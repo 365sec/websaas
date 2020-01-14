@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link  rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script type="text/javascript" src="/static/js/index.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+    <title>index</title>
+</head>
+<body>
+
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#d_issue_tesk" data-toggle="tab">下发扫描任务</a></li>
+    <li><a href="#d_get_tesk_list" data-toggle="tab" onclick="click_tesk_list()">获取所有任务列表</a></li>
+    <li><a href="#d_stop_task" data-toggle="tab" onclick="click_stop_task()">停止任务</a></li>
+    <li><a href="#d_get_task_status" data-toggle="tab" >获取任务状态</a></li>
+    <li><a href="#d_get_task_result" data-toggle="tab" >获取任务结果</a></li>
+    <li><a href="#d_get_plug" data-toggle="tab" onclick="click_get_plug()">获取插件列表</a></li>
+    <li><a href="#d_issue_tesk_batch" data-toggle="tab" onclick="d_issue_tesk_batch_click()">批量下发扫描任务</a></li>
+</ul>
+<div class="tab-content">
+    <div id="d_issue_tesk" class='tab-pane active'>
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="name">输入</label>
+                <textarea id="d_issue_task_text" class="form-control" rows="18"></textarea>
+            </div>
+            <div class="col-lg-6">
+                <label for="name">样例</label>
+                <pre>
+                    {
+                        "task_id": "1",
+                        "spider_task_id": "222",
+                        "url": "http://sfq.168tex.com/",
+                        "spider": {
+                            "maxpage": 500,
+                            "maxdepth": 3,
+                            "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
+                            "crawlrule": 0,
+                            "notscanfile": ""
+                        },
+                        "plugins": [
+                            "keywords",
+                            "component"
+                        ]
+                    }
+
+                </pre>
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="btn btn-default" onclick="click_issue_tesk()"> 下发任务扫描</button>
+        </div>
+        <div id="d_issue_task_text_result" class="row">
+
+        </div>
+
+    </div>
+    <div id="d_get_tesk_list" class='tab-pane'>
+
+    </div>
+    <div id="d_stop_task" class='tab-pane'>
+        停止任务<br>
+        <input type="text" id="id_stop_task"><br>
+        <button class="btn btn-default" onclick="click_stop_task()">停止</button><br>
+        <div id="d_stop_task_div" >
+        </div>
+    </div>
+    <div id="d_get_task_status" class='tab-pane'>
+        获取任务状态<br>
+        <input type="text" id="id_get_task_status"><br>
+        <button class="btn btn-default" onclick="click_task_status()">查询</button><br>
+        <div id="d_get_task_status_div" >
+        </div>
+    </div>
+    <div id="d_get_task_result" class='tab-pane'>
+        获取任务结果<br>
+        <input type="text" id="id_get_task_result"><br>
+        <button class="btn btn-default" onclick="click_task_result()">查询</button><br>
+        <div >
+            <pre id="d_get_task_result_div" >
+
+            </pre>
+        </div>
+    </div>
+    <div id="d_get_plug" class='tab-pane' >
+        获取插件列表
+    </div>
+    <div id="d_issue_tesk_batch"  class='tab-pane'>
+        批量下发
+        <button onclick="d_issue_task_batch_submit()" class="btn btn-default">提交</button><br>
+    <form role="form" method="post" id="task_batch_form">
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="name">输入</label>
+                <textarea id="d_issue_task_text_batch" class="form-control" rows="18" name="url"></textarea>
+
+                结果：
+                <pre id = "d_issue_task_batch_res" class="row">
+
+                </pre>
+            </div>
+            <div class="col-lg-6">
+                插件
+                <div id="plug_check_list" class="checkbox">
+
+                </div><br>
+                spider
+                <div id="spider_check_list" class="checkbox">
+
+                </div>
+            </div>
+        </div>
+{#        <button type="submit" class="btn btn-default">提交</button>#}
+
+    </form>
+
+    </div>
+</div>
+
+
+<style>
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
+</style>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">详情</h4>
+            </div>
+            <div id="model_result" class="modal-body">
+                <pre id="model_result" ></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+{#                <button type="button" class="btn btn-primary">提交更改</button>#}
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+</body>
+</html>
