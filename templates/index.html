@@ -14,7 +14,7 @@
 
 <ul class="nav nav-tabs">
     <li class="active"><a href="#d_issue_tesk" data-toggle="tab">下发扫描任务</a></li>
-    <li><a href="#d_get_tesk_list" data-toggle="tab" onclick="click_tesk_list()">获取所有任务列表</a></li>
+    <li><a href="#d_get_task_list" data-toggle="tab" onclick="click_task_list()">获取所有任务列表</a></li>
     <li><a href="#d_get_task_finish_list" data-toggle="tab" onclick="click_task_finish_list()">获取已完成任务列表</a></li>
     <li><a href="#d_stop_task" data-toggle="tab" onclick="click_stop_task()">停止任务</a></li>
     <li><a href="#d_get_task_status" data-toggle="tab" >获取任务状态</a></li>
@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-lg-6">
                 <label for="name">输入</label>
-                <textarea id="d_issue_task_text" class="form-control" rows="18"></textarea>
+                <label for="d_issue_task_text"></label><textarea id="d_issue_task_text" class="form-control" rows="18"></textarea>
             </div>
             <div class="col-lg-6">
                 <label for="name">样例</label>
@@ -61,7 +61,7 @@
         </div>
 
     </div>
-    <div id="d_get_tesk_list" class='tab-pane'>
+    <div id="d_get_task_list" class='tab-pane'>
 
     </div>
     <div id="d_get_task_finish_list" class='tab-pane'>
@@ -69,7 +69,7 @@
     </div>
     <div id="d_stop_task" class='tab-pane'>
         停止任务<br>
-        <input type="text" id="id_stop_task"><br>
+        <label for="id_stop_task"></label><input type="text" id="id_stop_task"><br>
         <button class="btn btn-default" onclick="click_stop_task()">停止</button><br>
         <div id="d_stop_task_div" >
         </div>

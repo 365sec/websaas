@@ -4,7 +4,7 @@ from vulcheck import views
 urlpatterns = [
 
     url(r'^issue_tesk', views.issue_tesk),
-    url(r'^tesk_list', views.get_tesk_list),
+    url(r'^task_list', views.get_task_list),
     url(r'^task_finish_list', views.get_task_finish_list),
     url(r'^get_scan_result$', views.get_scan_result),
     url(r'^get_scan_result_report_ip$', views.get_scan_result_report_ip),

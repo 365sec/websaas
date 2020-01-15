@@ -16,9 +16,9 @@ function click_issue_tesk() {
 }
 
 
-function click_tesk_list() {
+function click_task_list() {
     $.ajax({
-        url: "vulcheck/tesk_list",
+        url: "vulcheck/task_list",
         type: "get",
         success: function (data) {
             console.log(data);
@@ -33,11 +33,11 @@ function click_tesk_list() {
                     <td>${data['data'][x]['finish_time']}</td>
                     <td>${data['data'][x]['status']}</td>
 <!--                    <td><button  class="button " onclick="click_task_result_json('${data['data'][x]['task_id']}')"  data-toggle="modal" data-target="#myModal">详情</button></td>-->
-                    <td><a  target="_blank" href="get_report_html?task_id=${data['data'][x]['task_id']}"  >详情</a></td>
+                    <td><a  target="_blank" href="vulcheck/get_report_html?task_id=${data['data'][x]['task_id']}"  >详情</a></td>
 <!--                    <td><button  class="button " onclick="click_task_result_report('${data['data'][x]['task_id']}')" >报告</button></td>-->
-                    <td><a href="get_scan_result_report_ip?task_id=${data['data'][x]['task_id']}" >ip报告</a></td>
-                    <td><a href="get_scan_result_report_web?task_id=${data['data'][x]['task_id']}" >web报告</a></td>
-                    <td><a href="get_scan_result_report_word?task_id=${data['data'][x]['task_id']}" >key_word报告</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_ip?task_id=${data['data'][x]['task_id']}" >ip报告</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_web?task_id=${data['data'][x]['task_id']}" >web报告</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_word?task_id=${data['data'][x]['task_id']}" >key_word报告</a></td>
                 </tr>
                 
                 `
@@ -58,7 +58,7 @@ function click_tesk_list() {
             ${table_html}
         </tbody>
         </table>`;
-            $("#d_get_tesk_list").html("").append(html);
+            $("#d_get_task_list").html("").append(html);
         }
 
     })
@@ -81,10 +81,10 @@ function click_task_finish_list() {
                     <td>${data[x]['finish_time']}</td>
                     <td>${data[x]['status']}</td>
                     <td>${statistical}</td>
-                    <td><a  target="_blank" href="get_report_html?task_id=${data[x]['task_id']}"  >详情</a></td>
-                    <td><a href="get_scan_result_report_ip?task_id=${data[x]['task_id']}" >ip报告</a></td>
-                    <td><a href="get_scan_result_report_web?task_id=${data[x]['task_id']}" >web报告</a></td>
-                    <td><a href="get_scan_result_report_word?task_id=${data[x]['task_id']}" >key_word报告</a></td>
+                    <td><a  target="_blank" href="vulcheck/get_report_html?task_id=${data[x]['task_id']}"  >详情</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_ip?task_id=${data[x]['task_id']}" >ip报告</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_web?task_id=${data[x]['task_id']}" >web报告</a></td>
+                    <td><a href="vulcheck/get_scan_result_report_word?task_id=${data[x]['task_id']}" >key_word报告</a></td>
                 </tr>
                 
                 `

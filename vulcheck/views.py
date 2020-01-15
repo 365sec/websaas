@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 
-# Create your views here.
-# -*- coding: utf-8 -*
 import copy
 import json
 import time
@@ -21,26 +19,25 @@ from django.shortcuts import render
 import requests
 
 import logging
-logging.basicConfig(level=logging.DEBUG,
-                    # format="%(asctime)s %(name)s %(levelname)s %(message)s",
-                    format="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
-                    datefmt='%Y-%m-%d  %H:%M:%S %a'    #注意月份和天数不要搞乱了，这里的格式化符与time模块相同
-                    )
+import coloredlogs
 
+coloredlogs.install(level='DEBUG',
+                    fmt="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
+                    )
 
 glob_url = "http://172.16.39.65:9000"
 # glob_url = "http://172.16.39.78:9000"
 mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
 mongo_db = mongo_client['webmap']
 
-
 reload(sys)
 sys.setdefaultencoding('utf8')
+
 
 def index(request):
     context = {'hello': 'Hello World!'}
 
-    return render(request, 'vulcheck\index.html', context)
+    return render(request, r'vulcheck\index.html', context)
 
 
 def test(request):
@@ -54,6 +51,28 @@ def test_null(request):
 
     context = {}
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_report_html(request):
+    task_id = request.GET.get("task_id")
+    task_id = str(task_id)
+    ip_scan, web_scan, context, statistical = get_scan_res_json(task_id)
+    if context['data']:
+        finish_time = context['data']['finish_time']
+        finish_time = time.localtime(finish_time)
+        other_style_time = time.strftime("%Y-%m-%d %H:%M:%S", finish_time)
+        context['data']['finish_time'] = other_style_time
+        start_time = context['data']['start_time']
+        start_time = time.localtime(start_time)
+        other_style_time = time.strftime("%Y-%m-%d %H:%M:%S", start_time)
+        context['data']['start_time'] = other_style_time
+
+    return render(request, r'vulcheck\report.html', {
+        'data': json.dumps(context),
+        'ip_scan': json.dumps(ip_scan),
+        'web_scan': json.dumps(web_scan),
+        'statistical': json.dumps(statistical),
+    })
 
 
 def test_post_ajax(request):
@@ -105,9 +124,7 @@ def get_issue_task_result(url, task):
     return context
 
 
-def get_tesk_list(request):
-
-    print(u"获得任务列表")
+def get_task_list(request):
     url = glob_url + "/v1/gettasklist"
     print(url)
     result = requests.get(url)
@@ -131,7 +148,6 @@ def get_tesk_list(request):
 
 # 获取完成任务列表
 def get_task_finish_list(request):
-
     res = []
     project_set = mongo_db['projectdb']
 
@@ -222,7 +238,7 @@ def get_scan_result_report_web(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=web_scan.csv'
     writer = csv.writer(response)
-    result = ['命中关键词', '信息类别','证据' , 'URL', '域名', '主机(ip)', '标题（网站名称）', '发现时间']
+    result = ['命中关键词', '信息类别', '证据', 'URL', '域名', '主机(ip)', '标题（网站名称）', '发现时间']
     writer.writerow(result)
     CsvData = keyword_res_list
 
@@ -246,6 +262,30 @@ def get_scan_result_report_web(request):
     return response
 
 
+def get_scan_result_report_key_word(request):
+    print("get_scan_result_report_key_word")
+    task_id = request.GET.get("task_id")
+    keyword_res_list = get_scan_res_json(task_id)[1]
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=key_word_scan.csv'
+    writer = csv.writer(response)
+    result = ['关键词']
+    writer.writerow(result)
+    CsvData = keyword_res_list
+    res_list_list = []
+    for item in [CsvData]:
+        for x in item:
+            if x['value'] in res_list_list:
+                continue
+            res_list_list.append(x['value'])
+
+    for item in res_list_list:
+        writer.writerow([item])
+
+    return response
+
+
+# 获取某个 task_id 扫描的json结果
 def get_scan_res_json(task_id):
     task_id = str(task_id)
     url = glob_url + "/v1/getscanresult"
@@ -306,31 +346,10 @@ def get_scan_res_json(task_id):
                                         res_keyword['segment'] = res_keyword['segment'].replace("\r", "")
                                         res_keyword['segment'] = res_keyword['segment'].replace("\n", "")
                                         keyword_res_list.append(copy.deepcopy(res_keyword))
-    print(json.dumps(statistical))
+    logging.debug(statistical)
     return [res_list, keyword_res_list, context, statistical]
 
 
-def get_scan_result_report_key_word(request):
-    print("get_scan_result_report_key_word")
-    task_id = request.GET.get("task_id")
-    keyword_res_list = get_scan_res_json(task_id)[1]
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=key_word_scan.csv'
-    writer = csv.writer(response)
-    result = ['关键词']
-    writer.writerow(result)
-    CsvData = keyword_res_list
-    res_list_list = []
-    for item in [CsvData]:
-        for x in item:
-            if x['value'] in res_list_list:
-                continue
-            res_list_list.append(x['value'])
-
-    for item in res_list_list:
-        writer.writerow([item])
-
-    return response
 
 
 def get_task_status(request):
@@ -385,7 +404,6 @@ task_content = {
 
 
 def issue_task_list(request):
-
     check_url = request.POST.get("url")
     check_url = check_url
     check_url = check_url.split("\r\n")
@@ -412,7 +430,7 @@ def issue_task_list(request):
 
             start = int(res1.group(2))
             end = int(res1.group(3))
-            for j in range(start, end+1):
+            for j in range(start, end + 1):
                 temp_ip = res1.group(1)
                 temp_ip = temp_ip + str(j)
                 check_url_list.append(temp_ip)
@@ -483,26 +501,3 @@ def deal_result_json(web):
         if 'domain_hijack' in web['illegality']:
             result['illegality']['domain_hijack'] = len(web['illegality']['domain_hijack'])
     return result
-
-
-def get_report_html(request):
-
-    task_id = request.GET.get("task_id")
-    task_id = str(task_id)
-    ip_scan, web_scan, context, statistical = get_scan_res_json(task_id)
-    if context['data']:
-        finish_time = context['data']['finish_time']
-        finish_time = time.localtime(finish_time)
-        other_style_time = time.strftime("%Y-%m-%d %H:%M:%S", finish_time)
-        context['data']['finish_time'] = other_style_time
-        start_time = context['data']['start_time']
-        start_time = time.localtime(start_time)
-        other_style_time = time.strftime("%Y-%m-%d %H:%M:%S", start_time)
-        context['data']['start_time'] = other_style_time
-
-    return render(request, 'report.html', {
-        'data': json.dumps(context),
-        'ip_scan': json.dumps(ip_scan),
-        'web_scan': json.dumps(web_scan),
-        'statistical': json.dumps(statistical),
-    })
