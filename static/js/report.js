@@ -2,12 +2,15 @@
 var report_data;
 var ip_scan;
 var web_scan;
-function get_data(data,ip_scan_,web_scan_) {
+var statistical;
+function get_data(data,ip_scan_,web_scan_,statistical_) {
     report_data = data;
     ip_scan = ip_scan_;
     web_scan = web_scan_;
+    statistical = statistical_;
     console.log(report_data);
     console.log(ip_scan);
+    console.log(statistical);
 
 }
 

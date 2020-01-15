@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.shortcuts import render
+
+# Create your views here.
 # -*- coding: utf-8 -*
 import copy
 import json
@@ -34,7 +40,7 @@ sys.setdefaultencoding('utf8')
 def index(request):
     context = {'hello': 'Hello World!'}
 
-    return render(request, 'index.html', context)
+    return render(request, 'vulcheck\index.html', context)
 
 
 def test(request):
@@ -364,18 +370,18 @@ def get_plug(request):
 
 
 task_content = {
-                    "task_id": "",
-                    "spider_task_id": "",
-                    "url": "",
-                    "spider": {
-                        "maxpage": 500,
-                        "maxdepth": 3,
-                        "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
-                        "crawlrule": 0,
-                        "notscanfile": ""
-                    },
-                    "plugins": ""
-                }
+    "task_id": "",
+    "spider_task_id": "",
+    "url": "",
+    "spider": {
+        "maxpage": 500,
+        "maxdepth": 3,
+        "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
+        "crawlrule": 0,
+        "notscanfile": ""
+    },
+    "plugins": ""
+}
 
 
 def issue_task_list(request):

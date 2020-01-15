@@ -11,7 +11,8 @@
         var report_data = {{ data|safe }};
         var ip_scan = {{ ip_scan|safe }};
         var web_scan = {{ web_scan|safe }};
-        get_data(report_data,ip_scan,web_scan);
+        var statistical = {{ statistical|safe }};
+        get_data(report_data,ip_scan,web_scan,statistical);
     </script>
 </head>
 <body>

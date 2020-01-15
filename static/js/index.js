@@ -4,7 +4,7 @@ function click_issue_tesk() {
     let parm = {};
     parm['task'] = task;
     $.ajax({
-        url: "issue_tesk",
+        url: "vulcheck/issue_tesk",
         type: "post",
         data: parm,
         success: function (data) {
@@ -18,7 +18,7 @@ function click_issue_tesk() {
 
 function click_tesk_list() {
     $.ajax({
-        url: "tesk_list",
+        url: "vulcheck/tesk_list",
         type: "get",
         success: function (data) {
             console.log(data);
@@ -64,13 +64,61 @@ function click_tesk_list() {
     })
 }
 
+function click_task_finish_list() {
+    $.ajax({
+        url: "vulcheck/task_finish_list",
+        type: "get",
+        success: function (data) {
+            console.log(data);
+            let table_html = ``;
+
+            for (x in data) {
+                let statistical =JSON.stringify(data[x]['statistical']);
+                table_html += `
+                <tr>
+                    <td>${data[x]['task_id']}</td>
+                    <td>${data[x]['spider_task_id']}</td>
+                    <td>${data[x]['finish_time']}</td>
+                    <td>${data[x]['status']}</td>
+                    <td>${statistical}</td>
+                    <td><a  target="_blank" href="get_report_html?task_id=${data[x]['task_id']}"  >详情</a></td>
+                    <td><a href="get_scan_result_report_ip?task_id=${data[x]['task_id']}" >ip报告</a></td>
+                    <td><a href="get_scan_result_report_web?task_id=${data[x]['task_id']}" >web报告</a></td>
+                    <td><a href="get_scan_result_report_word?task_id=${data[x]['task_id']}" >key_word报告</a></td>
+                </tr>
+                
+                `
+            }
+            let html;
+            html = ` <table class="table table-bordered">
+            <caption>任务列表</caption>
+        <thead>
+        <tr>
+            <th>task_id</th>
+            <th>spider_task_id</th>
+            <th>finish_time</th>
+            <th>status</th>
+            <th>威胁</th>
+            <th>结果</th>
+        </tr>
+        </thead>
+        <tbody>
+            ${table_html}
+        </tbody>
+        </table>`;
+            $("#d_get_task_finish_list").html("").append(html);
+        }
+
+    })
+}
+
 function click_task_result_json(task_id) {
     /*获得任务列表JSON*/
     // console.log($(this))
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "get_scan_result",
+        url: "vulcheck/et_scan_result",
         type: "get",
         data: parm,
         success: function (data) {
@@ -87,7 +135,7 @@ function click_task_result_report(task_id) {
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "get_scan_result_report",
+        url: "vulcheck/get_scan_result_report",
         type: "get",
         data: parm,
         success: function (data) {
@@ -148,7 +196,7 @@ function click_stop_task() {
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "stop_task",
+        url: "vulcheck/stop_task",
         type: "get",
         success: function (data) {
             console.log(data);
@@ -167,7 +215,7 @@ function click_task_result() {
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "get_scan_result",
+        url: "vulcheck/get_scan_result",
         type: "get",
         data: parm,
         success: function (data) {
@@ -188,7 +236,7 @@ function click_task_status() {
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "task_status",
+        url: "vulcheck/task_status",
         type: "get",
         data: parm,
         success: function (data) {
@@ -236,7 +284,7 @@ function get_plug_list() {
     /*获得插件列表*/
     let res;
     $.ajax({
-        url: "get_plug",
+        url: "vulcheck/get_plug",
         type: "get",
         async: false,
         success: function (data) {
@@ -280,7 +328,7 @@ function d_issue_task_batch_submit() {
     console.log(post_data);
     let res;
     $.ajax({
-        url: "issue_task_list",
+        url: "vulcheck/issue_task_list",
         type: "post",
         data: post_data,
         async: false,
