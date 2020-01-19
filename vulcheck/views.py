@@ -39,6 +39,10 @@ def index(request):
 
     return render(request, r'vulcheck\index.html', context)
 
+def quickstart(request):
+    context = {'hello': 'Hello World!'}
+
+    return render(request, r'vulcheck\quickstart.html', context)
 
 def test(request):
     context = {'hello': 'Hello World!'}
@@ -73,6 +77,7 @@ def get_report_html(request):
         'web_scan': json.dumps(web_scan),
         'statistical': json.dumps(statistical),
     })
+
 
 
 def test_post_ajax(request):

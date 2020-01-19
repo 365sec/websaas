@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^test_post_ajax', views.test_post_ajax),
     url(r'^test', views.test),
     url(r'^get_report_html', views.get_report_html),
+    url(r'^quickstart', views.quickstart),
     url(r'', views.index),
 ]
