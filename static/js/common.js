@@ -37,13 +37,13 @@ $(function() {
 })
 // 点击menu菜单按钮展开折叠左侧sidebar
 $(document).on('click','.menu-button',function () {
-    if ($('.sidebar').hasClass('sidebar-close')){ //判断sidebar为折叠，展开sidebar
+    if ($('.sidebar-scrollhidden').hasClass('sidebar-close')){ //判断sidebar为折叠，展开sidebar
         $(this).find('i').removeClass('iconRotate') //.menu-button转向
-        $('.sidebar').removeClass('sidebar-close').addClass('sidebar-open');//添加sidebar-open
+        $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//添加sidebar-open
         $('.main-content').css('width','calc(100% - 180px)');////设置折叠后右侧内容框
     }else{
         $(this).find('i').addClass('iconRotate')//.menu-button转向
-        $('.sidebar').removeClass('sidebar-open').addClass('sidebar-close');//添加sidebar-close
+        $('.sidebar-scrollhidden').removeClass('sidebar-open').addClass('sidebar-close');//添加sidebar-close
         $('.sidebar-firstDrop, .sidebar-secondDrop').css('display','none');//隐藏所有二级三级展开框
         $('.nano-content').find('.icon-arrow').removeClass('iconRotate')//恢复栏目的箭头指向
         $('.main-content').css('width','calc(100% - 50px)');//设置折叠后右侧内容框
@@ -51,8 +51,8 @@ $(document).on('click','.menu-button',function () {
     }
 })
 // sidebar折叠后，点击缩放的按钮展开sidebar
-$(document).on('click','.sidebar-close>.nano-content>.sidebar-firstItem',function() {
-    $('.sidebar').removeClass('sidebar-close').addClass('sidebar-open');//展开sidebar
+$(document).on('click','.sidebar-close .nano-content>.sidebar-firstItem',function() {
+    $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//展开sidebar
     $('.main-content').css('width','calc(100% - 180px)');//设置折叠后右侧内容框
 
 });
