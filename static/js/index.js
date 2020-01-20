@@ -118,7 +118,7 @@ function click_task_result_json(task_id) {
     let parm = {};
     parm['task_id'] = task_id;
     $.ajax({
-        url: "vulcheck/et_scan_result",
+        url: "vulcheck/get_scan_result",
         type: "get",
         data: parm,
         success: function (data) {
@@ -280,65 +280,6 @@ function click_get_plug() {
 
 }
 
-function get_plug_list() {
-    /*获得插件列表*/
-    let res;
-    $.ajax({
-        url: "vulcheck/get_plug",
-        type: "get",
-        async: false,
-        success: function (data) {
-            // console.log(data);
-            res = data
 
-        }
-    });
-    // console.log(res)
-    return res
-}
 
-function d_issue_tesk_batch_click() {
-
-    let plug = get_plug_list();
-    console.log(plug);
-    /*
-    * 批量检测被点击*/
-
-    let plug_html = ``;
-    for (x in plug['data']) {
-        // console.log(plug['data'][x]['plugin_name'])
-        let plug_name = plug['data'][x]['plugin_name'];
-        plug_html += `<lable> <input type="checkbox" name="plugin_name" value="${plug_name}">${plug_name}</lable><br>`
-    }
-    $("#plug_check_list").html("").append(plug_html);
-
-    let spider_html = ``;
-    spider_html += `<lable>maxpage<input type="text" name="maxpage" placeholder="500" class="form-control"></lable><br>`;
-    spider_html += `<lable>maxdepth<input type="text" name="maxdepth" placeholder="3" class="form-control"></lable><br>`;
-    spider_html += `<lable>notscanurl<input type="text" name="notscanurl" placeholder="/.*?delete*,/.*?logout*,/.*?loginout*" class="form-control"></lable><br>`;
-    spider_html += `<lable>crawlrule<input type="text" name="crawlrule" placeholder="0" class="form-control"></lable><br>`;
-    spider_html += `<lable>notscanfile<input type="text" name="notscanfile" placeholder="" class="form-control"></lable><br>`;
-    $("#spider_check_list").html("").append(spider_html);
-}
-
-function d_issue_task_batch_submit() {
-
-    // console.log( $('#task_batch_form').serialize())
-    let post_data = $('#task_batch_form').serializeArray();
-    console.log(post_data);
-    let res;
-    $.ajax({
-        url: "vulcheck/issue_task_list",
-        type: "post",
-        data: post_data,
-        async: false,
-        success: function (data) {
-            // console.log(data);
-            res = data;
-            $("#d_issue_task_batch_res").html("").append(JSON.stringify(data, undefined, 4));
-            console.log(data)
-        }
-    });
-
-}
 

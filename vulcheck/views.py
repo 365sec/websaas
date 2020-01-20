@@ -30,7 +30,10 @@ coloredlogs.install(level='DEBUG',
 # glob_url = "http://172.16.39.65:9000"
 glob_url = "http://172.16.39.78:9000"
 mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
+
 mongo_db = mongo_client['webmap']
+project_set = mongo_db['projectdb']
+result_set = mongo_db['resultdb']
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -49,7 +52,6 @@ def quickstart(request):
 
 
 def show_all_task_html(request):
-
     context = {}
     return render(request, r'vulcheck\show_all_task.html', context)
 
@@ -58,17 +60,17 @@ def show_all_task(request):
     page = request.GET.get("page")
     page = 0 if not page else int(page) - 1
     page_num = 10
-    skip = int(page*page_num)
-    project_set = mongo_db['projectdb']
+    skip = int(page * page_num)
     max_num = project_set.count()
-    max_page = int(math.ceil(float(max_num) / page_num))    # 最大分页数
-    result = project_set.find({},{'_id':0}).skip(skip).limit(page_num)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+    result = project_set.find({}, {'_id': 0}).skip(skip).limit(page_num)
     logging.debug(max_num)
     task_list = []
     for x in result:
         logging.debug(x)
-        x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time']))
-        x['updatetime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['updatetime']))
+        x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time'])) if x[
+            'finish_time'] else ""
+        x['start_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['start_time'])) if x['start_time'] else ""
         task_list.append(x)
 
     context = {'code': '200',
@@ -80,9 +82,13 @@ def show_all_task(request):
 
 
 def send_task_html(request):
-
     context = {}
     return render(request, r'vulcheck\send_task.html', context)
+
+
+def task_detial_html(request):
+    context = {}
+    return render(request, r'vulcheck\task_detail.html', context)
 
 
 def get_report_html(request):
@@ -106,7 +112,6 @@ def get_report_html(request):
         'statistical': json.dumps(statistical),
         'statistical_one': json.dumps(statistical_one),
     })
-
 
 
 def test_post_ajax(request):
@@ -183,13 +188,13 @@ def get_task_list(request):
 # 获取完成任务列表
 def get_task_finish_list(request):
     res = []
-    project_set = mongo_db['projectdb']
+
 
     for i in project_set.find({'status': {'$ne': 'FINISHED'}}, {'_id': 0}).sort([('finish_time', -1)]):
         logging.debug(i)
         res.append(i)
-    mongo_set = mongo_db['resultdb']
-    for i in mongo_set.find({}, {'_id': 0}).sort([('finish_time', -1)]):
+
+    for i in result_set.find({}, {'_id': 0}).sort([('finish_time', -1)]):
         if 'result' in i:
             i['status'] = 'FINISHED'
             i['statistical'] = deal_result_json_all(i)[0]
@@ -217,19 +222,16 @@ def stop_task(request):
 
 
 def get_scan_result(request):
+
     task_id = request.GET.get("task_id")
     task_id = str(task_id)
-    url = glob_url + "/v1/getscanresult"
-    data = {"task_id": task_id}
-    data = json.dumps(data)
-    result = requests.post(url, data=data)
-    context = {'data': "", 'code': result.status_code}
-    if result.status_code == 200:
-        res = json.loads(result.text)
-        if res['code'] == 100:
-            context['data'] = res['data']
-    else:
-        context['data'] = ""
+    result = result_set.find({'task_id': task_id}, {'_id': 0})
+    result_list = []
+    for x in result:
+        # logging.debug(x)
+        result_list.append(x)
+
+    context = {"code":200,"data":result_list}
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
@@ -381,9 +383,7 @@ def get_scan_res_json(task_id):
                                         res_keyword['segment'] = res_keyword['segment'].replace("\n", "")
                                         keyword_res_list.append(copy.deepcopy(res_keyword))
     logging.debug(statistical)
-    return [res_list, keyword_res_list, context, statistical,statistical_one]
-
-
+    return [res_list, keyword_res_list, context, statistical, statistical_one]
 
 
 def get_task_status(request):
@@ -431,7 +431,10 @@ task_content = {
         "maxdepth": 3,
         "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
         "crawlrule": 0,
-        "notscanfile": ""
+        "notscanfile": "",
+        "phantomjs_enable": False,
+        "craw_current_directory": False
+
     },
     "plugins": ""
 }
@@ -447,6 +450,8 @@ def issue_task_list(request):
     notscanurl = request.POST.get("notscanurl")
     crawlrule = request.POST.get("crawlrule")
     notscanfile = request.POST.get("notscanfile")
+    phantomjs_enable = request.POST.get("phantomjs_enable")
+    craw_current_directory = request.POST.get("craw_current_directory")
     # plugins = request.POST.getlist("plugin_name")
     print(request.POST)
     context = []
@@ -487,7 +492,9 @@ def issue_task_list(request):
     task['spider']['notscanurl'] = notscanurl if notscanurl else "/.*?delete*,/.*?logout*,/.*?loginout*"
     task['spider']['crawlrule'] = crawlrule if crawlrule else 0
     task['spider']['notscanfile'] = notscanfile if notscanfile else ""
-    print(task)
+    task['spider']['phantomjs_enable'] = phantomjs_enable if phantomjs_enable else False
+    task['spider']['craw_current_directory'] = phantomjs_enable if craw_current_directory else False
+
     res = get_issue_task_result(glob_url + "/v1/sendtask", task)
     # print(res)
     context.append(res)

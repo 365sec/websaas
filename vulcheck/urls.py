@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import url
 from vulcheck import views
 
@@ -6,7 +7,7 @@ urlpatterns = [
     url(r'^issue_tesk', views.issue_tesk),
     url(r'^task_list', views.get_task_list),
     url(r'^task_finish_list', views.get_task_finish_list),
-    url(r'^get_scan_result$', views.get_scan_result),
+
     url(r'^get_scan_result_report_ip$', views.get_scan_result_report_ip),
     url(r'^get_scan_result_report_web$', views.get_scan_result_report_web),
     url(r'^get_scan_result_report_word$', views.get_scan_result_report_key_word),
@@ -18,8 +19,10 @@ urlpatterns = [
     url(r'^get_report_html', views.get_report_html),
     url(r'^quickstart', views.quickstart),
 
-    url(r'^show_all_task_html', views.show_all_task_html),
-    url(r'^show_all_task', views.show_all_task),
-    url(r'^send_task_html', views.send_task_html),
+    url(r'^show_all_task_html', views.show_all_task_html),  # 获得所有任务的页面
+    url(r'^show_all_task', views.show_all_task),  # 按页数获得所有任务
+    url(r'^send_task_html', views.send_task_html),  # 获得下发任务页面
+    url(r'^task_detial_html', views.task_detial_html),  # 获得单个任务详情页面
+    url(r'^get_scan_result$', views.get_scan_result),  # 获得单个任务扫描的结果
     url(r'', views.index),
 ]
