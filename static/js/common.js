@@ -1,4 +1,10 @@
+// 引入所需的内页js
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_index.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_quickstart.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_task.js'></script>");
+
 $(function() {
+    // 左侧手风琴点击样式变化
     $('.sidebar-firstNav').click(function () { //点击一级触发
         var parent = $(this).parent();
         parent.siblings().children('ul').slideUp();
@@ -34,28 +40,85 @@ $(function() {
             parentlevel.siblings().removeClass('open active').find('.active').removeClass('active')
         }
     })
+
+    // 左侧手风琴点击执行事件
+    $(".sidebar-firstNav,.sidebar-secondNav").click(function () {
+        var value = $(this).attr("data-value");
+        if(value){
+            var target = '/'+value.split('-')[0]+'#'+value.split('-')[1]
+            // 在本页面刷新链接只有参数变化则不改变url
+            if(!location.pathname || !location.hash ||
+                location.pathname + location.hash.split('?')[0] !== target){
+                history.pushState(null,null,target);
+            }
+        }
+        switch (value) {
+            case "vulcheck-index":
+                vulcheckIndex();
+                break;
+            case "vulcheck-quickstart":
+                vulcheckQuickstart();
+                break;
+            case "vulcheck-show_all_task":
+                vulcheck_show_all_task();
+                break;
+            case "vulcheck-send_task":
+                vulcheck_send_task();
+                break;
+            default:
+        }
+    });
+    // 点击menu菜单按钮展开折叠左侧sidebar
+    $('.menu-button').click(function () {
+        if ($('.sidebar-scrollhidden').hasClass('sidebar-close')){ //判断sidebar为折叠，展开sidebar
+            $(this).find('i').removeClass('iconRotate') //.menu-button转向
+            $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//添加sidebar-open
+            $('.main-content').css('width','calc(100% - 180px)');////设置折叠后右侧内容框
+        }else{
+            $(this).find('i').addClass('iconRotate')//.menu-button转向
+            $('.sidebar-scrollhidden').removeClass('sidebar-open').addClass('sidebar-close');//添加sidebar-close
+            $('.sidebar-firstDrop, .sidebar-secondDrop').css('display','none');//隐藏所有二级三级展开框
+            $('.nano-content').find('.icon-arrow').removeClass('iconRotate')//恢复栏目的箭头指向
+            $('.main-content').css('width','calc(100% - 50px)');//设置折叠后右侧内容框
+
+        }
+    })
+    // sidebar折叠后，点击缩放的按钮展开sidebar
+    $('.sidebar-close .nano-content>.sidebar-firstItem').click(function () {
+        $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//展开sidebar
+        $('.main-content').css('width','calc(100% - 180px)');//设置折叠后右侧内容框
+
+    });
+
+    refresh();//刷新时加载默认
+    $(window).on("popstate",function(){//监听url变化，回退时触发 pushState不触发
+        refresh();
+    });
+
+
 })
-// 点击menu菜单按钮展开折叠左侧sidebar
-$(document).on('click','.menu-button',function () {
-    if ($('.sidebar-scrollhidden').hasClass('sidebar-close')){ //判断sidebar为折叠，展开sidebar
-        $(this).find('i').removeClass('iconRotate') //.menu-button转向
-        $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//添加sidebar-open
-        $('.main-content').css('width','calc(100% - 180px)');////设置折叠后右侧内容框
+// 刷新，回退时加载默认
+function refresh() {
+    var req = '',//一级
+        hash='',//二级
+        page='';//页码参数
+    if(location.pathname)req = location.pathname.slice(1);//解析一级路径
+    if(location.hash)hash = location.hash.split('#')[1].split('?')[0];//解析二级路径
+    if(!hash){
+        if(!req){
+            //默认页面
+            $('.sidebar-secondNav[data-value="vulcheck-index"], .sidebar-firstNav[data-value="vulcheck-index"]').trigger('click');
+        }else{
+            //只有一级的默认页面为data-value为一级-index的内页
+            $('.sidebar-secondNav[data-value="'+req+'-index"], .sidebar-firstNav[data-value="'+req+'-index"]').trigger('click');
+        }
     }else{
-        $(this).find('i').addClass('iconRotate')//.menu-button转向
-        $('.sidebar-scrollhidden').removeClass('sidebar-open').addClass('sidebar-close');//添加sidebar-close
-        $('.sidebar-firstDrop, .sidebar-secondDrop').css('display','none');//隐藏所有二级三级展开框
-        $('.nano-content').find('.icon-arrow').removeClass('iconRotate')//恢复栏目的箭头指向
-        $('.main-content').css('width','calc(100% - 50px)');//设置折叠后右侧内容框
-
+        //模拟触发点击事件加载页面
+        $('.sidebar-secondNav[data-value='+req+'-'+hash+'], .sidebar-firstNav[data-value='+req+'-'+hash+']').trigger('click');
     }
-})
-// sidebar折叠后，点击缩放的按钮展开sidebar
-$(document).on('click','.sidebar-close .nano-content>.sidebar-firstItem',function() {
-    $('.sidebar-scrollhidden').removeClass('sidebar-close').addClass('sidebar-open');//展开sidebar
-    $('.main-content').css('width','calc(100% - 180px)');//设置折叠后右侧内容框
+}
 
-});
+// 添加分页
 function addPagination(nowpage,maxpage) {
     var pagination = '<ul>' ;
     if(nowpage > 1){
