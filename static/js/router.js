@@ -13,17 +13,15 @@ $(function () {
         if(location.hash)hash = location.hash.split('#')[1].split('?')[0];//解析二级路径
         if(!hash){
             if(!req){
-                $('.vulcheckIndex').trigger('click');  //默认页面
-                // eval('vulcheckIndex()');
+                //默认页面
+                $('.sidebar-secondNav[data-value="vulcheck-index"], .sidebar-firstNav[data-value="vulcheck-index"]').trigger('click');
             }else{
-                $('.'+req+'Index').trigger('click'); //只有一级的默认页面
-                // eval(req+'Index()');
+                //只有一级的默认页面
+                $('.sidebar-secondNav[data-value="'+req+'-index"], .sidebar-firstNav[data-value="'+req+'-index"]').trigger('click');
             }
         }else{
-            hash = hash.slice(0,1).toUpperCase()+hash.slice(1); //首字母大写
-            $('.'+req+hash).trigger('click'); //模拟触发点击事件加载页面
-            // eval(req+hash+'()');
-
+            //模拟触发点击事件加载页面
+            $('.sidebar-secondNav[data-value='+req+'-'+hash+'], .sidebar-firstNav[data-value='+req+'-'+hash+']').trigger('click');
         }
     }
 })

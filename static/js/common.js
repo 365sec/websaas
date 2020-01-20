@@ -59,17 +59,17 @@ $(document).on('click','.sidebar-close .nano-content>.sidebar-firstItem',functio
 function addPagination(nowpage,maxpage) {
     var pagination = '<ul>' ;
     if(nowpage > 1){
-        pagination +='       <button data-page="'+(nowpage-1)+'" class="pagination-link prev-link">上一页</button>' ;
+        pagination +='<button data-page="'+(nowpage-1)+'" class="pagination-link prev-link">上一页</button>' ;
     }else{
-        pagination +='       <button data-page="" class="pagination-link prev-link disabled" disabled>上一页</button>' ;//nowpage=1不可选
+        pagination +='<button data-page="" class="pagination-link prev-link disabled" disabled>上一页</button>' ;//nowpage=1不可选
     }
     for(var i = 1;i<=maxpage;i++){
-        pagination +='       <li data-page="'+i+'">'+i+'</li>'
+        pagination +='<li data-page="'+i+'">'+i+'</li>'
     }
     if(nowpage < maxpage){
-        pagination +='       <button data-page="'+(Number(nowpage)+1)+'" class="pagination-link next-link">下一页</button>' ;
+        pagination +='<button data-page="'+(Number(nowpage)+1)+'" class="pagination-link next-link">下一页</button>' ;
     }else{
-        pagination +='       <button data-page="" class="pagination-link next-link disabled" disabled>下一页</button> ';//nowpage=maxpage不可选
+        pagination +='<button data-page="" class="pagination-link next-link disabled" disabled>下一页</button> ';//nowpage=maxpage不可选
     }
     pagination +='</ul>';
     $('.pagination').html(pagination);

@@ -21,3 +21,4 @@ class logs(object):
 
     def error(self, message):
         self.logger.error(message)
+

@@ -15,8 +15,11 @@ urlpatterns = [
     url(r'^get_plug', views.get_plug),
     url(r'^issue_task_list', views.issue_task_list),
     url(r'^test_post_ajax', views.test_post_ajax),
-    url(r'^test', views.test),
     url(r'^get_report_html', views.get_report_html),
     url(r'^quickstart', views.quickstart),
+
+    url(r'^show_all_task_html', views.show_all_task_html),
+    url(r'^show_all_task', views.show_all_task),
+    url(r'^send_task_html', views.send_task_html),
     url(r'', views.index),
 ]

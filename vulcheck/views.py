@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import math
+
 from django.shortcuts import render
 
 import copy
@@ -25,8 +27,8 @@ coloredlogs.install(level='DEBUG',
                     fmt="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
                     )
 
-glob_url = "http://172.16.39.65:9000"
-# glob_url = "http://172.16.39.78:9000"
+# glob_url = "http://172.16.39.65:9000"
+glob_url = "http://172.16.39.78:9000"
 mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
 mongo_db = mongo_client['webmap']
 
@@ -39,28 +41,54 @@ def index(request):
 
     return render(request, r'vulcheck\index.html', context)
 
+
 def quickstart(request):
     context = {'hello': 'Hello World!'}
 
     return render(request, r'vulcheck\quickstart.html', context)
 
-def test(request):
-    context = {'hello': 'Hello World!'}
 
-    return render(request, 'test.html', context)
-
-
-def test_null(request):
-    context = {'hello': 'Hello World!'}
+def show_all_task_html(request):
 
     context = {}
+    return render(request, r'vulcheck\show_all_task.html', context)
+
+
+def show_all_task(request):
+    page = request.GET.get("page")
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page*page_num)
+    project_set = mongo_db['projectdb']
+    max_num = project_set.count()
+    max_page = int(math.ceil(float(max_num) / page_num))    # 最大分页数
+    result = project_set.find({},{'_id':0}).skip(skip).limit(page_num)
+    logging.debug(max_num)
+    task_list = []
+    for x in result:
+        logging.debug(x)
+        x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time']))
+        x['updatetime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['updatetime']))
+        task_list.append(x)
+
+    context = {'code': '200',
+               'data': task_list,
+               'max_page': max_page,
+               }
+
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def send_task_html(request):
+
+    context = {}
+    return render(request, r'vulcheck\send_task.html', context)
 
 
 def get_report_html(request):
     task_id = request.GET.get("task_id")
     task_id = str(task_id)
-    ip_scan, web_scan, context, statistical = get_scan_res_json(task_id)
+    ip_scan, web_scan, context, statistical, statistical_one = get_scan_res_json(task_id)
     if context['data']:
         finish_time = context['data']['finish_time']
         finish_time = time.localtime(finish_time)
@@ -76,6 +104,7 @@ def get_report_html(request):
         'ip_scan': json.dumps(ip_scan),
         'web_scan': json.dumps(web_scan),
         'statistical': json.dumps(statistical),
+        'statistical_one': json.dumps(statistical_one),
     })
 
 
@@ -163,7 +192,7 @@ def get_task_finish_list(request):
     for i in mongo_set.find({}, {'_id': 0}).sort([('finish_time', -1)]):
         if 'result' in i:
             i['status'] = 'FINISHED'
-            i['statistical'] = deal_result_json_all(i)
+            i['statistical'] = deal_result_json_all(i)[0]
         res.append(i)
 
     return HttpResponse(json.dumps(res), content_type="application/json")
@@ -310,7 +339,7 @@ def get_scan_res_json(task_id):
     statistical = {}
     statistical_one = {}
     if "result" in context['data']:
-        statistical = deal_result_json_all(context['data'])
+        statistical, statistical_one = deal_result_json_all(context['data'])
         for x in context['data']['result']:
             res = context['data']['result'][x]
             result = {}
@@ -352,7 +381,7 @@ def get_scan_res_json(task_id):
                                         res_keyword['segment'] = res_keyword['segment'].replace("\n", "")
                                         keyword_res_list.append(copy.deepcopy(res_keyword))
     logging.debug(statistical)
-    return [res_list, keyword_res_list, context, statistical]
+    return [res_list, keyword_res_list, context, statistical,statistical_one]
 
 
 
@@ -470,11 +499,15 @@ def issue_task_list(request):
 def deal_result_json_all(data):
     statistical = {}
     statistical_one = {}
+    statistical_detail = {}
     for x in data['result']:
         res = data['result'][x]
         res_one = deal_result_json(res)
         if res_one:
             statistical_one[x] = res_one
+            statistical_detail[x] = res
+            logging.debug(x)
+            logging.debug(res_one)
             for k in res_one:
                 if k not in statistical:
                     statistical[k] = {}
@@ -482,13 +515,13 @@ def deal_result_json_all(data):
                     if j not in statistical[k]:
                         statistical[k][j] = 0
                     statistical[k][j] += res_one[k][j]
-    return statistical
+    return statistical, statistical_one
 
 
 # 网站层面的结果
 def deal_result_json(web):
     # print(key)
-    result = {}
+    result = {}  # 一个网站的汇总
     if 'vulnerables' in web:
         result['vulnerables'] = {}
         for x in web['vulnerables']:
