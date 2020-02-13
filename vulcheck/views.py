@@ -99,6 +99,11 @@ def get_total_html(request):
     return render(request, r'vulcheck\total.html', context)
 
 
+def total_one_detail_html(request):
+    context = {}
+    return render(request, r'vulcheck\total_one.html', context)
+
+
 def get_report_html(request):
     task_id = request.GET.get("task_id")
     task_id = str(task_id)

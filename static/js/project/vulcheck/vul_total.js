@@ -144,7 +144,7 @@ function get_scan_list_page(page, filter_param) {
                 // console.log(res['data'][x]['result']);
                 html += `<div class="row">`;
                 html += `<div class="col-lg-5">`;
-                html += `<h4><a onclick='get_task_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']}</a></h4>`;
+                html += `<h4><a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']}</a></h4>`;
                 html += `<li>标题：${title}</li>`;
                 html += `<li>ip：${ip}</li>`;
                 html += `<li>端口：${protocols}</li>`;
@@ -160,4 +160,26 @@ function get_scan_list_page(page, filter_param) {
 
         }
     })
+}
+
+function get_total_one_detail(_info) {
+    /*获得单个任务的详情信息*/
+    let b = new Base64();
+    _info = b.decode(_info);
+    // console.log(task_info);
+    _info = JSON.parse(_info);
+    get_total_one_detail_html();
+    $("#total_one_detail_div").html("").append(JSON.stringify(_info,undefined,4));
+    // get_task_detail_result(_info['task_id']);
+}
+function get_total_one_detail_html() {
+    $.ajax({
+        url: 'vulcheck/total_one_detail_html',
+        dataType: "html",
+        type: "get",
+        async:false,
+        success: function (res) {
+            $('.tab-content').html(res);
+        }
+    });
 }

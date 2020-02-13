@@ -143,9 +143,6 @@ function get_task_detail(task_info) {
     get_task_detail_html();
     $("#task_send_detail_div").html("").append(JSON.stringify(task_info,undefined,4));
     get_task_detail_result(task_info['task_id']);
-
-
-
 }
 
 function get_task_detail_html() {
