@@ -20,7 +20,7 @@ function vulcheck_all_task_able() {
     get_task_list(page);//刷新后退加载页码表格数据
 }
 
-$(document).on('click', '.pagination>ul>*', function () {
+$(document).off('click','.pagination>ul>*').on('click', '.pagination>ul>*', function () {
     let page = $(this).attr('data-page'); // 获取按钮代表的页码
     get_task_list(page)//点击页码获取数据
 });
@@ -40,10 +40,13 @@ function get_task_list(page) {
             let html = ``;
             for (let x in res['data'])
             {
-                let task_info = JSON.stringify(res['data'][x]['task_info']);
 
+
+                let b = new Base64();
+                let task_info = JSON.stringify(res['data'][x]['task_info']);
+                task_info = b.encode(task_info);
                 html+=`<tr>`;
-                html+=`<td><a onclick='get_task_detail(${task_info})'>${res['data'][x]['task_id']}</a></td>`;
+                html+=`<td><a onclick='get_task_detail("${task_info}")'>${res['data'][x]['task_id']}</a></td>`;
                 html+=`<td>${res['data'][x]['status']}</td>`;
                 html+=`<td>${res['data'][x]['start_time']}</td>`;
                 html+=`<td>${res['data'][x]['finish_time']}</td>`;
@@ -133,7 +136,10 @@ function d_issue_task_batch_submit() {
 
 function get_task_detail(task_info) {
     /*获得单个任务的详情信息*/
-    console.log(task_info);
+    let b = new Base64();
+    task_info = b.decode(task_info);
+    // console.log(task_info);
+    task_info = JSON.parse(task_info);
     get_task_detail_html();
     $("#task_send_detail_div").html("").append(JSON.stringify(task_info,undefined,4));
     get_task_detail_result(task_info['task_id']);

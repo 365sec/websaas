@@ -11,7 +11,7 @@ coloredlogs.install(level='DEBUG',
                     fmt="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
                     )
 
-mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
+mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
 mongo_db = mongo_client['webmap']
 
 
@@ -97,10 +97,13 @@ def classify_by_key():
                 ]
 
     for x in classify:
-        match = {'$match': {x: {'$exists': True}}}
-        # match['$match']['task_id'] = "2e50b90c-d6a6-41e3-a3ed-502e1d9fa131"
+        # match = {'$match': {x: {'$exists': True}}}
+        match = {'$match': {}}
+
+        # match['$match']['result.value.location.province'] = "Hubei"
         # match['$match']['task_id'] = "486a8d13-ff6e-4b5a-9322-5f0b5f63b750"
-        if x == 'value.language':
+        # match['$match']['result.value.protocols'] = "9000/http"
+        if x == 'result.value.language':
             pipeline = [
                 {'$project': {"task_id": 1, 'result': 1}},
                 {'$unwind': '$result'},
@@ -119,8 +122,63 @@ def classify_by_key():
                     '_id': "$" + x,
                     'count': {'$sum': 1},
                 }},
-                # {'$sort': {'count': -1}},
+                {'$sort': {'count': -1}},
                 {'$project': {"_id": 1, 'count': 1}}
+            ]
+        k = 0
+        logging.debug(x)
+        for i in project_set.aggregate(pipeline):
+            if not i['_id']:
+                continue
+            if "result.value.server" in x:
+                i['_id'] = i['_id']['product']+":"+i['_id']['version']
+            logging.debug(i)
+        #     k += 1
+        # logging.debug(k)
+
+
+
+@log_time
+def classify_by_key2():
+    project_set = mongo_db['resultdb']
+    classify = [
+        # 'result.value.server',
+        # 'result.value.protocols',
+        'result.value.location.city',
+        # 'result.value.location.province',
+        # 'result.value.location.country_ch',
+        # 'result.value.language',
+        # 'result.value.cdn',
+        # 'result.value.component',
+    ]
+
+    for x in classify:
+        match = {'$match': {x: {'$exists': True}}}
+        match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+        # match['$match']['orig_url'] = 'http://45.249.246.179/'
+        # match['$match']['task_id'] = "486a8d13-ff6e-4b5a-9322-5f0b5f63b750"
+        # match['$match']['result.value.protocols'] = "80/http"
+        if x == 'value.language':
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                {'$unwind': "$" + x},
+                match,
+                {'$group': {'_id': "$" + x, 'count': {'$sum': 1}}},
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
+            ]
+        else:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                # {'$group': {
+                #     '_id': "$" + x,
+                #     'count': {'$sum': 1},
+                # }},
+                # {'$sort': {'count': -1}},
+                # {'$project': {"_id": 1, 'count': 1}}
             ]
         k = 0
         logging.debug(x)
@@ -190,7 +248,7 @@ def classify_by_key_vulnerables():
 def classify_by_key_illegality():
     project_set = mongo_db['resultdb']
     pipeline = [
-        {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843'}},
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843'}},
         {'$project': {'result': 1, 'task_id': 1}},
         {'$unwind': '$result'},
         {'$unwind': '$result.value.vulnerables'},
@@ -284,12 +342,61 @@ def mongo_search():
         logging.debug(i)
 
 
+@log_time
+def get_scan_list():
+    project_set = mongo_db['resultdb']
+
+    pipeline = [
+        {'$project': {"_id": 0, 'result': 1}},
+        {'$match': {"result": {'$exists': True}, }},
+        {'$unwind': "$result"},
+        # {'$unwind': "$result.scheme_domain"},
+        # {'$unwind': "$result.value.vulnerables.plugin_name"},
+        # {'$group': {'_id': "$result.value.vulnerables.plugin_name", 'count': {'$sum': 1}}},
+        {'$project': {"task_id": 1,
+                      'result.scheme_domain': 1,
+                      'result.value.language': 1,
+                      'result.value.title': 1,
+                      'result.value.ip': 1,
+                      'result.value.protocols': 1,
+                      'result.value.location': 1,
+                      'result.value.save_time': 1,
+                      'result.value.response_headers': 1,
+                      }},
+        {'$sort': {'result.value.save_time': -1}},
+    ]
+
+    for i in project_set.aggregate(pipeline):
+        logging.debug(i)
+
+
+@log_time
+def get_array_count():
+    project_set = mongo_db['resultdb']
+    pipeline = [
+        {"$match":{"result": {'$exists':True}} },
+        {
+            '$project':{
+                '_id':0,
+                'size_of_result':{'$size':"$result"},
+            }
+        },
+
+
+    ]
+    sum = 0
+    for i in project_set.aggregate(pipeline):
+        sum += i['size_of_result']
+    logging.debug(sum)
+
+
 if __name__ == '__main__':
     # get_all_vul_count()
     # classify_by_key_vulnerables()
-    classify_by_key_illegality()
-    classify_by_key_illegality_reduce()
+    # classify_by_key_illegality()
+    # classify_by_key_illegality_reduce()
 
-    # classify_by_key()
+    classify_by_key()
     # classify_by_key1()
-    # mongo_search()
+    # get_scan_list()
+    # get_array_count()

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from imp import reload
+
 import math
 
 from django.shortcuts import render
@@ -28,15 +30,16 @@ coloredlogs.install(level='DEBUG',
                     )
 
 # glob_url = "http://172.16.39.65:9000"
-glob_url = "http://172.16.39.78:9000"
-mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
+glob_url = "http://127.0.0.1:9000"
+mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
 
 mongo_db = mongo_client['webmap']
 project_set = mongo_db['projectdb']
 result_set = mongo_db['resultdb']
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+
+# reload(sys)
+# sys.setdefaultencoding('utf8')
 
 
 def index(request):
@@ -67,7 +70,7 @@ def show_all_task(request):
     logging.debug(max_num)
     task_list = []
     for x in result:
-        logging.debug(x)
+        # logging.debug(x)
         x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time'])) if x[
             'finish_time'] else ""
         x['start_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['start_time'])) if x['start_time'] else ""
@@ -89,6 +92,11 @@ def send_task_html(request):
 def task_detial_html(request):
     context = {}
     return render(request, r'vulcheck\task_detail.html', context)
+
+
+def get_total_html(request):
+    context = {}
+    return render(request, r'vulcheck\total.html', context)
 
 
 def get_report_html(request):
@@ -189,7 +197,6 @@ def get_task_list(request):
 def get_task_finish_list(request):
     res = []
 
-
     for i in project_set.find({'status': {'$ne': 'FINISHED'}}, {'_id': 0}).sort([('finish_time', -1)]):
         logging.debug(i)
         res.append(i)
@@ -222,7 +229,6 @@ def stop_task(request):
 
 
 def get_scan_result(request):
-
     task_id = request.GET.get("task_id")
     task_id = str(task_id)
     result = result_set.find({'task_id': task_id}, {'_id': 0})
@@ -231,7 +237,7 @@ def get_scan_result(request):
         # logging.debug(x)
         result_list.append(x)
 
-    context = {"code":200,"data":result_list}
+    context = {"code": 200, "data": result_list}
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
@@ -546,3 +552,136 @@ def deal_result_json(web):
         if 'domain_hijack' in web['illegality']:
             result['illegality']['domain_hijack'] = len(web['illegality']['domain_hijack'])
     return result
+
+
+def classify_by_key(request):
+    """
+    关于所有分类信息的查询过滤
+    :arg request
+    :return 结果
+    """
+    # project_set = mongo_db['resultdb']
+    filter_param = json.loads(request.body)
+
+
+    context = {"data": {}}
+    classify = [
+        'result.value.server',
+        'result.value.protocols',
+        'result.value.location.city',
+        'result.value.location.province',
+        'result.value.location.country_ch',
+        'result.value.language',
+        'result.value.cdn',
+        'result.value.component',
+    ]
+    match = {'$match': {}}
+    # match['$match']['result.value.location.province'] = "Hubei"
+    for key in filter_param['param']:
+        val = filter_param['param'][key]
+        # logging.debug(filter_param['param'][key])
+        match['$match'][key] = val
+        logging.debug(val)
+    logging.debug(match)
+    for x in classify:
+        # match['$match'][x] = {'$exists': True}
+        # match['$match']['result.value.location.province'] = "Hubei"
+        # match['$match']['task_id'] = "2e50b90c-d6a6-41e3-a3ed-502e1d9fa131"
+        # match['$match']['task_id'] = "486a8d13-ff6e-4b5a-9322-5f0b5f63b750"
+        # match['$match']['result.value.protocols'] = "9000/http"
+        if x == 'result.value.language' or x == 'result.value.component':
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                {'$unwind': "$" + x},
+                match,
+                {'$group': {'_id': "$" + x, 'count': {'$sum': 1}}},
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
+            ]
+        else:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                {'$group': {
+                    '_id': "$" + x,
+                    'count': {'$sum': 1},
+                }},
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
+            ]
+        # logging.debug(x)
+        context['data'][x] = []
+        for i in result_set.aggregate(pipeline):
+            if not i['_id']:
+                continue
+            if isinstance(i['_id'], dict):
+                if 'version' in i['_id']:
+                    i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
+                else:
+                    i['_id'] = i['_id']['product']
+            # logging.debug(i)
+
+            context['data'][x].append(i)
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_result_count(match):
+    """:ivar获得所有result长度总和"""
+
+    # project_set = mongo_db['resultdb']
+    pipeline = [
+        match,
+        {
+            '$project': {
+                '_id': 0,
+                'size_of_result': {'$size': "$result"},
+            }
+        },
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        sum += i['size_of_result']
+    # logging.debug(sum)
+    return sum
+
+
+def get_scan_list(request):
+    context = {"max_page": 0}
+    page = request.GET.get("page")
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    page = param['page']
+    filter_param = param['param']
+    # project_set = mongo_db['resultdb']
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page * page_num)
+
+    match = {'$match': {"result": {'$exists': True}}}
+
+    for key in filter_param:
+        val = filter_param[key]
+        match['$match'][key] = val
+    # match['$match']['result.value.protocols'] = "9000/http"
+    max_num = get_result_count(match)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+    pipeline = [
+        {'$project': {"_id": 0, 'result': 1}},
+        match,
+        {'$unwind': "$result"},
+        {'$skip': skip},
+        {'$limit': page_num},
+        {'$sort': {'result.value.save_time': -1}},
+    ]
+    result = []
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        result.append(i)
+
+    # logging.debug(max_page)
+    context['max_page'] = max_page
+    context['data'] = result
+    return HttpResponse(json.dumps(context), content_type="application/json")

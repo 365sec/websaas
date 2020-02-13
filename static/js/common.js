@@ -2,6 +2,7 @@
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_index.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_quickstart.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_task.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_total.js'></script>");
 
 $(function() {
     // 左侧手风琴点击样式变化
@@ -64,6 +65,9 @@ $(function() {
                 break;
             case "vulcheck-send_task":
                 vulcheck_send_task();
+                break;
+            case "vulcheck-get_total_html":
+                vulcheck_get_total_html();
                 break;
             default:
         }
@@ -147,3 +151,5 @@ function addPagination(nowpage,maxpage) {
     }
     $('.pagination>ul li[data-page='+nowpage+']').addClass('active').siblings().removeClass('active')//当前页面高亮
 }
+
+
