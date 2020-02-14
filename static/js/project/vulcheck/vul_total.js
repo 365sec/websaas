@@ -22,7 +22,15 @@ function vulcheck_get_total_html(task_id) {
         }
     });
 }
-
+let class_dir= {};
+class_dir['result.value.server'] = "服务器";
+class_dir['result.value.protocols'] = "端口";
+class_dir['result.value.location.city'] = "城市";
+class_dir['result.value.location.province'] = "省份";
+class_dir['result.value.location.country_ch'] = "国家\\地区";
+class_dir['result.value.language'] = "语言";
+class_dir['result.value.cdn'] = "CDN";
+class_dir['result.value.component'] = "组件";
 function classify_by_key(filter_param) {
     /*
     * 左侧统计信息*/
@@ -44,7 +52,7 @@ function classify_by_key(filter_param) {
                 // console.log(key);
                 // console.log(data['data'][key]);
                 html += `<div>
-                            <div class="key-title">${key}</div>
+                            <div class="key-title">${class_dir[key]}</div>
                             <ul  class="key-content clearfix">`;
                 for (let i in data['data'][key]) {
                     let val = data['data'][key][i]['_id']
@@ -220,8 +228,10 @@ function get_detail_html(info) {
     html =``;
     $("#base_info_server").html("").append("服务信息");
     html+=`<tr><td>操作系统</td><td>${info['result']['value']['os']||""}</td></tr>`;
-    html+=`<tr><td>服务器</td><td>${info['result']['value']['server']['product']||""}</td></tr>`;
-    html+=`<tr><td>版本</td><td>${info['result']['value']['server']['version']||""}</td></tr>`;
+    if (info['result']['value'].hasOwnProperty("server")) {
+        html+=`<tr><td>服务器</td><td>${info['result']['value']['server']['product']||""}</td></tr>`;
+        html+=`<tr><td>版本</td><td>${info['result']['value']['server']['version']||""}</td></tr>`;
+    }
     html+=`<tr><td>端口</td><td>${info['result']['value']['protocols']||""}</td></tr>`;
 
     if (info['result']['value'].hasOwnProperty("language"))
