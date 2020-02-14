@@ -93,10 +93,11 @@ function add_filter_param(key, val) {
 
     let html = ``;
     for (let i in filter_temp) {
-        html += `<span onclick="remove_filter(this,'${i}')" class="label label-info">${filter_temp[i]}</span><br>`
+        html += `<span onclick="remove_filter(this,'${i}')" class="label-fliter">${filter_temp[i]}</span>`
     }
     // html += `<span onclick="remove_filter(this)" class="label label-info">${val}</span><br>`
     filter_param_div.html("").append(html);
+
 }
 
 function remove_filter(par,key) {
@@ -181,7 +182,9 @@ function get_scan_list_page(page, filter_param) {
             }
             $('.classify-content-data-all').html(html);
             addPagination(page, max_page);
-
+            //设置右侧最小高度，使中间分割线撑满
+            // console.log($('#classify_list').height())
+            // $('.classify-content-data-all').css('min-height',$('#classify_list').height())
         }
     })
 }
@@ -194,10 +197,6 @@ function get_total_one_detail(_info) {
     _info = JSON.parse(_info);
     get_total_one_detail_html();
     get_detail_html(_info);
-
-
-
-
     // get_task_detail_result(_info['task_id']);
 }
 function get_total_one_detail_html() {
@@ -359,5 +358,7 @@ function get_detail_html(info) {
             </div>`;
         }
         $("#illegality_div").html("").append(html);
+
     }
+
 }

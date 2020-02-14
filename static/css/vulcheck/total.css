@@ -39,3 +39,13 @@
     max-height: 200px;
     min-height: 100px;
 }
+.label-fliter{
+    padding: 4px 10px;
+    margin-right: 10px;
+    color: #00a5e3;
+    border: 1px solid #00a5e3;
+    border-radius: 3px;
+}
+.label-fliter:hover{
+    opacity: .7;
+}

@@ -292,6 +292,7 @@ p {
 .pagination ul li,.pagination ul button{
     display: inline-block;
     padding: 4px 12px;
+    margin: 0 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background: #fff;
