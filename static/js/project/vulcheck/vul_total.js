@@ -43,12 +43,17 @@ function classify_by_key(filter_param) {
             for (let key in data['data']) {
                 // console.log(key);
                 // console.log(data['data'][key]);
-                html += `<div>${key}`;
+                html += `<div>
+                            <div class="key-title">${key}</div>
+                            <ul  class="key-content clearfix">`;
                 for (let i in data['data'][key]) {
                     let val = data['data'][key][i]['_id']
-                    html += `<li><a onclick="add_filter_param('${key}','${val}')">${val}</a> &nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</li>`;
+                    html += `<li>
+                                <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a> 
+                                <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</span>
+                            </li>`;
                 }
-                html += `</div><br><br>`;
+                html += `</ul></div>`;
             }
 
             $("#classify_list").html("").append(html);
@@ -112,7 +117,7 @@ function get_scan_list(filter_param) {
 
 }
 
-$(document).off('click', '.pagination>ul>*').on('click', '.pagination>ul>*', function () {
+$(document).off('click', '.total.pagination>ul>*').on('click', '.total.pagination>ul>*', function () {
     var page = $(this).attr('data-page'); // 获取按钮代表的页码
     get_scan_list_page(page, filter_param)//点击页码获取数据
 });
@@ -149,20 +154,24 @@ function get_scan_list_page(page, filter_param) {
                 let protocols = res['data'][x]['result']['value']['protocols'] || "";
                 let save_time = res['data'][x]['result']['value']['save_time'] || "";
                 // console.log(res['data'][x]['result']);
-                html += `<div class="row">`;
-                html += `<div class="col-lg-5">`;
-                html += `<h4><a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']}</a></h4>`;
-                html += `<li>标题：${title}</li>`;
-                html += `<li>ip：${ip}</li>`;
-                html += `<li>端口：${protocols}</li>`;
-                html += `<li>保存时间：${save_time}</li>`;
-                html += `</div>`;
-                html += `<div class="col-lg-4">`;
-                html += `<pre>${response_headers}</pre>`;
-                html += `</div>`;
-                html += `</div><br><br>`;
+                html += `<div class="classify-content-data">
+                            <div class="classify-content-data-ip">
+                                <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']} <i class="iconfont icon-link"></i></a>
+                             </div>
+                             <div class="classify-content-data-content clearfix">
+                                <ul class="classify-content-data-content-info float-left">
+                                    <li>标题：${title}</li>
+                                    <li>ip：${ip}</li>
+                                    <li>端口：${protocols}</li>
+                                    <li>保存时间：${save_time}</li>
+                                </ul>
+                                <div class="classify-content-data-content-code float-left">
+                                    <pre>${response_headers}</pre>
+                                </div>
+                            </div>
+                        </div>`;
             }
-            $('.pagination').prev().find('tbody').html(html);
+            $('.classify-content-data-all').html(html);
             addPagination(page, max_page);
 
         }
@@ -170,7 +179,7 @@ function get_scan_list_page(page, filter_param) {
 }
 
 function get_total_one_detail(_info) {
-    /*获得单条数据的详情信息*/
+    /*获得单个数据的详情信息*/
     let b = new Base64();
     _info = b.decode(_info);
     // console.log(task_info);

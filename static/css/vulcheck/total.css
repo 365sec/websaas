@@ -1,0 +1,41 @@
+/*统计页面样式*/
+.classify-list {
+    width: 25%;
+    padding: 18px 0;
+}
+.classify-content {
+    width: 75%;
+    padding: 18px 20px;
+    border-left: 1px solid #ddd;
+}
+.key-title{
+    width: 100%;
+    padding: 0 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #002430;
+}
+.key-content{
+    padding: 10px 16px;
+    line-height: 24px;
+}
+.classify-content-data-ip {
+    padding: 5px 10px;
+    color: #002430;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+.classify-content-data-content-info{
+    padding: 10px;
+    line-height: 24px;
+    width: 40%;
+}
+.classify-content-data-content-code{
+    width: 60%;
+    padding: 10px 0;
+    line-height: 24px;
+}
+.classify-content-data-content-code pre{
+    max-height: 200px;
+    min-height: 100px;
+}

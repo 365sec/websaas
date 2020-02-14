@@ -15,9 +15,15 @@ ul li{
     list-style: none;
 }
 a,
-a:active{
+a:active,
+a:hover,
+a:visited,
+a:link {
     text-decoration: none;
     color: #333;
+}
+a:hover{
+    color: #00a5e3;
 }
 h1,
 h2,
@@ -279,6 +285,10 @@ p {
 /*tab-content start*/
 
 /*分页 start*/
+.pagination{
+    width: 100%;
+    text-align: center;
+}
 .pagination ul li,.pagination ul button{
     display: inline-block;
     padding: 4px 12px;
