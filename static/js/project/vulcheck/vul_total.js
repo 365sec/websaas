@@ -196,7 +196,7 @@ function get_total_one_detail_html() {
 }
 function get_detail_html(info) {
     let html = ``;
-    $("#total_one_detail_div").html("").append(JSON.stringify(info,undefined,4));
+    // $("#total_one_detail_div").html("").append(JSON.stringify(info,undefined,4));
 
     console.log(info);
     //基础信息
@@ -273,4 +273,72 @@ function get_detail_html(info) {
         html+=`<tr><td></td></td><td>${url||""}</td></tr>`;
     }
     $("#web_info_body").html("").append(html);
+
+    //网站相应信息
+    if (info['result']['value'].hasOwnProperty("response_headers")) {
+        html = ``;
+        for (let key in info['result']['value']['response_headers'])
+        {
+            html+=`<tr><td>${key}</td><td>${info['result']['value']['response_headers'][key]||""}</td></tr>`;
+        }
+        $("#web_response_info").html("").append(html);
+        $("#web_response_info_div").show();
+
+    }
+
+    //漏洞信息
+    if (info['result']['value'].hasOwnProperty("vulnerables")) {
+        html = ``;
+        for(let i in info['result']['value']['vulnerables'])
+        {
+            html+=`            <div class="row"  >
+                <table class="table table-condensed">
+                    <caption >${info['result']['value']['vulnerables'][i]['name']||""}</caption>
+                    <tbody >
+                    <tr><td>存在漏洞的URL</td><td>${info['result']['value']['vulnerables'][i]['url']||""}</td></tr>
+                    <tr><td>插件名称或POC名称</td><td>${info['result']['value']['vulnerables'][i]['plugin_name']||""}</td></tr>
+                    <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['vulnerables'][i]['headers']['host']||""}</td></tr>
+                    <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</td></tr>
+                    <tr><td>存在漏洞的变量</td><td>${info['result']['value']['vulnerables'][i]['variable']||""}</td></tr>
+                    <tr><td>漏洞结果描述</td><td>${info['result']['value']['vulnerables'][i]['result_desc']||""}</td></tr>
+                    <tr><td>fuzz测试构造的payload</td><td>${info['result']['value']['vulnerables'][i]['payload']||""}</td></tr>
+                    <tr><td>请求方法</td><td>${info['result']['value']['vulnerables'][i]['method']||""}</td></tr>
+                    <tr><td>漏洞严重等级</td><td>${info['result']['value']['vulnerables'][i]['severity']||""}</td></tr>
+                    </tbody>
+                </table>
+            </div>`;
+        }
+        $("#vulnerables_div").html("").append(html);
+    }
+
+    //违法信息 illegality
+    if (info['result']['value'].hasOwnProperty("illegality")) {
+        html = ``;
+        for(let i in info['result']['value']['illegality'])
+        {
+            html+=`            <div class="row"  >
+                <table class="table table-condensed">
+                    <caption >${info['result']['value']['illegality'][i]['name']||""}</caption>
+                    <tbody >
+                    <tr><td>存在问题的URL</td><td>${info['result']['value']['illegality'][i]['url']||""}</td></tr>
+                    <tr><td>插件名称或POC名称</td><td>${info['result']['value']['illegality'][i]['plugin_name']||""}</td></tr>
+                    <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['illegality'][i]['headers']['host']||""}</td></tr>
+                    <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['illegality'][i]['headers']['Referer']||""}</td></tr>
+                    <tr><td>请求方法</td><td>${info['result']['value']['illegality'][i]['method']||""}</td></tr>
+                    <tr><td>漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</td></tr>
+                    <tr><td>敏感关键词类型</td><td>${info['result']['value']['illegality'][i]['type']||""}</td></tr>
+                    <tr><td>敏感关键词截取片段</td><td>${info['result']['value']['illegality'][i]['segment']||""}</td></tr>
+                    <tr><td>敏感关键词内容</td><td>${info['result']['value']['illegality'][i]['value']||""}</td></tr>
+                    <tr><td>网页挂马类型</td><td>${info['result']['value']['illegality'][i]['type']||""}</td></tr>
+                    <tr><td>网页挂马名称</td><td>${info['result']['value']['illegality'][i]['display']||""}</td></tr>
+                    <tr><td>网页挂马截取片段</td><td>${info['result']['value']['illegality'][i]['value']||""}</td></tr>
+                    <tr><td>网页劫持源地址</td><td>${info['result']['value']['illegality'][i]['orig_url']||""}</td></tr>
+                    <tr><td>网页劫持跳转地址</td><td>${info['result']['value']['illegality'][i]['redirect_url']||""}</td></tr>
+              
+                    </tbody>
+                </table>
+            </div>`;
+        }
+        $("#illegality_div").html("").append(html);
+    }
 }
