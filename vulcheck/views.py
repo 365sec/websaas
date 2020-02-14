@@ -568,7 +568,6 @@ def classify_by_key(request):
     # project_set = mongo_db['resultdb']
     filter_param = json.loads(request.body)
 
-
     context = {"data": {}}
     classify = [
         'result.value.server',
@@ -670,11 +669,11 @@ def get_scan_list(request):
     for key in filter_param:
         val = filter_param[key]
         match['$match'][key] = val
-    # match['$match']['result.value.protocols'] = "9000/http"
+    # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
     max_num = get_result_count(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
-        {'$project': {"_id": 0, 'result': 1}},
+        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
         match,
         {'$unwind': "$result"},
         {'$skip': skip},

@@ -5,13 +5,56 @@
     <title>单个详情</title>
 </head>
 <body>
-<div >
+
+<div>
     <pre id="total_one_detail_div">
 
     </pre>
-{#    <pre id="task_result_detail_div">#}
-{##}
-{#    </pre>#}
+
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="row">
+                <table class="table table-condensed">
+                    <caption id="base_info_ip"></caption>
+                    <tbody id="base_info_body">
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <table class="table table-condensed">
+                    <caption id="base_info_server"></caption>
+                    <tbody id="base_info_server_body">
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row" id="whois_div" style="display: none">
+
+                <table class="table table-condensed">
+                    <caption>WHOIS</caption>
+                    <tbody id="base_info_whois">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-offset-6">
+            <div class="row">
+                <table class="table table-condensed">
+                    <caption >网站信息</caption>
+                    <tbody id="web_info_body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {#    <pre id="task_result_detail_div">#}
+    {##}
+    {#    </pre>#}
 </div>
 </body>
 </html>

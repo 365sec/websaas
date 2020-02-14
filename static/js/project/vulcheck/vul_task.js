@@ -140,9 +140,13 @@ function get_task_detail(task_info) {
     task_info = b.decode(task_info);
     // console.log(task_info);
     task_info = JSON.parse(task_info);
-    get_task_detail_html();
-    $("#task_send_detail_div").html("").append(JSON.stringify(task_info,undefined,4));
-    get_task_detail_result(task_info['task_id']);
+    // get_task_detail_html();
+
+    // get_task_detail_result(task_info['task_id']);
+    vulcheck_get_total_html(task_info['task_id']);
+    $("#task_send_detail_div").show().html("").append(JSON.stringify(task_info,undefined,4));
+
+    // cony(te.log(task_info);
 }
 
 function get_task_detail_html() {

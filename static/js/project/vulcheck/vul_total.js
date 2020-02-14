@@ -1,16 +1,23 @@
-function vulcheck_get_total_html() {
+function vulcheck_get_total_html(task_id) {
+    filter_param = {};
+    filter_temp = {};
+    if(task_id)
+    {
+        filter_param['task_id']=task_id;
+    }
     /*
     * 加载统计信息HTML页面*/
     $.ajax({
         url: 'vulcheck/get_total_html',
         dataType: "html",
         type: "get",
+        async:false,
         success: function (res) {
             $('.tab-content').html(res);
-            filter_param = {};
-            filter_temp = {};
+
             classify_by_key(filter_param);
             get_scan_list(filter_param);
+
 
         }
     });
@@ -163,13 +170,17 @@ function get_scan_list_page(page, filter_param) {
 }
 
 function get_total_one_detail(_info) {
-    /*获得单个任务的详情信息*/
+    /*获得单条数据的详情信息*/
     let b = new Base64();
     _info = b.decode(_info);
     // console.log(task_info);
     _info = JSON.parse(_info);
     get_total_one_detail_html();
-    $("#total_one_detail_div").html("").append(JSON.stringify(_info,undefined,4));
+    get_detail_html(_info);
+
+
+
+
     // get_task_detail_result(_info['task_id']);
 }
 function get_total_one_detail_html() {
@@ -182,4 +193,84 @@ function get_total_one_detail_html() {
             $('.tab-content').html(res);
         }
     });
+}
+function get_detail_html(info) {
+    let html = ``;
+    $("#total_one_detail_div").html("").append(JSON.stringify(info,undefined,4));
+
+    console.log(info);
+    //基础信息
+    $("#base_info_ip").html("").append(info['result']['value']['ip']);
+    html+=`<tr><td>国家/地区</td><td>${info['result']['value']['location']['country_ch']||""}</td></tr>`;
+    html+=`<tr><td>省份</td><td>${info['result']['value']['location']['province']||""}</td></tr>`;
+    html+=`<tr><td>城市</td><td>${info['result']['value']['location']['city']||""}</td></tr>`;
+    html+=`<tr><td>经度</td><td>${info['result']['value']['location']['lon']||""}</td></tr>`;
+    html+=`<tr><td>纬度</td><td>${info['result']['value']['location']['lat']||""}</td></tr>`;
+    $("#base_info_body").html("").append(html);
+    //服务信息
+    html =``;
+    $("#base_info_server").html("").append("服务信息");
+    html+=`<tr><td>操作系统</td><td>${info['result']['value']['os']||""}</td></tr>`;
+    html+=`<tr><td>服务器</td><td>${info['result']['value']['server']['product']||""}</td></tr>`;
+    html+=`<tr><td>版本</td><td>${info['result']['value']['server']['version']||""}</td></tr>`;
+    html+=`<tr><td>端口</td><td>${info['result']['value']['protocols']||""}</td></tr>`;
+
+    if (info['result']['value'].hasOwnProperty("language"))
+    {
+        let language=  "";
+        for (let lang in info['result']['value']['language'] )
+        {
+            let product= info['result']['value']['language'][lang]['product'];
+            let version= info['result']['value']['language'][lang]['version'];
+            language += product+":"+version+"<br>"
+        }
+        html+=`<tr><td>语言</td><td>${language||""}</td></tr>`;
+    }
+
+    html+=`<tr><td>返回状态码</td><td>${info['result']['value']['status_code']||""}</td></tr>`;
+    $("#base_info_server_body").html("").append(html);
+    //WHOIS
+    if (info['result']['value'].hasOwnProperty("whois"))
+    {
+
+        let temp_whois = info['result']['value']['whois'];
+        html=``;
+        for(let key in temp_whois)
+        {
+            html+=`<tr><td>${key}</td><td></td><td></td></tr>`;
+            for(let key_ in temp_whois[key]){
+                html+=`<tr><td></td><td>${key_}</td><td></td></tr>`;
+                if ( Array.isArray(temp_whois[key][key_])) {
+                    for (let i in temp_whois[key][key_] )
+                    {
+                        html+=`<tr><td></td><td></td><td>${temp_whois[key][key_][i]}</td></tr>`;
+                    }
+                }
+                else {
+                    html+=`<tr><td></td><td></td><td>${temp_whois[key][key_]}</td></tr>`;
+                }
+            }
+        }
+        $("#base_info_whois").html("").append(html);
+        $("#whois_div").show();
+    }
+
+    //网站信息
+    html =``;
+    html+=`<tr><td>域名</td><td>${info['result']['scheme_domain']||""}</td></tr>`;
+    html+=`<tr><td>URL</td><td>${info['result']['value']['url']||""}</td></tr>`;
+    html+=`<tr><td>标题</td><td>${info['result']['value']['title']||""}</td></tr>`;
+    html+=`<tr><td>描述</td><td>${info['result']['value']['description']||""}</td></tr>`;
+    html+=`<tr><td>关键词</td><td>${info['result']['value']['keywords']||""}</td></tr>`;
+    html+=`<tr><td>保存时间</td><td>${info['result']['value']['save_time']||""}</td></tr>`;
+    html+=`<tr><td></td><td></td></tr>`;
+    html+=`<tr><td>扫描URL总数</td><td>${info['result']['value']['statistics']['total']||""}</td></tr>`;
+    html+=`<tr><td>URL_LIST</td><td></td></tr>`;
+    for (let i in info['result']['value']['statistics']['urls'])
+    {
+        let url = info['result']['value']['statistics']['urls'][i];
+        // console.log(url);
+        html+=`<tr><td></td></td><td>${url||""}</td></tr>`;
+    }
+    $("#web_info_body").html("").append(html);
 }
