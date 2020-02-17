@@ -49,3 +49,6 @@
 .label-fliter:hover{
     opacity: .7;
 }
+.label-fliter i{
+    margin-left: 10px;
+}

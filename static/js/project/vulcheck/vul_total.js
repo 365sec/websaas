@@ -93,7 +93,7 @@ function add_filter_param(key, val) {
 
     let html = ``;
     for (let i in filter_temp) {
-        html += `<span onclick="remove_filter(this,'${i}')" class="label-fliter">${filter_temp[i]}</span>`
+        html += `<span class="label-fliter">${filter_temp[i]}<i class="iconfont icon-del" onclick="remove_filter(this,'${i}')"></i></span>`
     }
     // html += `<span onclick="remove_filter(this)" class="label label-info">${val}</span><br>`
     filter_param_div.html("").append(html);
@@ -107,7 +107,7 @@ function remove_filter(par,key) {
     delete filter_param[key+".version"];
     delete filter_temp[key];
     // console.log(filter_param);
-    $(par).remove();
+    $(par).parent().remove();
     classify_by_key(filter_param);
     get_scan_list(filter_param);
 }
