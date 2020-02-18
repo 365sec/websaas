@@ -29,5 +29,7 @@ urlpatterns = [
     url(r'^get_scan_list$', views.get_scan_list),  # 获得每一条结果的list[]
     url(r'^total_one_detail_html$', views.total_one_detail_html),  # 单条数据的HTML
     # url(r'/index/$', views.index),
-    # url(r'', views.index),
+    # url(r'.*', views.index),
+    url(r'^index$', views.index),
+    url(r'', views.index1),
 ]

@@ -283,7 +283,7 @@ def classify_by_key_illegality():
     logging.debug(result)
 
 @log_time
-def classify_by_key_illegality_by_domian_reduce():
+def classify_by_key_by_domian_reduce():
     project_set = mongo_db['resultdb']
     # logging.debug(project_set)
     result = {}
@@ -418,8 +418,8 @@ if __name__ == '__main__':
     # classify_by_key_vulnerables()
     # classify_by_key_illegality()
     # classify_by_key_illegality()
-    classify_by_key_plugin_reduce()
-
+    # classify_by_key_plugin_reduce()
+    classify_by_key_by_domian_reduce()
     # classify_by_key()
     # classify_by_key1()
     # get_scan_list()

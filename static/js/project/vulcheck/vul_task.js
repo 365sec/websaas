@@ -6,6 +6,7 @@ function vulcheck_show_all_task() {
         success: function (res) {
             $('.tab-content').html(res);
 
+            console.log(res);
             vulcheck_all_task_able();
         }
     });
@@ -40,7 +41,6 @@ function get_task_list(page) {
             let html = ``;
             for (let x in res['data'])
             {
-
 
                 let b = new Base64();
                 let task_info = JSON.stringify(res['data'][x]['task_info']);
@@ -146,7 +146,20 @@ function get_task_detail(task_info) {
     vulcheck_get_total_html(task_info['task_id']);
     let html= get_send_task_info_html(task_info);
     // $("#task_send_detail_div").show().html("").append(JSON.stringify(task_info,undefined,4));
-    $("#task_send_detail_div").show().html("").append(html);
+
+    //任务下发信息
+    $("#task_send_detail_div").show();
+    $("#task_send_detail_table_body").html("").append(html);
+
+    //报道a标签
+    //<button class="btn btn-default">  </button>
+    let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html()"  >报告</button>`;
+    $("#report_div").show().html("").append(report_a);
+
+    let send_data = {};
+    send_data['param'] = {"task_id":task_info['task_id']};
+    let  data = get_classify_by_key(send_data);
+    console.log(data)
 
 
 }
@@ -194,6 +207,7 @@ function get_task_detail_html() {
         async:false,
         success: function (res) {
             $('.tab-content').html(res);
+
         }
     });
 }

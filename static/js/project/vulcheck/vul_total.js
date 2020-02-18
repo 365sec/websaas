@@ -39,37 +39,46 @@ function classify_by_key(filter_param) {
     // console.log((filter_param));
     let send_data = {};
     send_data['param'] = filter_param;
+    let  data = get_classify_by_key(send_data);
+    let html = ``;
+    for (let key in data['data']) {
+        // console.log(key);
+        // console.log(data['data'][key]);
+        html += `<div>
+                            <div class="key-title">${class_dir[key]}</div>
+                            <ul  class="key-content clearfix">`;
+        for (let i in data['data'][key]) {
+            let val = data['data'][key][i]['_id']
+            html += `<li>
+                                <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a> 
+                                <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</span>
+                            </li>`;
+        }
+        html += `</ul></div>`;
+    }
+
+    $("#classify_list").html("").append(html);
+}
+
+function get_classify_by_key(send_data) {
+
+    /*
+   * 左侧统计信息*/
+    let return_data;
     send_data = JSON.stringify(send_data);
-    // send_data['param'] = "11111111111";
     $.ajax({
         url: 'vulcheck/classify_by_key',
         type: "post",
         dataType: "json",
         contentType: 'application/json;charset=utf-8',
         data: send_data,
+        async:false,
         success: function (data) {
-            // console.log(data);
-            let html = ``;
-            for (let key in data['data']) {
-                // console.log(key);
-                // console.log(data['data'][key]);
-                html += `<div>
-                            <div class="key-title">${class_dir[key]}</div>
-                            <ul  class="key-content clearfix">`;
-                for (let i in data['data'][key]) {
-                    let val = data['data'][key][i]['_id']
-                    html += `<li>
-                                <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a> 
-                                <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</span>
-                            </li>`;
-                }
-                html += `</ul></div>`;
-            }
-
-            $("#classify_list").html("").append(html);
-
+            return_data = data;
         }
     });
+
+    return return_data;
 }
 
 var filter_param = {};
@@ -167,22 +176,43 @@ function get_scan_list_page(page, filter_param) {
                 let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
                 let illegality = res['data'][x]['result']['value']['illegality'] || [];
                 let vul_html =``;
-                console.log(res['data'][x]['result']);
+
                 if (vulnerables.length>0)
                 {
                      vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
-                    for( let i in vulnerables)
+                    let vul_reduce = vulnerables.reduce(function (prev,res) {
+                        if(prev.hasOwnProperty(res['name']))
+                        {
+                            prev[res['name']]++;
+                        }
+                        else {
+                            prev[res['name']]=1;
+                        }
+                        return prev
+                    },{});
+                    for( let i in vul_reduce)
                     {
-                        vul_html +=`<li style="color: red">${vulnerables[i]['name']}</li'>`;
+                        vul_html +=`<li style="color: red">${i}: ${vul_reduce[i]}</li'>`;
                     }
                 }
                 let ill_html =``;
                 if (illegality.length>0)
                 {
                     ill_html =`<li>非法信息：${illegality.length}</li>`;
-                    for( let i in illegality)
+
+                    let ill_reduce = illegality.reduce(function (prev,res) {
+                        if(prev.hasOwnProperty(res['name']))
+                        {
+                            prev[res['name']]++;
+                        }
+                        else {
+                            prev[res['name']]=1;
+                        }
+                        return prev
+                    },{});
+                    for( let i in ill_reduce)
                     {
-                        ill_html +=`<li style="color: red">${illegality[i]['name']}</li'>`;
+                        ill_html +=`<li style="color: red">${i}: ${ill_reduce[i]}</li'>`;
                     }
                 }
 

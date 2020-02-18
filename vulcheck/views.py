@@ -47,6 +47,10 @@ def index(request):
 
     return render(request, r'vulcheck\index.html', context)
 
+def index1(request):
+    context = {'hello': 'Hello World!'}
+
+    return render(request, r'index.html', context)
 
 def quickstart(request):
     context = {'hello': 'Hello World!'}

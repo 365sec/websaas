@@ -36,5 +36,6 @@ urlpatterns = [
     # url(r'^test', views.test),
     # url(r'^get_report_html', views.get_report_html),
     url(r'vulcheck/', include('vulcheck.urls')),
+    # url(r'/', views.index),
     url(r'', views.index),
 ]
