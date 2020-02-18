@@ -226,6 +226,7 @@ def classify_by_key1():
         #     k += 1
         # logging.debug(k)
 
+
 @log_time
 def classify_by_key_vulnerables():
     project_set = mongo_db['resultdb']
@@ -251,11 +252,11 @@ def classify_by_key_illegality():
         # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843'}},
         {'$project': {'result': 1, 'task_id': 1}},
         {'$unwind': '$result'},
-        {'$unwind': '$result.value.vulnerables'},
-        {'$unwind': '$result.value.vulnerables.plugin_name'},
+        {'$unwind': '$result.value.illegality'},
+        {'$unwind': '$result.value.illegality.plugin_name'},
         {'$group': {
             '_id': '$result.scheme_domain',
-            'plugin_name': {'$push': "$result.value.vulnerables.plugin_name"},
+            'plugin_name': {'$push': "$result.value.illegality.plugin_name"},
         }},
         {'$unwind': "$plugin_name"},
         {
@@ -282,55 +283,77 @@ def classify_by_key_illegality():
     logging.debug(result)
 
 @log_time
-def classify_by_key_illegality_reduce():
+def classify_by_key_illegality_by_domian_reduce():
     project_set = mongo_db['resultdb']
     # logging.debug(project_set)
-    # x: {'$exists': True}
-    pipeline = [
-        {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
-        {'$project': {'result': 1, 'task_id': 1}},
-        {'$unwind': '$result'},
-        {'$unwind': '$result.value.vulnerables'},
-        {'$unwind': '$result.value.vulnerables.plugin_name'},
-        {'$group': {
-            '_id': '$result.scheme_domain',
-            'count': {'$sum': 1},
-            'plugin_num': {'$push': "$result.value.vulnerables.plugin_name"},
-            # 'plugin': {'$push': {'plugin_name': '$result.value.vulnerables.plugin_name','num':{'$sum':1}}},
-        }},
-        {'$unwind': '$plugin_num'},
-        {'$group': {
-            '_id': {
-                'url': '$_id',
-                'plugin': '$plugin_num',
-            },
-            # 'total': {'count'},
-            'plugin_count': {'$sum': 1},
-
-        }},
-        {'$group': {
-            '_id': '$_id.url',
-            # 'plugin_total_num':{'$sum': 1},
-            'plugin_classs_num': {'$sum': 1},
-            'plugin_num': {'$addToSet': {'plugin': '$_id.plugin', 'num': '$plugin_count'}},
-
-        }},
-
-    ]
-    res = project_set.aggregate(pipeline)
     result = {}
-    for i in res:
-        logging.debug(i)
-    #     if i['_id'] not in result:
-    #         result[i['_id']] = {}
-    #         result[i['_id']]['total'] = i['count']
-    #         result[i['_id']]['result'] = {}
-    #     for plugin_num in i['plugin_num']:
-    #         if plugin_num not in result[i['_id']]['result']:
-    #             result[i['_id']]['result'][plugin_num] = 0
-    #         result[i['_id']]['result'][plugin_num] += 1
-    #
-    # logging.debug(result)
+    plug = ["vulnerables","illegality"]
+    for x in plug:
+        pipeline = [
+            # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+            {'$project': {'result': 1, 'task_id': 1}},
+            {'$unwind': '$result'},
+            {'$unwind': '$result.value.'+x},
+            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$group': {
+                '_id': '$result.scheme_domain',
+                'count': {'$sum': 1},
+                'plugin_num': {'$push': '$result.value.'+x+'.plugin_name'},
+                # 'plugin': {'$push': {'plugin_name': '$result.value.vulnerables.plugin_name','num':{'$sum':1}}},
+            }},
+            {'$unwind': '$plugin_num'},
+            {'$group': {
+                '_id': {
+                    'url': '$_id',
+                    'plugin': '$plugin_num',
+                },
+                # 'total': {'count'},
+                'plugin_count': {'$sum': 1},
+
+            }},
+            {'$group': {
+                '_id': '$_id.url',
+                # 'plugin_total_num':{'$sum': 1},
+                'plugin_classs_num': {'$sum': 1},
+                'plugin_num': {'$addToSet': {'plugin': '$_id.plugin', 'num': '$plugin_count'}},
+
+            }},
+            {'$sort': {'plugin_classs_num': -1}},
+
+        ]
+        res = project_set.aggregate(pipeline)
+
+        for i in res:
+
+            logging.debug(i)
+
+
+@log_time
+def classify_by_key_plugin_reduce():
+    project_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+    plug = ["vulnerables","illegality"]
+    for x in plug:
+        pipeline = [
+            # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+            {'$project': {'result': 1, 'task_id': 1}},
+            {'$unwind': '$result'},
+            {'$unwind': '$result.value.'+x},
+            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$group': {
+                '_id': '$result.value.'+x+'.plugin_name',
+                'count': {'$sum': 1},
+            }},
+            {'$sort': {'count': -1}},
+
+        ]
+        res = project_set.aggregate(pipeline)
+        result['result.value.'+x+'.plugin_name'] = []
+        for i in res:
+            result['result.value.'+x+'.plugin_name'].append(i)
+            logging.debug(i)
+        logging.debug(result)
 
 
 def mongo_search():
@@ -394,9 +417,10 @@ if __name__ == '__main__':
     # get_all_vul_count()
     # classify_by_key_vulnerables()
     # classify_by_key_illegality()
-    # classify_by_key_illegality_reduce()
+    # classify_by_key_illegality()
+    classify_by_key_plugin_reduce()
 
-    classify_by_key()
+    # classify_by_key()
     # classify_by_key1()
     # get_scan_list()
     # get_array_count()

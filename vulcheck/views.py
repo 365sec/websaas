@@ -567,7 +567,7 @@ def classify_by_key(request):
     """
     # project_set = mongo_db['resultdb']
     filter_param = json.loads(request.body)
-
+    logging.debug(filter_param)
     context = {"data": {}}
     classify = [
         'result.value.server',
@@ -625,11 +625,42 @@ def classify_by_key(request):
                     i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
                 else:
                     i['_id'] = i['_id']['product']
-            # logging.debug(i)
 
             context['data'][x].append(i)
 
+    plugins_result = classify_by_key_plugins_reduce(match)
+    for x in plugins_result:
+        context["data"][x] = plugins_result[x]
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def classify_by_key_plugins_reduce(match):
+
+    result = {}
+
+    plug = ["vulnerables","illegality"]
+    for x in plug:
+        pipeline = [
+            # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+            {'$project': {'result': 1, 'task_id': 1}},
+            {'$unwind': '$result'},
+            {'$unwind': '$result.value.'+x},
+            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            match,
+            {'$group': {
+                '_id': '$result.value.'+x+'.plugin_name',
+                'count': {'$sum': 1},
+            }},
+            {'$sort': {'count': -1}},
+
+        ]
+        res = result_set.aggregate(pipeline)
+        result['result.value.'+x+'.plugin_name'] = []
+        for i in res:
+            result['result.value.'+x+'.plugin_name'].append(i)
+            # logging.debug(i)
+        # logging.debug(result)
+    return result
 
 
 def get_result_count(match):

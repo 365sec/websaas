@@ -144,9 +144,46 @@ function get_task_detail(task_info) {
 
     // get_task_detail_result(task_info['task_id']);
     vulcheck_get_total_html(task_info['task_id']);
-    $("#task_send_detail_div").show().html("").append(JSON.stringify(task_info,undefined,4));
+    let html= get_send_task_info_html(task_info);
+    // $("#task_send_detail_div").show().html("").append(JSON.stringify(task_info,undefined,4));
+    $("#task_send_detail_div").show().html("").append(html);
 
-    // cony(te.log(task_info);
+
+}
+
+function get_send_task_info_html(task_info) {
+    /*发送的任务信息*/
+
+    let html = ``;
+    let url_num = task_info['url'].length;
+    html+=`<tr><td>task_id</td><td>${task_info['task_id']}</td></tr>`;
+    html+=`<tr><td>URL</td><td>${task_info['url']}</td></tr>`;
+    html+=`<tr><td>URL个数</td><td>${task_info['url'].length}</td></tr>`;
+    html+=`<tr><td>爬虫信息</td><td></td></tr>`;
+    html+=`<tr><td>notscanurl</td><td>${task_info['spider']['notscanurl']}</td></tr>`;
+    html+=`<tr><td>crawlrule</td><td>${task_info['spider']['crawlrule']}</td></tr>`;
+    html+=`<tr><td>craw_current_directory</td><td>${task_info['spider']['craw_current_directory']}</td></tr>`;
+    html+=`<tr><td>maxpage</td><td>${task_info['spider']['maxpage']}</td></tr>`;
+    html+=`<tr><td>notscanfile</td><td>${task_info['spider']['notscanfile']}</td></tr>`;
+    html+=`<tr><td>phantomjs_enable</td><td>${task_info['spider']['phantomjs_enable']}</td></tr>`;
+    html+=`<tr><td>maxdepth</td><td>${task_info['spider']['maxdepth']}</td></tr>`;
+
+    let plug = "";
+    for(let i in task_info['plugins'])
+    {
+        // console.log(i);
+        if (i === "0")
+        {
+            plug += task_info['plugins'][i] ;
+
+            continue;
+        }
+        plug +=  ";&nbsp;" +task_info['plugins'][i]
+    }
+    html+=`<tr><td>插件信息</td><td>${plug}</td></tr>`;
+
+    $("#task_send_detail_table_body").html("").append(html);
+    return html;
 }
 
 function get_task_detail_html() {

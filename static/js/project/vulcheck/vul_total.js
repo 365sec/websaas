@@ -31,6 +31,8 @@ class_dir['result.value.location.country_ch'] = "国家\\地区";
 class_dir['result.value.language'] = "语言";
 class_dir['result.value.cdn'] = "CDN";
 class_dir['result.value.component'] = "组件";
+class_dir['result.value.illegality.plugin_name'] = "非法信息";
+class_dir['result.value.vulnerables.plugin_name'] = "检查插件";
 function classify_by_key(filter_param) {
     /*
     * 左侧统计信息*/
@@ -162,6 +164,28 @@ function get_scan_list_page(page, filter_param) {
                 detail = b.encode(detail);
                 let protocols = res['data'][x]['result']['value']['protocols'] || "";
                 let save_time = res['data'][x]['result']['value']['save_time'] || "";
+                let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
+                let illegality = res['data'][x]['result']['value']['illegality'] || [];
+                let vul_html =``;
+                console.log(res['data'][x]['result']);
+                if (vulnerables.length>0)
+                {
+                     vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
+                    for( let i in vulnerables)
+                    {
+                        vul_html +=`<li style="color: red">${vulnerables[i]['name']}</li'>`;
+                    }
+                }
+                let ill_html =``;
+                if (illegality.length>0)
+                {
+                    ill_html =`<li>非法信息：${illegality.length}</li>`;
+                    for( let i in illegality)
+                    {
+                        ill_html +=`<li style="color: red">${illegality[i]['name']}</li'>`;
+                    }
+                }
+
                 // console.log(res['data'][x]['result']);
                 html += `<div class="classify-content-data">
                             <div class="classify-content-data-ip">
@@ -173,6 +197,8 @@ function get_scan_list_page(page, filter_param) {
                                     <li>ip：${ip}</li>
                                     <li>端口：${protocols}</li>
                                     <li>保存时间：${save_time}</li>
+                                    ${vul_html}
+                                    ${ill_html}
                                 </ul>
                                 <div class="classify-content-data-content-code float-left">
                                     <pre>${response_headers}</pre>
