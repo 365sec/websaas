@@ -157,67 +157,101 @@ function get_scan_list_page(page, filter_param) {
         data: data,
         success: function (res) {
             let max_page = parseInt(res['max_page']);
-            let html = ``;
-            for (let x in res['data']) {
-                let title = res['data'][x]['result']['value']['title'] || "";
-                let ip = res['data'][x]['result']['value']['ip'] || "";
-                let response_headers = res['data'][x]['result']['value']['response_headers'];
-                if (response_headers) {
-                    response_headers = JSON.stringify(response_headers, undefined, 4);
-                } else {
-                    response_headers = ""
-                }
+            console.log(res);
+            let html = get_scan_list_page_html(res);
+            $('.classify-content-data-all').html(html);
+            addPagination(page, max_page);
+            //设置右侧最小高度，使中间分割线撑满
+            // console.log($('#classify_list').height())
+            // $('.classify-content-data-all').css('min-height',$('#classify_list').height())
+        }
+    })
+}
+function get_scan_val_iil_list_page(filter_param) {
+    let data = {
+        "param": filter_param,
+    };
+    data = JSON.stringify(data);
+    $.ajax({
+        url: "vulcheck/get_scan_vul_iil_domain_list",
+        type: "post",
+        dataType: "json",
+        contentType: 'application/json;charset=utf-8',
+        data: data,
+        success: function (res) {
+            console.log(res)
+            for (let i in res['data'])
+            {
+                res['data'][i]['result'] = res['data'][i]['result'][0]
+            }
+            let html = get_scan_list_page_html(res);
+            $('#report_vul_ill_list').html(html);
 
-                let detail = JSON.stringify(res['data'][x]);
-                let b = new Base64();
-                detail = b.encode(detail);
-                let protocols = res['data'][x]['result']['value']['protocols'] || "";
-                let save_time = res['data'][x]['result']['value']['save_time'] || "";
-                let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
-                let illegality = res['data'][x]['result']['value']['illegality'] || [];
-                let vul_html =``;
+        }
+    })
+}
+function get_scan_list_page_html(res) {
+    let html = ``;
+    for (let x in res['data']) {
+        let title = res['data'][x]['result']['value']['title'] || "";
+        let ip = res['data'][x]['result']['value']['ip'] || "";
+        let response_headers = res['data'][x]['result']['value']['response_headers'];
+        if (response_headers) {
+            response_headers = JSON.stringify(response_headers, undefined, 4);
+        } else {
+            response_headers = ""
+        }
 
-                if (vulnerables.length>0)
+        let detail = JSON.stringify(res['data'][x]);
+        let b = new Base64();
+        detail = b.encode(detail);
+        let protocols = res['data'][x]['result']['value']['protocols'] || "";
+        let save_time = res['data'][x]['result']['value']['save_time'] || "";
+        let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
+        let illegality = res['data'][x]['result']['value']['illegality'] || [];
+        let vul_html =``;
+
+        if (vulnerables.length>0)
+        {
+            vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
+            let vul_reduce = vulnerables.reduce(function (prev,res) {
+                if(prev.hasOwnProperty(res['name']))
                 {
-                     vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
-                    let vul_reduce = vulnerables.reduce(function (prev,res) {
-                        if(prev.hasOwnProperty(res['name']))
-                        {
-                            prev[res['name']]++;
-                        }
-                        else {
-                            prev[res['name']]=1;
-                        }
-                        return prev
-                    },{});
-                    for( let i in vul_reduce)
-                    {
-                        vul_html +=`<li style="color: red">${i}: ${vul_reduce[i]}</li'>`;
-                    }
+                    prev[res['name']]++;
                 }
-                let ill_html =``;
-                if (illegality.length>0)
+                else {
+                    prev[res['name']]=1;
+                }
+                return prev
+            },{});
+            for( let i in vul_reduce)
+            {
+                vul_html +=`<li style="color: red">${i}: ${vul_reduce[i]}</li'>`;
+            }
+        }
+        let ill_html =``;
+        if (illegality.length>0)
+        {
+            ill_html =`<li>非法信息：${illegality.length}</li>`;
+
+            let ill_reduce = illegality.reduce(function (prev,res) {
+                if(prev.hasOwnProperty(res['name']))
                 {
-                    ill_html =`<li>非法信息：${illegality.length}</li>`;
-
-                    let ill_reduce = illegality.reduce(function (prev,res) {
-                        if(prev.hasOwnProperty(res['name']))
-                        {
-                            prev[res['name']]++;
-                        }
-                        else {
-                            prev[res['name']]=1;
-                        }
-                        return prev
-                    },{});
-                    for( let i in ill_reduce)
-                    {
-                        ill_html +=`<li style="color: red">${i}: ${ill_reduce[i]}</li'>`;
-                    }
+                    prev[res['name']]++;
                 }
+                else {
+                    prev[res['name']]=1;
+                }
+                return prev
+            },{});
+            for( let i in ill_reduce)
+            {
+                ill_html +=`<li style="color: red">${i}: ${ill_reduce[i]}</li'>`;
+            }
+        }
 
-                // console.log(res['data'][x]['result']);
-                html += `<div class="classify-content-data">
+        // console.log(res['data'][x]['result']);
+        html += `<div class="classify-content-data">
                             <div class="classify-content-data-ip">
                                 <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']} <i class="iconfont icon-link"></i></a>
                              </div>
@@ -235,16 +269,93 @@ function get_scan_list_page(page, filter_param) {
                                 </div>
                             </div>
                         </div>`;
-            }
-            $('.classify-content-data-all').html(html);
-            addPagination(page, max_page);
-            //设置右侧最小高度，使中间分割线撑满
-            // console.log($('#classify_list').height())
-            // $('.classify-content-data-all').css('min-height',$('#classify_list').height())
-        }
-    })
-}
+    }
 
+    return html
+}
+function get_scan_list_page_report_html(res) {
+    let html = ``;
+    for (let x in res['data']) {
+        let title = res['data'][x]['result'][0]['value']['title'] || "";
+        let ip = res['data'][x]['result'][0]['value']['ip'] || "";
+        let response_headers = res['data'][x]['result'][0]['value']['response_headers'];
+        if (response_headers) {
+            response_headers = JSON.stringify(response_headers, undefined, 4);
+        } else {
+            response_headers = ""
+        }
+
+        let detail = JSON.stringify(res['data'][x]);
+        let b = new Base64();
+        detail = b.encode(detail);
+        let protocols = res['data'][x]['result'][0]['value']['protocols'] || "";
+        let save_time = res['data'][x]['result'][0]['value']['save_time'] || "";
+        let vulnerables = res['data'][x]['result'][0]['value']['vulnerables'] || [];
+        let illegality = res['data'][x]['result'][0]['value']['illegality'] || [];
+        let vul_html =``;
+
+        if (vulnerables.length>0)
+        {
+            vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
+            let vul_reduce = vulnerables.reduce(function (prev,res) {
+                if(prev.hasOwnProperty(res['name']))
+                {
+                    prev[res['name']]++;
+                }
+                else {
+                    prev[res['name']]=1;
+                }
+                return prev
+            },{});
+            for( let i in vul_reduce)
+            {
+                vul_html +=`<li style="color: red">${i}: ${vul_reduce[i]}</li'>`;
+            }
+        }
+        let ill_html =``;
+        if (illegality.length>0)
+        {
+            ill_html =`<li>非法信息：${illegality.length}</li>`;
+
+            let ill_reduce = illegality.reduce(function (prev,res) {
+                if(prev.hasOwnProperty(res['name']))
+                {
+                    prev[res['name']]++;
+                }
+                else {
+                    prev[res['name']]=1;
+                }
+                return prev
+            },{});
+            for( let i in ill_reduce)
+            {
+                ill_html +=`<li style="color: red">${i}: ${ill_reduce[i]}</li'>`;
+            }
+        }
+
+        // console.log(res['data'][x]['result']);
+        html += `<div class="classify-content-data">
+                            <div class="classify-content-data-ip">
+                                <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result'][0]['scheme_domain']} <i class="iconfont icon-link"></i></a>
+                             </div>
+                             <div class="classify-content-data-content clearfix">
+                                <ul class="classify-content-data-content-info float-left">
+                                    <li>标题：${title}</li>
+                                    <li>ip：${ip}</li>
+                                    <li>端口：${protocols}</li>
+                                    <li>保存时间：${save_time}</li>
+                                    ${vul_html}
+                                    ${ill_html}
+                                </ul>
+                                <div class="classify-content-data-content-code float-left">
+                                    <pre>${response_headers}</pre>
+                                </div>
+                            </div>
+                        </div>`;
+    }
+
+    return html
+}
 function get_total_one_detail(_info) {
     /*获得单个数据的详情信息*/
     let b = new Base64();
@@ -272,7 +383,7 @@ function get_detail_html(info) {
 
     console.log(info);
     //基础信息
-    $("#base_info_ip").html("").append(info['result']['value']['ip']);
+    $("#base_info_ip").html("").append(info['result']['value']['ip']||"");
     html+=`<tr><td>国家/地区</td><td>${info['result']['value']['location']['country_ch']||""}</td></tr>`;
     html+=`<tr><td>省份</td><td>${info['result']['value']['location']['province']||""}</td></tr>`;
     html+=`<tr><td>城市</td><td>${info['result']['value']['location']['city']||""}</td></tr>`;

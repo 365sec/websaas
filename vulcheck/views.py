@@ -571,7 +571,7 @@ def classify_by_key(request):
     """
     # project_set = mongo_db['resultdb']
     filter_param = json.loads(request.body)
-    logging.debug(filter_param)
+    # logging.debug(filter_param)
     context = {"data": {}}
     classify = [
         'result.value.server',
@@ -589,8 +589,8 @@ def classify_by_key(request):
         val = filter_param['param'][key]
         # logging.debug(filter_param['param'][key])
         match['$match'][key] = val
-        logging.debug(val)
-    logging.debug(match)
+        # logging.debug(val)
+    # logging.debug(match)
     for x in classify:
         # match['$match'][x] = {'$exists': True}
         # match['$match']['result.value.location.province'] = "Hubei"
@@ -698,9 +698,7 @@ def get_scan_list(request):
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
-
     match = {'$match': {"result": {'$exists': True}}}
-
     for key in filter_param:
         val = filter_param[key]
         match['$match'][key] = val
@@ -723,4 +721,31 @@ def get_scan_list(request):
     # logging.debug(max_page)
     context['max_page'] = max_page
     context['data'] = result
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_scan_vul_iil_domain_list(request):
+    """:arg
+        获得违法信息和存在漏洞的域名
+    """
+    # logging.debug(json.loads(request.body))
+    request_param = json.loads(request.body)
+    logging.debug(request_param)
+    task_id = request_param['param']['task_id']
+
+    context = {}
+    task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    param = {}
+    if task_id:
+        param['task_id'] = task_id
+    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
+                    {'result.value.vulnerables.plugin_name': {'$exists': True}}]
+    res = result_set.find(param, {"result": 1, "task_id": 1, "_id": 0})
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i)
+
+    context['data'] = result
+    context['maxx'] = "111111"
     return HttpResponse(json.dumps(context), content_type="application/json")

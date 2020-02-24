@@ -6,7 +6,7 @@ function vulcheck_show_all_task() {
         success: function (res) {
             $('.tab-content').html(res);
 
-            console.log(res);
+            // console.log(res);
             vulcheck_all_task_able();
         }
     });
@@ -153,13 +153,10 @@ function get_task_detail(task_info) {
 
     //报道a标签
     //<button class="btn btn-default">  </button>
-    let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html()"  >报告</button>`;
+    let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html('${task_info['task_id']}')"  >报告</button>`;
     $("#report_div").show().html("").append(report_a);
 
-    let send_data = {};
-    send_data['param'] = {"task_id":task_info['task_id']};
-    let  data = get_classify_by_key(send_data);
-    console.log(data)
+
 
 
 }
@@ -199,7 +196,7 @@ function get_send_task_info_html(task_info) {
     return html;
 }
 
-function get_task_detail_html() {
+function get_task_detail_html(task_id) {
     $.ajax({
         url: 'vulcheck/task_detial_html',
         dataType: "html",
@@ -207,9 +204,76 @@ function get_task_detail_html() {
         async:false,
         success: function (res) {
             $('.tab-content').html(res);
+            let send_data = {};
+            if (task_id)
+            {
+                send_data['param'] = {"task_id":task_id};
+            }
+            let  data = get_classify_by_key(send_data);
+            console.log(data);
+            $("#task_result_detail_div").html("").append(JSON.stringify(data, undefined, 4));
+            chart_pie(data['data']['result.value.server'],"服务器","chart_server");
+            chart_pie(data['data']['result.value.protocols'],"端口服务","chart_protocols");
+            chart_pie(data['data']['result.value.language'],"开发语言","chart_language");
+            chart_pie(data['data']['result.value.cdn'],"使用的cdn服务器","chart_cdn");
+            chart_pie(data['data']['result.value.component'],"使用的组件","chart_component");
+            chart_pie(data['data']['result.value.vulnerables.plugin_name'],"漏洞情况","chart_vulnerables");
+            chart_pie(data['data']['result.value.illegality.plugin_name'],"违法信息情况","chart_illegality");
 
+
+            get_scan_val_iil_list_page(send_data['param'])
         }
     });
+}
+
+
+function chart_pie(data, text, chat_div) {
+    /*
+    data:数据
+    text:标题
+    chat_div：div id
+    * */
+    let chart = echarts.init(document.getElementById(chat_div));
+    let _data = data.reduce(function (prev, res) {
+        prev['legend'].push(res['_id']);
+        prev['series'].push({"value": res['count'], "name": res['_id']});
+        return prev
+    }, {"legend": [], "series": []});
+    let option = {
+        title: {
+            text: text,
+            subtext: '占有比',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: _data['legend']
+        },
+        series: [
+            {
+                name: '访问来源',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: _data['series'],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    chart.setOption(option);
 }
 function get_task_detail_result(task_id) {
     let parm = {};

@@ -328,6 +328,43 @@ def classify_by_key_by_domian_reduce():
             logging.debug(i)
 
 
+def get_vul_iil_domain():
+    result_set = mongo_db['resultdb']
+
+    task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    param = {}
+    if task_id:
+        param['task_id'] = task_id
+    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
+                     {'result.value.vulnerables.plugin_name': {'$exists': True}}]
+    # param['_id'] = 0
+    logging.debug(param)
+    res = result_set.find(param,{"_id": 0})
+    result = []
+    for i in res:
+        logging.debug(i)
+        result.append(i)
+
+
+def get_vul_iil_domain1():
+    result_set = mongo_db['resultdb']
+
+    task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    param = {}
+    if task_id:
+        param['task_id'] = task_id
+    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
+                    {'result.value.vulnerables.plugin_name': {'$exists': True}}]
+    # param['_id'] = 0
+    logging.debug(param)
+    res = result_set.find(param,{"_id": 0})
+    result = []
+    for i in res:
+        logging.debug(i)
+        result.append(i)
+
+
+
 @log_time
 def classify_by_key_plugin_reduce():
     project_set = mongo_db['resultdb']
@@ -397,6 +434,7 @@ def get_scan_list():
 def get_array_count():
     project_set = mongo_db['resultdb']
     pipeline = [
+
         {"$match":{"result": {'$exists':True}} },
         {
             '$project':{
@@ -419,7 +457,8 @@ if __name__ == '__main__':
     # classify_by_key_illegality()
     # classify_by_key_illegality()
     # classify_by_key_plugin_reduce()
-    classify_by_key_by_domian_reduce()
+    # classify_by_key_by_domian_reduce()
+    get_vul_iil_domain()
     # classify_by_key()
     # classify_by_key1()
     # get_scan_list()
