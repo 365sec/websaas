@@ -1,21 +1,44 @@
+<div class="main-content-card" style="margin-bottom: 24px">
+    <div class="main-content-card-content clearfix">
+        <div class="vul-web-top asset">
+            <i class="iconfont icon-asset"></i>
+            <div class="vul-web-top-content">
+                <div class="vul-web-top-title">检测资产总数</div>
+                <div id="vul-web-top-asset" class="vul-web-top-number">0</div>
+            </div>
+        </div>
+        <div class="vul-web-top threat">
+            <i class="iconfont icon-threat"></i>
+            <div class="vul-web-top-content">
+                <div class="vul-web-top-title">检测漏洞总数</div>
+                <div id="vul-web-top-threat" class="vul-web-top-number">46</div>
+            </div>
+        </div>
+        <div class="vul-web-top website">
+            <i class="iconfont icon-website"></i>
+            <div class="vul-web-top-content">
+                <div class="vul-web-top-title">存在漏洞的页面数</div>
+                <div id="vul-web-top-website" class="vul-web-top-number">6666</div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="main-content-card">
     <div class="main-content-card-title">
         <span>漏洞网站分析</span>
         <div class="main-content-card-btngroup">
-            <div class="main-content-card-btngroup-search">
-                <form  method="post" role="form" id="vul_web_form">
-                    <input type="text" placeholder="关键字" name="keyword">
-                    <div id="vul_web_keyword_select">
-                    </div>
-                    <input type="text" placeholder="地区" name="result.value.location">
-                    <input type="text" placeholder="日期" name="result.value.save_time">
-                    <button type="button" onclick="vul_web_search()" ><i class="iconfont icon-search"></i></button>
+            <form  method="post" role="form" id="vul_web_form">
+                <input type="text" placeholder="关键字" name="keyword">
+                <div id="vul_web_keyword_select">
+                </div>
+                <input type="text" placeholder="地区" name="result.value.location">
+                <input type="text" placeholder="日期" name="result.value.save_time">
+                <button type="button" onclick="vul_web_search()" ><i class="iconfont icon-search"></i></button>
 
-                </form>
-            </div>
+            </form>
         </div>
     </div>
-    <div class="main-content-card-table">
+    <div class="main-content-card-content">
         <table class="table table-bordered">
             <thead>
             <th>网站URL</th>
@@ -36,5 +59,3 @@
         </div>
     </div>
 </div>
-<script>
-

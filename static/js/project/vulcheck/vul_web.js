@@ -21,7 +21,7 @@ function get_vul_keyword() {
         type: "get",
         success: function (res) {
 
-            let html =`<select class="form-control" name="result.value.vulnerables.name">`;
+            let html =`<select name="result.value.vulnerables.name">`;
             html+=` <option value="">漏洞名称</option>`;
             for (let x of res['data'])
             {

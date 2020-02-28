@@ -20,7 +20,7 @@ function get_ill_keyword() {
         type: "get",
         success: function (res) {
 
-            let html =`<select class="form-control" name="result.value.illegality.name">`;
+            let html =`<select name="result.value.illegality.name">`;
             html+=` <option value="">命中关键字</option>`;
            for (let x of res['data'])
            {
