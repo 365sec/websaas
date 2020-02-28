@@ -66,11 +66,11 @@ def show_all_task_html(request):
 def show_all_task(request):
     page = request.GET.get("page")
     page = 0 if not page else int(page) - 1
-    page_num = 10
+    page_num = 15
     skip = int(page * page_num)
     max_num = project_set.count()
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
-    result = project_set.find({}, {'_id': 0}).skip(skip).limit(page_num)
+    result = project_set.find({}, {'_id': 0}).sort([("finish_time",-1)]).skip(skip).limit(page_num)
     logging.debug(max_num)
     task_list = []
     for x in result:
@@ -106,6 +106,16 @@ def get_total_html(request):
 def total_one_detail_html(request):
     context = {}
     return render(request, r'vulcheck\total_one.html', context)
+
+
+def get_ill_web_html(request):
+    context = {}
+    return render(request, r'vulcheck\illegalWebsites.html', context)
+
+
+def get_vul_web_html(request):
+    context = {}
+    return render(request, r'vulcheck\vulWebsites.html', context)
 
 
 def get_report_html(request):
@@ -563,6 +573,15 @@ def deal_result_json(web):
     return result
 
 
+def delete_task(request):
+    task_id = request.GET.get("task_id")
+    logging.debug(task_id)
+    result_set.delete_many({"task_id":task_id})
+    project_set.delete_many({"task_id":task_id})
+    context = {"code": 200}
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
 def classify_by_key(request):
     """
     关于所有分类信息的查询过滤
@@ -734,7 +753,7 @@ def get_scan_vul_iil_domain_list(request):
     task_id = request_param['param']['task_id']
 
     context = {}
-    task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    # task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
     param = {}
     if task_id:
         param['task_id'] = task_id
@@ -747,5 +766,145 @@ def get_scan_vul_iil_domain_list(request):
         result.append(i)
 
     context['data'] = result
-    context['maxx'] = "111111"
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_ill_web_data(request):
+    """:arg
+        获得违法网站信息
+    """
+    context = {"max_page": 0}
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    page = param['page']
+    filter_param = param['param']
+    # project_set = mongo_db['resultdb']
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page * page_num)
+    match = {'$match': {"result": {'$exists': True}}}
+    match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    for key in filter_param:
+        if key=="keyword":
+            continue
+        val = filter_param[key]
+        match['$match'][key] = val
+
+    max_num = get_result_count(match)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+    pipeline = [
+        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$skip': skip},
+        {'$limit': page_num},
+        {'$sort': {'result.value.save_time': -1}},
+    ]
+    result = []
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        result.append(i)
+
+    # logging.debug(max_page)
+    context['max_page'] = max_page
+    context['data'] = result
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_vul_web_data(request):
+    """:arg
+        获得漏洞网站网站信息
+    """
+    context = {"max_page": 0}
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    page = param['page']
+    filter_param = param['param']
+    # project_set = mongo_db['resultdb']
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page * page_num)
+    match = {'$match': {"result": {'$exists': True}}}
+    match['$match']['result.value.vulnerables.plugin_name'] = {'$exists': True}
+    for key in filter_param:
+        if key == "keyword":
+            continue
+        val = filter_param[key]
+        match['$match'][key] = val
+
+    max_num = get_result_count(match)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+    pipeline = [
+        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$skip': skip},
+        {'$limit': page_num},
+        {'$sort': {'result.value.save_time': -1}},
+    ]
+    result = []
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        result.append(i)
+
+    # logging.debug(max_page)
+    context['max_page'] = max_page
+    context['data'] = result
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_ill_keyword(request):
+    """:arg
+        违法网站关键词下拉框
+    """
+    context = {}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.illegality'},
+        {'$group': {
+            '_id': '$result.value.illegality.name',
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        logging.debug(i)
+        result.append(i['_id'])
+
+    context['data'] = result
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_vul_keyword(request):
+    """:arg
+        漏洞网站关键词下拉框
+    """
+    context = {}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.vulnerables'},
+        {'$group': {
+            '_id': '$result.value.vulnerables.name',
+            'count': {'$sum': 1},
+        }},
+        {'$sort': {'count': -1}},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i)
+
+    context['data'] = result
+
     return HttpResponse(json.dumps(context), content_type="application/json")

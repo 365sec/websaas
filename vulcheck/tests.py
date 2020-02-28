@@ -328,6 +328,108 @@ def classify_by_key_by_domian_reduce():
             logging.debug(i)
 
 
+def get_ill_keyword():
+    """:arg获得违法网站关键词的个数
+    """
+    result_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+
+
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.illegality'},
+        {'$group': {
+            '_id': '$result.value.illegality.name',
+            'count': {'$sum': 1},
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
+
+
+def get_vul_keyword():
+    """:arg
+    获得漏洞的个数
+    """
+    result_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.vulnerables'},
+        {'$group': {
+            '_id': '$result.value.vulnerables.name',
+            'count': {'$sum': 1},
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
+
+
+def get_vul_web():
+    """:arg
+    存在漏洞的网站个数
+    """
+    result_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+    # match = {'$match': {x: {'$exists': True}}}
+    # match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$match': {'result.value.vulnerables': {'$exists': True}}},
+        {'$group': {
+            '_id': '$result.scheme_domain',
+            'domian_list': {'$addToSet': '$result.scheme_domain'},
+        }},
+        {'$count': "domian_list"}
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
+
+
+def get_all_web():
+    """:arg
+    检测总数
+    """
+    result_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+    # match = {'$match': {x: {'$exists': True}}}
+    # match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        # {'$match': {'result.value.vulnerables': {'$exists': True}}},
+        {'$group': {
+            '_id': '$result.scheme_domain',
+            'domian_list': {'$addToSet': '$result.scheme_domain'},
+        }},
+        {'$count': "domian_list"}
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
+
+
+
+
 def get_vul_iil_domain():
     result_set = mongo_db['resultdb']
 
@@ -458,7 +560,11 @@ if __name__ == '__main__':
     # classify_by_key_illegality()
     # classify_by_key_plugin_reduce()
     # classify_by_key_by_domian_reduce()
-    get_vul_iil_domain()
+    # get_vul_iil_domain()
+    get_ill_keyword()
+    # get_vul_keyword()
+    # get_vul_web()
+    # get_all_web()
     # classify_by_key()
     # classify_by_key1()
     # get_scan_list()

@@ -3,7 +3,7 @@ function vulcheck_get_total_html(task_id) {
     filter_temp = {};
     if(task_id)
     {
-        filter_param['task_id']=task_id;
+         filter_param['task_id']=task_id;
     }
     /*
     * 加载统计信息HTML页面*/
@@ -501,6 +501,50 @@ function get_detail_html(info) {
         html = ``;
         for(let i in info['result']['value']['illegality'])
         {
+            let temp_html = ``;
+            if (info['result']['value']['illegality'][i]['plugin_name']==="keywords")
+            {
+                let type = "";
+                let segment = "";
+                let value = "";
+                for (let j in info['result']['value']['illegality'][i]['value']) {
+                    type +=info['result']['value']['illegality'][i]['value'][j]['type']+"&nbsp;";
+                    for(let z in info['result']['value']['illegality'][i]['value'][j]['keyword_list'])
+                    {
+                        segment+=info['result']['value']['illegality'][i]['value'][j]['keyword_list'][z]['segment']+"&nbsp;";
+                        value+=info['result']['value']['illegality'][i]['value'][j]['keyword_list'][z]['value']+"&nbsp;";
+                    }
+                }
+                temp_html+=`
+                    <tr><td>敏感关键词类型</td><td>${type||""}</td></tr>
+                    <tr><td>敏感关键词截取片段</td><td>${segment||""}</td></tr>
+                    <tr><td>敏感关键词内容</td><td>${value||""}</td></tr>`;
+            }else if(info['result']['value']['illegality'][i]['plugin_name']==="trojanhorse")
+            {
+                let type = "";
+                let display = "";
+                let value = "";
+                for (let j in info['result']['value']['illegality'][i]['value']) {
+                    type +=info['result']['value']['illegality'][i]['value'][j]['type']+"&nbsp;";
+                    for(let z in info['result']['value']['illegality'][i]['value'][j]['keyword_list'])
+                    {
+                        display+=info['result']['value']['illegality'][i]['value'][j]['keyword_list'][z]['display']+"&nbsp;";
+                        value+=info['result']['value']['illegality'][i]['value'][j]['keyword_list'][z]['value']+"&nbsp;";
+                    }
+                }
+                temp_html+=`
+                    <tr><td>网页挂马类型</td><td>${type||""}</td></tr>
+                    <tr><td>网页挂马名称</td><td>${display||""}</td></tr>
+                    <tr><td>网页挂马截取片段</td><td>${value||""}</td></tr>
+                `;
+
+            }else if (info['result']['value']['illegality'][i]['plugin_name']==="domain_hijack")
+            {
+                temp_html+=`                    
+                    <tr><td>网页劫持源地址</td><td>${info['result']['value']['illegality'][i]['orig_url']||""}</td></tr>
+                    <tr><td>网页劫持跳转地址</td><td>${info['result']['value']['illegality'][i]['redirect_url']||""}</td></tr>`;
+            }
+
             html+=`            <div class="row"  >
                 <table class="table table-condensed">
                     <caption >${info['result']['value']['illegality'][i]['name']||""}</caption>
@@ -511,15 +555,7 @@ function get_detail_html(info) {
                     <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['illegality'][i]['headers']['Referer']||""}</td></tr>
                     <tr><td>请求方法</td><td>${info['result']['value']['illegality'][i]['method']||""}</td></tr>
                     <tr><td>漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</td></tr>
-                    <tr><td>敏感关键词类型</td><td>${info['result']['value']['illegality'][i]['type']||""}</td></tr>
-                    <tr><td>敏感关键词截取片段</td><td>${info['result']['value']['illegality'][i]['segment']||""}</td></tr>
-                    <tr><td>敏感关键词内容</td><td>${info['result']['value']['illegality'][i]['value']||""}</td></tr>
-                    <tr><td>网页挂马类型</td><td>${info['result']['value']['illegality'][i]['type']||""}</td></tr>
-                    <tr><td>网页挂马名称</td><td>${info['result']['value']['illegality'][i]['display']||""}</td></tr>
-                    <tr><td>网页挂马截取片段</td><td>${info['result']['value']['illegality'][i]['value']||""}</td></tr>
-                    <tr><td>网页劫持源地址</td><td>${info['result']['value']['illegality'][i]['orig_url']||""}</td></tr>
-                    <tr><td>网页劫持跳转地址</td><td>${info['result']['value']['illegality'][i]['redirect_url']||""}</td></tr>
-              
+                    ${temp_html}
                     </tbody>
                 </table>
             </div>`;

@@ -3,6 +3,8 @@ document.write("<script type='text/javascript' src='/static/js/project/vulcheck/
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_quickstart.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_task.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_total.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/illegal_web.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_web.js'></script>");
 
 $(function() {
     // 左侧手风琴点击样式变化
@@ -68,6 +70,12 @@ $(function() {
                 break;
             case "vulcheck-get_total_html":
                 vulcheck_get_total_html();
+                break;
+            case "vulcheck-get_ill_web_html":
+                vulcheck_get_ill_web_html();
+                break;
+            case "vulcheck-get_vul_web_html":
+                vulcheck_get_vul_web_html();
                 break;
             default:
         }

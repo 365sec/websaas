@@ -47,16 +47,34 @@ function get_task_list(page) {
                 task_info = b.encode(task_info);
                 html+=`<tr>`;
                 html+=`<td><a onclick='get_task_detail("${task_info}")'>${res['data'][x]['task_id']}</a></td>`;
+                html+=`<td></td>`;
                 html+=`<td>${res['data'][x]['status']}</td>`;
                 html+=`<td>${res['data'][x]['start_time']}</td>`;
                 html+=`<td>${res['data'][x]['finish_time']}</td>`;
-                html+=`<td><div><a href="#" >停止</a></div></td>`;
+                html+=`<td><div><a href="#" >停止</a>&nbsp;<a onclick="delete_task('${res['data'][x]['task_id']}')" >删除</a></div></td>`;
                 html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
         }
     });
+}
+
+function delete_task(task_id) {
+    var message=confirm("确定删除task_id=="+task_id+"吗？");
+    if(message===true)
+    {
+        $.ajax({
+            url: 'vulcheck/delete_task',
+            data: {"task_id":task_id},
+            type: "get",
+            success: function (res) {
+                alert("删除成功")
+                get_task_list(1);
+            }
+        });
+    }
+
 }
 
 function vulcheck_send_task() {
