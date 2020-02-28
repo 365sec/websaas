@@ -1,0 +1,28 @@
+.vul-web-top{
+    float: left;
+    width: calc(33.3% - 16px);
+    height: 100px;
+    padding: 16px;
+    color: #fff;
+}
+.vul-web-top.asset{
+    background: #2ec7c9;
+}
+.vul-web-top.threat{
+    background: #b6a2de;
+}
+.vul-web-top.website{
+    background: #5ab1ef;
+}
+.vul-web-top + .vul-web-top{
+   margin-left: 24px;
+}
+.vul-web-top i{
+    display: inline-block;
+    padding: 0 20px;
+    font-size: 50px;
+}
+.vul-web-top-content{
+    display: inline-block;
+    font-size: 18px;
+}
