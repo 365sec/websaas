@@ -119,7 +119,7 @@ function refresh() {
     if(!hash){
         if(!req){
             //默认页面
-            $('.sidebar-secondNav[data-value="vulcheck-index"], .sidebar-firstNav[data-value="vulcheck-index"]').trigger('click');
+            $('.sidebar-secondNav[data-value="vulcheck-get_total_html"], .sidebar-firstNav[data-value="vulcheck-get_total_html"]').trigger('click');
         }else{
             //只有一级的默认页面为data-value为一级-index的内页
             $('.sidebar-secondNav[data-value="'+req+'-index"], .sidebar-firstNav[data-value="'+req+'-index"]').trigger('click');

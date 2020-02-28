@@ -1,3 +1,4 @@
+// 漏洞列表
 function vulcheck_get_vul_web_html() {
     $.ajax({
         url: 'vulcheck/get_vul_web_html',
@@ -123,3 +124,7 @@ function vul_web_table_page(page) {
         }
     });
 }
+$(document).on('click', '.vue-web.pagination>ul>*', function () {
+    var page = $(this).attr('data-page'); // 获取按钮代表的页码
+    vul_web_table_page(page)//点击页码获取数据
+});
