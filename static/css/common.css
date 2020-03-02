@@ -284,6 +284,22 @@ p {
 .main-content-card-content table>thead>tr>th {
     border: none;
 }
+.tableta-w10px{
+    max-width: 10%;
+}
+.tableta-w12px{
+    max-width: 12%;
+}
+.tableta-w14px{
+    max-width: 14%;
+}
+.tabletd-overflow{
+    margin: 0;
+    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 /*tab-content start*/
 
 /*分页 start*/
@@ -309,3 +325,4 @@ p {
     cursor: not-allowed;
 }
 /*分页 end*/
+

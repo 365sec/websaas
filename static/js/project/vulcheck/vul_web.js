@@ -76,7 +76,7 @@ function vul_web_table_page(page) {
             {
                 html+=`<tr>`;
                 // html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`;
-                html+=`<td>${res['data'][x]['result']['scheme_domain']||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w14" title="${res['data'][x]['result']['scheme_domain']||""}">${res['data'][x]['result']['scheme_domain']||""}</p></td>`;
                 html+=`<td>${res['data'][x]['result']['value']['ip']||""}</td>`;
                 let class_word_set = new Set();
                 let key_word_set = new Set();
@@ -103,19 +103,19 @@ function vul_web_table_page(page) {
                 {
                     segment_word+=i+"&nbsp;"
                 }
-                html+=`<td>${class_word||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w14" title="${class_word||""}">${class_word||""}</p></td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 let country_ch =res['data'][x]['result']['value']['location']['country_ch']||"";
                 let province =res['data'][x]['result']['value']['location']['province']||"";
                 let city =res['data'][x]['result']['value']['location']['city']||"";
-                html+=`<td>${country_ch+"&nbsp;"+province+"&nbsp;"+city}</td>`;
-                html+=`<td>${segment_word||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w14" title="${country_ch+"&nbsp;"+province+"&nbsp;"+city}">${country_ch+"&nbsp;"+province+"&nbsp;"+city}</p></td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w14" title="${segment_word||""}">${segment_word||""}</p></td>`;
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
                 let detail = JSON.stringify(res['data'][x]);
                 let b = new Base64();
                 detail = b.encode(detail);
-                html+=`<td> <a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
+                html+=`<td><a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
 
                 html+=`</tr>`;
             }

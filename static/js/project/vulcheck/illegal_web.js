@@ -79,7 +79,7 @@ function ill_web_table_page(page) {
             {
                 html+=`<tr>`;
                 // html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`;
-                html+=`<td>${res['data'][x]['result']['scheme_domain']||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w12" title="${res['data'][x]['result']['scheme_domain']||""}">${res['data'][x]['result']['scheme_domain']||""}</p></td>`;
                 html+=`<td>${res['data'][x]['result']['value']['ip']||""}</td>`;
                 let class_word_set = new Set();
                 let key_word_set = new Set();
@@ -113,13 +113,13 @@ function ill_web_table_page(page) {
                     segment_word+=i+"&nbsp;"
                 }
                 html+=`<td>${class_word||""}</td>`;
-                html+=`<td>${key_word||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w10" title="${key_word||""}">${key_word||""}</p></td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 let country_ch =res['data'][x]['result']['value']['location']['country_ch']||"";
                 let province =res['data'][x]['result']['value']['location']['province']||"";
                 let city =res['data'][x]['result']['value']['location']['city']||"";
-                html+=`<td>${country_ch+"&nbsp;"+province+"&nbsp;"+city}</td>`;
-                html+=`<td>${segment_word||""}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w10" title="${country_ch+"&nbsp;"+province+"&nbsp;"+city}">${country_ch+"&nbsp;"+province+"&nbsp;"+city}</td>`;
+                html+=`<td><p class="tabletd-overflow tableta-w12" title="${segment_word||""}">${segment_word||""}</p></td>`;
                 html+=`<td>${res['data'][x]['result']['value']['idc']||""}</td>`;
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
                 html+=`<td>${""}</td>`;
