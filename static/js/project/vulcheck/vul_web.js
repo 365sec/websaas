@@ -7,6 +7,8 @@ function vulcheck_get_vul_web_html() {
         success: function (res) {
 
             $('.tab-content').html(res);
+            // 更改title
+            document.title = '漏洞列表';
             vul_web_table();
             get_vul_keyword();
         }

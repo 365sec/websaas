@@ -5,6 +5,9 @@ function vulcheckIndex() {
         type: "get",
         success: function (res) {
             $('.tab-content').html(res);
+            // 更改title
+            document.title = 'index';
+
             vulcheckIndexTable()//加载表格数据
         }
     });

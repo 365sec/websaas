@@ -5,7 +5,8 @@ function vulcheck_show_all_task() {
         type: "get",
         success: function (res) {
             $('.tab-content').html(res);
-
+            // 更改title
+            document.title = '任务列表';
             // console.log(res);
             vulcheck_all_task_able();
         }
@@ -85,6 +86,8 @@ function vulcheck_send_task() {
         type: "get",
         success: function (res) {
             $('.tab-content').html(res);
+            //设置title
+            document.title = '下发任务'
             d_issue_tesk_batch_click()
         }
     });

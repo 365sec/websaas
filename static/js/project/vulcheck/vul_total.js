@@ -14,7 +14,8 @@ function vulcheck_get_total_html(task_id) {
         async:false,
         success: function (res) {
             $('.tab-content').html(res);
-
+            // 更改title
+            document.title = '总览';
             classify_by_key(filter_param);
             get_scan_list(filter_param);
 

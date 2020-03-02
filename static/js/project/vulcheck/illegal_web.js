@@ -1,3 +1,4 @@
+// 违法网站分析
 function vulcheck_get_ill_web_html() {
     $.ajax({
         url: 'vulcheck/get_ill_web_html',
@@ -6,6 +7,7 @@ function vulcheck_get_ill_web_html() {
         success: function (res) {
 
             $('.tab-content').html(res);
+            document.title = '违法网站分析';
             ill_web_table();
             get_ill_keyword();
         }
