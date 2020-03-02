@@ -276,6 +276,7 @@ p {
 }
 .main-content-card-content table{
     width: 100%;
+    table-layout: fixed;
 }
 .main-content-card-content thead{
     color: #fff;
@@ -284,14 +285,19 @@ p {
 .main-content-card-content table>thead>tr>th {
     border: none;
 }
-.tableta-w10px{
-    max-width: 10%;
+
+.tableta-w10{
+    /*max-width: 100px;*/
+    width: 10%;
+
 }
-.tableta-w12px{
-    max-width: 12%;
+.tableta-w12{
+    /*max-width: 140px;*/
+    width: 12%;
 }
-.tableta-w14px{
-    max-width: 14%;
+.tableta-w14{
+    /*max-width: 160px;*/
+    width: 14%;
 }
 .tabletd-overflow{
     margin: 0;

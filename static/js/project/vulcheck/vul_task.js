@@ -46,8 +46,8 @@ function get_task_list(page) {
                 let task_info = JSON.stringify(res['data'][x]['task_info']);
                 task_info = b.encode(task_info);
                 html+=`<tr>`;
-                html+=`<td><a onclick='get_task_detail("${task_info}")'>${res['data'][x]['task_id']}</a></td>`;
-                html+=`<td></td>`;
+                html+=`<td><p class="tabletd-overflow"><a onclick='get_task_detail("${task_info}")' title="${res['data'][x]['task_id']}">${res['data'][x]['task_id']}</a></p></td>`;
+                html+=`<td><p class="tabletd-overflow"></p></td>`;
                 html+=`<td>${res['data'][x]['status']}</td>`;
                 html+=`<td>${res['data'][x]['start_time']}</td>`;
                 html+=`<td>${res['data'][x]['finish_time']}</td>`;
