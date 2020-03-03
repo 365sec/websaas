@@ -4,21 +4,21 @@
             <i class="iconfont icon-asset"></i>
             <div class="vul-web-top-content">
                 <div class="vul-web-top-title">检测资产总数</div>
-                <div id="vul-web-top-asset" class="vul-web-top-number">0</div>
+                <div id="vul-web-top-asset" class="vul-web-top-number"></div>
             </div>
         </div>
         <div class="vul-web-top threat">
             <i class="iconfont icon-threat"></i>
             <div class="vul-web-top-content">
                 <div class="vul-web-top-title">检测漏洞总数</div>
-                <div id="vul-web-top-threat" class="vul-web-top-number">46</div>
+                <div id="vul-web-top-threat" class="vul-web-top-number"></div>
             </div>
         </div>
         <div class="vul-web-top website">
             <i class="iconfont icon-website"></i>
             <div class="vul-web-top-content">
                 <div class="vul-web-top-title">存在漏洞的页面数</div>
-                <div id="vul-web-top-website" class="vul-web-top-number">6666</div>
+                <div id="vul-web-top-website" class="vul-web-top-number"></div>
             </div>
         </div>
     </div>
@@ -28,6 +28,9 @@
         <span>漏洞网站分析</span>
         <div class="main-content-card-btngroup">
             <form  method="post" role="form" id="vul_web_form">
+                <input type="text" placeholder="任务id" name="keyword">
+                <div id="vul_web_id_select">
+                </div>
                 <input type="text" placeholder="关键字" name="keyword">
                 <div id="vul_web_keyword_select">
                 </div>
@@ -43,7 +46,7 @@
             <thead>
             <th width="15%">网站URL</th>
             <th width="120px">关联IP</th>
-            <th width="12%">分类</th>
+            <th width="12%">漏洞名称</th>
 {#            <th>命中关键字</th>#}
             <th width="10%">归属地区</th>
             <th>内容</th>

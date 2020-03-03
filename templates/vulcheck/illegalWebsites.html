@@ -1,27 +1,34 @@
 <div class="main-content-card" style="margin-bottom: 24px">
     <div class="main-content-card-content clearfix">
         <div class="ill-web-top heilian">
-            <div class="ill-web-top-title">黑链检测告警</div>
+            <div class="ill-web-top-title">暗链检测告警</div>
             <div class="ill-web-top-content">
-                <div class="ill-web-top-number all">已监测资产<div>1212</div></div>
-                <div class="ill-web-top-number read">已读警告<div>1212</div></div>
-                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>
+                <div class="ill-web-top-number all">发现暗链网站 <div id="ill-web-top-number-heilian-web">0</div></div>
+                <div class="ill-web-top-number read">发现暗链总数 <div id="ill-web-top-number-heilian-num">0</div></div>
+{#                <div class="ill-web-top-number read">已读警告<div>1212</div></div>#}
+{#                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>#}
             </div>
         </div>
         <div class="ill-web-top guama">
             <div class="ill-web-top-title">挂马检测告警</div>
             <div class="ill-web-top-content">
-                <div class="ill-web-top-number all">已监测资产<div>1212</div></div>
-                <div class="ill-web-top-number read">已读警告<div>1212</div></div>
-                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>
+                <div class="ill-web-top-number all">发现挂马网站<div id="ill-web-top-number-guama-web">0</div></div>
+                <div class="ill-web-top-number all">发现挂马总数<div id="ill-web-top-number-guama-num">0</div></div>
+                <div class="ill-web-top-number all">网页劫持网站<div id="ill-web-top-number-hijack-web">0</div></div>
+                <div class="ill-web-top-number all">网页劫持总数<div id="ill-web-top-number-hijack-num">0</div></div>
+{#                <div class="ill-web-top-number read">已读警告<div>1212</div></div>#}
+{#                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>#}
             </div>
         </div>
         <div class="ill-web-top sense">
             <div class="ill-web-top-title">敏感检测告警</div>
             <div class="ill-web-top-content">
-                <div class="ill-web-top-number all">已监测资产<div>1212</div></div>
-                <div class="ill-web-top-number read">已读警告<div>1212</div></div>
-                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>
+                <div class="ill-web-top-number all">发现敏感信息网站<div id="ill-web-top-number-sense-web">0</div></div>
+                <div class="ill-web-top-number all">发现敏感信息总数<div id="ill-web-top-number-sense-num">0</div></div>
+                <div class="ill-web-top-number all">图片鉴黄网站<div id="ill-web-top-number-image-web">0</div></div>
+                <div class="ill-web-top-number all">图片鉴黄<div id="ill-web-top-number-image-num">0</div></div>
+{#                <div class="ill-web-top-number read">已读警告<div>1212</div></div>#}
+{#                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>#}
             </div>
         </div>
     </div>
@@ -48,7 +55,7 @@
             <thead>
             <th width="15%">网站域名</th>
             <th width="120px">关联IP</th>
-            <th width="10%">漏洞名称</th>
+            <th width="10%">分类</th>
             <th width="12%">命中关键字</th>
 {#            <th>等级</th>#}
             <th width="10%">归属地区</th>

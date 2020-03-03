@@ -15,7 +15,6 @@ urlpatterns = [
     url(r'^task_status', views.get_task_status),
     url(r'^get_plug', views.get_plug),
     url(r'^issue_task_list', views.issue_task_list),
-    url(r'^test_post_ajax', views.test_post_ajax),
     url(r'^get_report_html', views.get_report_html),
     url(r'^quickstart', views.quickstart),
 
@@ -37,6 +36,8 @@ urlpatterns = [
     url(r'^get_vul_web_html$', views.get_vul_web_html),  # 网页非法信息的HTML
     url(r'^get_vul_web_data$', views.get_vul_web_data),  # 网页漏洞信息数据
     url(r'^get_vul_keyword$', views.get_vul_keyword),  # 网页漏洞关键词下拉框
+    url(r'^get_vul_total$', views.get_vul_total),  # 网页漏洞上部分统计信息
+    url(r'^get_ill_total$', views.get_ill_total),  # 违法信息漏洞上部分统计信息
     # url(r'/index/$', views.index),
     # url(r'.*', views.index),
     url(r'^index$', views.index),

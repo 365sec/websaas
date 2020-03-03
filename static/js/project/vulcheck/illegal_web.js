@@ -1,4 +1,3 @@
-// 违法网站分析
 function vulcheck_get_ill_web_html() {
     $.ajax({
         url: 'vulcheck/get_ill_web_html',
@@ -10,8 +9,88 @@ function vulcheck_get_ill_web_html() {
             document.title = '违法网站分析';
             ill_web_table();
             get_ill_keyword();
+            get_ill_total();
         }
     });
+}
+
+function get_ill_total() {
+    /*获得违法信息列表上部分的统计信息*/
+    $.ajax({
+        url: 'vulcheck/get_ill_total',
+        type: "get",
+        success: function (data) {
+            let res = data['data'];
+            let key_info = data['key_info'];
+            console.log(data)
+            let keywords=0;
+            let keywords_web=0;
+            let trojanhorse=0;
+            let trojanhorse_web=0;
+            let domain_hijack=0;
+            let domain_hijack_web=0;
+            let black_link=0;
+            let black_link_web=0;
+            let yellow_image=0;
+            let yellow_image_web=0;
+            for(let i in res)
+            {
+                switch (res[i]['_id']) {
+                    case 'keywords':
+                        keywords = res[i]['count'];
+                        break;
+                    case 'trojanhorse':
+                        trojanhorse = res[i]['count'];
+                        break;
+                    case 'domain_hijack':
+                        domain_hijack = res[i]['count'];
+                        break;
+                    case 'black_link':
+                        black_link = res[i]['count'];
+                        break;
+                    case 'yellow_image':
+                        yellow_image = res[i]['count'];
+                        break;
+                }
+            }
+
+            for(let i in key_info)
+            {
+                switch (key_info[i]['_id']) {
+                    case 'keywords':
+                        keywords_web = key_info[i]['count'];
+                        break;
+                    case 'trojanhorse':
+                        trojanhorse_web = key_info[i]['count'];
+                        break;
+                    case 'domain_hijack':
+                        domain_hijack_web = key_info[i]['count'];
+                        break;
+                    case 'black_link':
+                        black_link_web = key_info[i]['count'];
+                        break;
+                    case 'yellow_image':
+                        yellow_image_web = key_info[i]['count'];
+                        break;
+                }
+            }
+
+            $("#ill-web-top-number-heilian-num").html("").append(black_link);
+            $("#ill-web-top-number-heilian-web").html("").append(black_link_web);
+            $("#ill-web-top-number-guama-num").html("").append(trojanhorse);
+            $("#ill-web-top-number-guama-web").html("").append(trojanhorse_web);
+            $("#ill-web-top-number-hijack-num").html("").append(domain_hijack);
+            $("#ill-web-top-number-hijack-web").html("").append(domain_hijack_web);
+            $("#ill-web-top-number-sense-num").html("").append(keywords);
+            $("#ill-web-top-number-sense-web").html("").append(keywords_web);
+            $("#ill-web-top-number-image-num").html("").append(yellow_image);
+            $("#ill-web-top-number-image-web").html("").append(yellow_image_web);
+
+            console.log(res)
+        }
+    });
+
+
 }
 
 function get_ill_keyword() {
@@ -114,6 +193,7 @@ function ill_web_table_page(page) {
                 {
                     segment_word+=i+"&nbsp;"
                 }
+                // console.log(segment_word)
                 html+=`<td>${class_word||""}</td>`;
                 html+=`<td><p class="tabletd-overflow" title="${key_word||""}">${key_word||""}</p></td>`;
                 // html+=`<td>${key_word||""}</td>`;

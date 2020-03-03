@@ -236,7 +236,8 @@ function get_task_detail_html(task_id) {
             $("#task_result_detail_div").html("").append(JSON.stringify(data, undefined, 4));
             chart_pie(data['data']['result.value.server'],"服务器","chart_server");
             chart_pie(data['data']['result.value.protocols'],"端口服务","chart_protocols");
-            chart_pie(data['data']['result.value.language'],"开发语言","chart_language");
+            // chart_pie(data['data']['result.value.language'],"开发语言","chart_language");
+            chart_bar(data['data']['result.value.language'],"开发语言","chart_language");
             chart_pie(data['data']['result.value.cdn'],"使用的cdn服务器","chart_cdn");
             chart_pie(data['data']['result.value.component'],"使用的组件","chart_component");
             chart_pie(data['data']['result.value.vulnerables.plugin_name'],"漏洞情况","chart_vulnerables");
@@ -297,6 +298,65 @@ function chart_pie(data, text, chat_div) {
     // 使用刚指定的配置项和数据显示图表。
     chart.setOption(option);
 }
+
+
+function chart_bar(data, text, chat_div) {
+    /*
+    data:数据
+    text:标题
+    chat_div：div id
+    * */
+    let chart = echarts.init(document.getElementById(chat_div));
+    let _data = data.reduce(function (prev, res) {
+        prev['legend'].push(res['_id']);
+        // prev['series'].push({"value": res['count'], "name": res['_id']});
+        prev['series'].push(res['count']);
+        return prev
+    }, {"legend": [], "series": []});
+    console.log(_data)
+    let option = {
+        title: {
+            text: text,
+            subtext: 'top统计'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: _data['legend']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: _data['legend']
+        },
+        series: [
+            {
+                name: '数目',
+                type: 'bar',
+                data: _data['series']
+            }
+        ]
+    };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    chart.setOption(option);
+}
+
+
 function get_task_detail_result(task_id) {
     let parm = {};
     parm['task_id'] = task_id;

@@ -211,6 +211,7 @@ function get_scan_list_page_html(res) {
         let b = new Base64();
         detail = b.encode(detail);
         let protocols = res['data'][x]['result']['value']['protocols'] || "";
+        let country = res['data'][x]['result']['value']['location']['country_ch'] || "";
         let save_time = res['data'][x]['result']['value']['save_time'] || "";
         let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
         let illegality = res['data'][x]['result']['value']['illegality'] || [];
@@ -264,6 +265,7 @@ function get_scan_list_page_html(res) {
                                 <ul class="classify-content-data-content-info float-left">
                                     <li>标题：${title}</li>
                                     <li>ip：${ip}</li>
+                                    <li>国家/地区：${country}</li>
                                     <li>端口：${protocols}</li>
                                     <li>保存时间：${save_time}</li>
                                     ${vul_html}
@@ -422,7 +424,6 @@ function get_detail_html(info) {
     //WHOIS
     if (info['result']['value'].hasOwnProperty("whois"))
     {
-
         let temp_whois = info['result']['value']['whois'];
         html=``;
         for(let key in temp_whois)
@@ -498,7 +499,8 @@ function get_detail_html(info) {
                 </table>
             </div>`;
         }
-        $("#vulnerables_div").html("").append(html);
+        $("#vulnerables_div").show();
+        $("#vulnerables_info").html("").append(html);
     }
 
     //违法信息 illegality
@@ -565,7 +567,9 @@ function get_detail_html(info) {
                 </table>
             </div>`;
         }
-        $("#illegality_div").html("").append(html);
+        $("#illegality_div").show();
+        $("#illegality_info").html("").append(html);
+
 
     }
 

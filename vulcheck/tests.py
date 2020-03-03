@@ -287,6 +287,47 @@ def classify_by_key_by_domian_reduce():
     project_set = mongo_db['resultdb']
     # logging.debug(project_set)
     result = {}
+    # plug = ["vulnerables","illegality"]
+    plug = ["illegality"]
+    for x in plug:
+        pipeline = [
+            # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+            {'$project': {'result': 1, 'task_id': 1}},
+            {'$unwind': '$result'},
+            {'$unwind': '$result.value.'+x},
+            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$group': {
+                '_id': '$result.scheme_domain',
+                'count': {'$sum': 1},
+                'plugin_num': {'$push': '$result.value.'+x+'.plugin_name'},
+                # 'plugin': {'$push': {'plugin_name': '$result.value.vulnerables.plugin_name','num':{'$sum':1}}},
+            }},
+            {'$unwind': '$plugin_num'},
+            {'$group': {
+                '_id': {
+                    'url': '$_id',
+                    'plugin': '$plugin_num',
+                },
+                # 'total': {'count'},
+                'plugin_count': {'$sum': 1},
+            }},
+            {'$group': {
+                '_id': '$_id.plugin',
+                'url_num': {'$sum': 1},
+                # 'url_list_num': {'$addToSet': {'plugin': '$_id.url', 'num': '$plugin_count'}},
+            }},
+            {'$sort': {'url_num': -1}},
+
+        ]
+        res = project_set.aggregate(pipeline)
+        for i in res:
+            logging.debug(i)
+
+@log_time
+def classify_by_domian_by_key_reduce():
+    project_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
     plug = ["vulnerables","illegality"]
     for x in plug:
         pipeline = [
@@ -309,7 +350,6 @@ def classify_by_key_by_domian_reduce():
                 },
                 # 'total': {'count'},
                 'plugin_count': {'$sum': 1},
-
             }},
             {'$group': {
                 '_id': '$_id.url',
@@ -342,8 +382,12 @@ def get_ill_keyword():
         {'$unwind': '$result'},
         {'$unwind': '$result.value.illegality'},
         {'$group': {
-            '_id': '$result.value.illegality.name',
-            'count': {'$sum': 1},
+            # '_id': '$result.value.illegality.plugin_name',
+            '_id': {
+                'url':'$result.scheme_domain',
+                'plugin_name':'$result.value.illegality.plugin_name',
+            },
+            # 'count': {'$sum': 1},
         }},
 
     ]
@@ -392,9 +436,11 @@ def get_vul_web():
         {'$match': {'result.value.vulnerables': {'$exists': True}}},
         {'$group': {
             '_id': '$result.scheme_domain',
-            'domian_list': {'$addToSet': '$result.scheme_domain'},
+            # 'domian_list': {'$addToSet': '$result.scheme_domain'},
+            'domian_list': {'$push': '$result.scheme_domain'},
         }},
-        {'$count': "domian_list"}
+        # {'$count': "domian_list"}
+        # {'$count':{'$size':"$domian_list"},}
 
     ]
     res = result_set.aggregate(pipeline)
@@ -404,7 +450,7 @@ def get_vul_web():
 
 def get_all_web():
     """:arg
-    检测总数
+    检测所有web ip总数
     """
     result_set = mongo_db['resultdb']
     # logging.debug(project_set)
@@ -559,7 +605,7 @@ if __name__ == '__main__':
     # classify_by_key_illegality()
     # classify_by_key_illegality()
     # classify_by_key_plugin_reduce()
-    # classify_by_key_by_domian_reduce()
+    classify_by_key_by_domian_reduce()
     # get_vul_iil_domain()
     get_ill_keyword()
     # get_vul_keyword()

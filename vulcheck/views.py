@@ -449,25 +449,27 @@ def get_plug(request):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
-task_content = {
-    "task_id": "",
-    "spider_task_id": "",
-    "url": "",
-    "spider": {
-        "maxpage": 500,
-        "maxdepth": 3,
-        "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
-        "crawlrule": 0,
-        "notscanfile": "",
-        "phantomjs_enable": False,
-        "craw_current_directory": False
-
-    },
-    "plugins": ""
-}
 
 
 def issue_task_list(request):
+    """:arg下发任务"""
+    task_content = {
+        "task_id": "",
+        "spider_task_id": "",
+        "url": "",
+        "spider": {
+            "maxpage": 500,
+            "maxdepth": 3,
+            "notscanurl": "/.*?delete*,/.*?logout*,/.*?loginout*",
+            "crawlrule": 0,
+            "notscanfile": "",
+            "phantomjs_enable": False,
+            "craw_current_directory": False
+
+        },
+        "plugins": ""
+    }
+
     check_url = request.POST.get("url")
     check_url = check_url
     check_url = check_url.split("\r\n")
@@ -884,6 +886,29 @@ def get_ill_keyword(request):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
+def get_ill_keyword_num():
+    """:arg
+        违法网站关键词统计
+    """
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.illegality'},
+        {'$group': {
+            '_id': '$result.value.illegality.plugin_name',
+            'count': {'$sum': 1},
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i)
+    return result
+
+
 def get_vul_keyword(request):
     """:arg
         漏洞网站关键词下拉框
@@ -910,3 +935,140 @@ def get_vul_keyword(request):
     context['data'] = result
 
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_vul_total(request):
+    """:arg漏洞列表上面统计部分"""
+    vul_keyword = get_vul_keyword_num()
+    vul_web = get_vul_web_num()
+    all_web = get_all_web_num()
+
+    context = {'vul_keyword':vul_keyword,'vul_web':vul_web,'all_web':all_web}
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_ill_total(request):
+    """:arg漏洞列表上面统计部分"""
+    data = get_ill_keyword_num()
+    key_info = illegality_by_key_by_domian_reduce()
+    context = {'data':data,'key_info':key_info}
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_vul_keyword_num():
+    """:arg
+    获得漏洞的个数
+    """
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.vulnerables'},
+        {'$group': {
+            '_id': '$result.value.vulnerables.name',
+            'count': {'$sum': 1},
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i)
+
+    return result
+
+
+def get_vul_web_num():
+    """:arg
+    存在漏洞的网站个数
+    """
+    result = {}
+    # match = {'$match': {x: {'$exists': True}}}
+    # match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$match': {'result.value.vulnerables': {'$exists': True}}},
+        {'$group': {
+            '_id': '$result.scheme_domain',
+            # 'domian_list': {'$addToSet': '$result.scheme_domain'},
+            'domian_list': {'$push': '$result.scheme_domain'},
+        }},
+        # {'$count': "domian_list"}
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        logging.debug(i)
+        result.append(i['domian_list'])
+
+    return result
+
+
+def get_all_web_num():
+    """:arg
+    检测总数
+    """
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        # {'$match': {'result.value.vulnerables': {'$exists': True}}},
+        {'$group': {
+            '_id': '$result.scheme_domain',
+            'domian_list': {'$addToSet': '$result.scheme_domain'},
+        }},
+        {'$count': "domian_list"}
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i['domian_list'])
+
+    return result
+
+
+def illegality_by_key_by_domian_reduce():
+    """:arg 该函数获取一个违法关键词  有多少个网站存在"""
+    result = []
+    # plug = ["vulnerables","illegality"]
+    plug = ["illegality"]
+    for x in plug:
+        pipeline = [
+            {'$project': {'result': 1, 'task_id': 1}},
+            {'$unwind': '$result'},
+            {'$unwind': '$result.value.'+x},
+            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$group': {
+                '_id': '$result.scheme_domain',
+                'count': {'$sum': 1},
+                'plugin_num': {'$push': '$result.value.'+x+'.plugin_name'},
+                # 'plugin': {'$push': {'plugin_name': '$result.value.vulnerables.plugin_name','num':{'$sum':1}}},
+            }},
+            {'$unwind': '$plugin_num'},
+            {'$group': {
+                '_id': {
+                    'url': '$_id',
+                    'plugin': '$plugin_num',
+                },
+                # 'total': {'count'},
+                'plugin_count': {'$sum': 1},
+            }},
+            {'$group': {
+                '_id': '$_id.plugin',
+                'count': {'$sum': 1},
+                # 'url_list_num': {'$addToSet': {'plugin': '$_id.url', 'num': '$plugin_count'}},
+            }},
+            {'$sort': {'count': -1}},
+
+        ]
+        res = result_set.aggregate(pipeline)
+        for i in res:
+            logging.debug(i)
+            result.append(i)
+        return result

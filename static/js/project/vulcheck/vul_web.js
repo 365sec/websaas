@@ -11,12 +11,13 @@ function vulcheck_get_vul_web_html() {
             document.title = '漏洞列表';
             vul_web_table();
             get_vul_keyword();
+            get_vul_total();
         }
     });
 }
 
 function get_vul_keyword() {
-
+    /*获得关键词下拉框的信息*/
     $.ajax({
         url: 'vulcheck/get_vul_keyword',
         // dataType: "json",
@@ -130,3 +131,31 @@ $(document).on('click', '.vul-web.pagination>ul>*', function () {
     var page = $(this).attr('data-page'); // 获取按钮代表的页码
     vul_web_table_page(page)//点击页码获取数据
 });
+
+
+function get_vul_total() {
+    /*获得漏洞列表上部分的统计信息*/
+    $.ajax({
+        url: 'vulcheck/get_vul_total',
+        type: "get",
+        success: function (res) {
+
+            let top_website = res['vul_web'].reduce(function (sum,prve) {
+                sum+=prve.length;
+                return sum
+            },0);
+
+            let top_threat = res['vul_keyword'].reduce(function (sum,prve) {
+
+                sum+=prve['count'];
+                return sum
+            },0);
+
+            $("#vul-web-top-asset").html("").append(res['all_web'][0]);
+            $("#vul-web-top-threat").html("").append(top_threat);
+            $("#vul-web-top-website").html("").append(top_website);
+            console.log(res)
+        }
+    });
+
+}
