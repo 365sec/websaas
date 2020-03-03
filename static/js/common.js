@@ -5,7 +5,6 @@ document.write("<script type='text/javascript' src='/static/js/project/vulcheck/
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_total.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/illegal_web.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_web.js'></script>");
-
 $(function() {
     // 左侧手风琴点击样式变化
     $('.sidebar-firstNav').click(function () { //点击一级触发

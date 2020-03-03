@@ -175,7 +175,7 @@ function get_task_detail(task_info) {
     //报道a标签
     //<button class="btn btn-default">  </button>
     let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html('${task_info['task_id']}')"  >报告</button>`;
-    $("#report_div").show().html("").append(report_a);
+    $("#report_div").show().children().html("").append(report_a);
 
 
 
@@ -225,6 +225,7 @@ function get_task_detail_html(task_id) {
         async:false,
         success: function (res) {
             $('.tab-content').html(res);
+            document.title = '任务详情报告';
             let send_data = {};
             if (task_id)
             {

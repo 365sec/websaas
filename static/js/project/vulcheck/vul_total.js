@@ -4,6 +4,11 @@ function vulcheck_get_total_html(task_id) {
     if(task_id)
     {
          filter_param['task_id']=task_id;
+         document.title = '扫描任务信息';
+    }
+    else{
+         document.title = '总览';
+
     }
     /*
     * 加载统计信息HTML页面*/
@@ -15,7 +20,6 @@ function vulcheck_get_total_html(task_id) {
         success: function (res) {
             $('.tab-content').html(res);
             // 更改title
-            document.title = '总览';
             classify_by_key(filter_param);
             get_scan_list(filter_param);
 
@@ -564,5 +568,17 @@ function get_detail_html(info) {
         $("#illegality_div").html("").append(html);
 
     }
+
+    // 地图
+    getMap(info['result']['value']['location']['lon'],info['result']['value']['location']['lat'],'map-canvas')
+}
+// 地图
+function getMap(x,y,div) {
+    var map = new BMap.Map(div);            // 创建Map实例
+    var point = new BMap.Point(x,y); // 创建点坐标
+    map.centerAndZoom(point,20);
+    map.enableScrollWheelZoom();
+    var marker = new BMap.Marker(point);        // 创建标注
+    map.addOverlay(marker);                     // 将标注添加到地图中
 
 }

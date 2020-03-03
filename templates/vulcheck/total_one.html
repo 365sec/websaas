@@ -1,80 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>单个详情</title>
-</head>
-<body>
 
-<div>
 {#    <pre id="total_one_detail_div">#}
 {##}
 {#    </pre>#}
 
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="row">
-                <table class="table table-condensed">
-                    <caption id="base_info_ip"></caption>
-                    <tbody id="base_info_body">
 
-                    </tbody>
-                </table>
-            </div>
+<div style="float: left; width: calc(50% - 12px);margin-right: 24px">
+{#    ip信息#}
+    <div class="main-content-card">
+        <div class="main-content-card-content">
+            <table class="table table-condensed">
+                <caption id="base_info_ip"></caption>
+                <tbody id="base_info_body">
 
-            <div class="row">
-                <table class="table table-condensed">
-                    <caption id="base_info_server"></caption>
-                    <tbody id="base_info_server_body">
-
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="row" id="whois_div" style="display: none">
-
-                <table class="table table-condensed">
-                    <caption>WHOIS</caption>
-                    <tbody id="base_info_whois">
-
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
-        <div class="col-lg-offset-6">
-            <div class="row">
-                <table class="table table-condensed">
-                    <caption >网站信息</caption>
-                    <tbody id="web_info_body">
+    </div>
+{#   服务信息#}
+    <div class="main-content-card">
+        <div class="main-content-card-content">
+            <table class="table table-condensed">
+                <caption id="base_info_server"></caption>
+                <tbody id="base_info_server_body">
 
-                    </tbody>
-                </table>
-            </div>
-            <div class="row" id="web_response_info_div" style="display: none">
-                <table class="table table-condensed">
-                    <caption >响应头部信息</caption>
-                    <tbody id="web_response_info">
+                </tbody>
+            </table>
+        </div>
+    </div>
+{#    网站信息#}
+    <div class="main-content-card">
+        <div class="main-content-card-content">
+            <table class="table table-condensed">
+                <caption >网站信息</caption>
+                <tbody id="web_info_body">
 
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{#    其他信息#}
+    <div class="main-content-card" style="display: none">
+    <div class="main-content-card-content" id="whois_div">
+        <table class="table table-condensed">
+            <caption>WHOIS</caption>
+            <tbody id="base_info_whois">
 
-            <div class="row" id="web_response_info_div" style="display: none">
-                <table class="table table-condensed">
-                    <caption >响应头部信息</caption>
-                    <tbody id="web_response_info">
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<div style="float: left; width: calc(50% - 12px)">
+{#  地图#}
+    <div class="main-content-card">
+        <div class="main-content-card-content">
+            <div id="map-canvas" style="width: 100%; height: 300px"></div>
+        </div>
+    </div>
+{#    响应头部信息#}
+    <div class="main-content-card">
+        <div class="main-content-card-content" id="web_response_info_div" style="display: none">
+            <table class="table table-condensed">
+                <caption >响应头部信息</caption>
+                <tbody id="web_response_info">
 
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <div class="row" id="vulnerables_div">
+    <div id="vulnerables_div" class="main-content-card" style="display: none">
+        <div class="main-content-card-content" >
+        </div>
+    </div>
 
-            </div>
-            <div class="row" id="illegality_div">
+    <div id="illegality_div" class="main-content-card" style="display: none" >>
+        <div class="main-content-card-content"
+        </div>
+    </div>
+{#违法信息#}
+    <div class="main-content-card"  style="display: none">
+        <div class="main-content-card-content" id="vulnerables_info_div">
+            <table class="table table-condensed">
+            <caption >违法信息</caption>
+            <tbody id="vulnerables_info">
 
-            </div>
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+
+
+
+
+{#    <div class="row">#}
+{#        <div class="col-lg-4">#}
+{#            <div class="row">#}
+{#                <table class="table table-condensed">#}
+{#                    <caption id="base_info_ip"></caption>#}
+{#                    <tbody id="base_info_body">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="row">#}
+{#                <table class="table table-condensed">#}
+{#                    <caption id="base_info_server"></caption>#}
+{#                    <tbody id="base_info_server_body">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="row" id="whois_div" style="display: none">#}
+{##}
+{#                <table class="table table-condensed">#}
+{#                    <caption>WHOIS</caption>#}
+{#                    <tbody id="base_info_whois">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-lg-offset-6">#}
+{#            <div class="row">#}
+{#                <table class="table table-condensed">#}
+{#                    <caption >网站信息</caption>#}
+{#                    <tbody id="web_info_body">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{#            <div class="row" id="web_response_info_div" style="display: none">#}
+{#                <table class="table table-condensed">#}
+{#                    <caption >响应头部信息</caption>#}
+{#                    <tbody id="web_response_info">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="row" id="web_response_info_div" style="display: none">#}
+{#                <table class="table table-condensed">#}
+{#                    <caption >响应头部信息</caption>#}
+{#                    <tbody id="web_response_info">#}
+{##}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="row" id="vulnerables_div">#}
+{##}
+{#            </div>#}
+{#            <div class="row" id="illegality_div">#}
+{##}
+{#            </div>#}
+{##}
 {#            <div class="row" id="vulnerables_info_div" style="display: none" >#}
 {#                <table class="table table-condensed">#}
 {#                    <caption >违法信息</caption>#}
@@ -83,13 +167,10 @@
 {#                    </tbody>#}
 {#                </table>#}
 {#            </div>#}
+{##}
+{##}
+{#        </div>#}
+{#    </div>#}
+{#        <pre id="task_result_detail_div">#}
 
-
-        </div>
-    </div>
-    {#    <pre id="task_result_detail_div">#}
-    {##}
     {#    </pre>#}
-</div>
-</body>
-</html>
