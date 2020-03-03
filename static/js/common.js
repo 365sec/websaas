@@ -112,8 +112,7 @@ $(function() {
 function refresh() {
     var req = '',//一级
         hash='',//二级
-        page='',//页码参数
-        ip = '';//总览内页
+        page='';//页码参数
     if(location.pathname)req = location.pathname.slice(1);//解析一级路径
     if(location.hash)hash = location.hash.split('#')[1].split('?')[0];//解析二级路径
     if(!hash){
@@ -129,9 +128,7 @@ function refresh() {
         $('.sidebar-secondNav[data-value='+req+'-'+hash+'], .sidebar-firstNav[data-value='+req+'-'+hash+']').trigger('click');
     }
 }
-function getrgs() {
-    var strs = location.href
-}
+
 
 
 // 添加分页
