@@ -385,6 +385,8 @@ function get_total_one_detail_html() {
     });
 }
 function get_detail_html(info) {
+    // history.pushState(null,null,location.href+ '&ip='+ info['result']['value']['ip']);
+
     let html = ``;
     // $("#total_one_detail_div").html("").append(JSON.stringify(info,undefined,4));
 
@@ -444,6 +446,7 @@ function get_detail_html(info) {
         }
         $("#base_info_whois").html("").append(html);
         $("#whois_div").show();
+
     }
 
     //网站信息

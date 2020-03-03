@@ -45,6 +45,9 @@ table td{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.table{
+    margin: 0;
+}
 .clearfix:after{
     content: '';
     display: block;

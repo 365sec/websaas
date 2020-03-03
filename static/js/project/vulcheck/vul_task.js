@@ -9,10 +9,17 @@ function vulcheck_show_all_task() {
             document.title = '任务列表';
             // console.log(res);
             vulcheck_all_task_able();
+             // $('#add-task').modal('show');
+             $('#add-task').on('show.bs.modal', function () {
+                 vulcheck_send_task();
+             });
         }
     });
 }
+$(document).on('#add-task-btn','click',function () {
+             $('#add-task').modal('show');
 
+})
 function vulcheck_all_task_able() {
     // 获取页码刷新时的高亮显示
     let page = 1;
@@ -26,6 +33,7 @@ $(document).off('click','.task.pagination>ul>*').on('click', '.task.pagination>u
     let page = $(this).attr('data-page'); // 获取按钮代表的页码
     get_task_list(page)//点击页码获取数据
 });
+
 
 
 function get_task_list(page) {
@@ -371,3 +379,7 @@ function get_task_detail_result(task_id) {
         }
     })
 }
+// 模态框显示获取内容
+$(function () {
+
+})
