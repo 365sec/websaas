@@ -117,25 +117,45 @@ function d_issue_tesk_batch_click() {
 
 
     let plug_html = ``;
+    plug_html += `<div class="checkbox-selectall">
+                        <input id="checkbox-selectall" class="checkbox-on-off" type="checkbox" name="plugin-name" value="" style="display: none;">
+                        <label for="checkbox-selectall" >
+                            <div class="btn-on-off">
+                                <div class="move"></div>
+                                <div class="btn-background"></div>
+                            </div>
+                            <span>全选</span>
+                        </label>
+                    </div>`
     for (let key in plug['data']) {
 
         for (let x in plug['data'][key]) {
             let plug_name = plug['data'][key][x]['plugin_name'];
             let issue_name = plug['data'][key][x]['issue_name'];
-            plug_html += `<lable><input type="checkbox" name="plugin_name" value="${plug_name}">${plug_name}&nbsp;&nbsp;${issue_name}</lable><br>`
+            plug_html += `<div class="checkbox-single">
+                            <input id="${plug_name}" class="checkbox-on-off" type="checkbox" name="plugin-name" value="${plug_name}" style="display: none;">
+                            <label for="${plug_name}" >
+                                <div class="btn-on-off">
+                                    <div class="move"></div>
+                                    <div class="btn-background"></div>
+                                </div>
+                                <span>${plug_name}&nbsp;&nbsp;${issue_name}</span>
+                            </label>
+                        </div>`
         }
 
     }
+
     $("#plug_check_list").html("").append(plug_html);
 
     let spider_html = ``;
-    spider_html += `<lable>maxpage<input type="text" name="maxpage" placeholder="500" class="form-control"></lable><br>`;
-    spider_html += `<lable>maxdepth<input type="text" name="maxdepth" placeholder="3" class="form-control"></lable><br>`;
-    spider_html += `<lable>notscanurl<input type="text" name="notscanurl" placeholder="/.*?delete*,/.*?logout*,/.*?loginout*" class="form-control"></lable><br>`;
-    spider_html += `<lable>crawlrule<input type="text" name="crawlrule" placeholder="0" class="form-control"></lable><br>`;
-    spider_html += `<lable>notscanfile<input type="text" name="notscanfile" placeholder="" class="form-control"></lable><br>`;
-    spider_html += `<lable>phantomjs_enable<input type="text" name="phantomjs_enable" placeholder="False" class="form-control"></lable><br>`;
-    spider_html += `<lable>craw_current_directory<input type="text" name="craw_current_directory" placeholder="False" class="form-control"></lable><br>`;
+    spider_html += `<lable>maxpage<input type="text" name="maxpage" placeholder="500" class="form-control"></lable>`;
+    spider_html += `<lable>maxdepth<input type="text" name="maxdepth" placeholder="3" class="form-control"></lable>`;
+    spider_html += `<lable>notscanurl<input type="text" name="notscanurl" placeholder="/.*?delete*,/.*?logout*,/.*?loginout*" class="form-control"></lable>`;
+    spider_html += `<lable>crawlrule<input type="text" name="crawlrule" placeholder="0" class="form-control"></lable>`;
+    spider_html += `<lable>notscanfile<input type="text" name="notscanfile" placeholder="" class="form-control"></lable>`;
+    spider_html += `<lable>phantomjs_enable<input type="text" name="phantomjs_enable" placeholder="False" class="form-control"></lable>`;
+    spider_html += `<lable>craw_current_directory<input type="text" name="craw_current_directory" placeholder="False" class="form-control"></lable>`;
     $("#spider_check_list").html("").append(spider_html);
 }
 
@@ -148,7 +168,7 @@ function get_plug_list() {
         async: false,
         success: function (data) {
             res = data;
-
+            console.log(data)
         }
     });
     return res

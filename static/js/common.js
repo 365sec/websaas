@@ -161,4 +161,20 @@ function addPagination(nowpage,maxpage) {
     $('.pagination>ul li[data-page='+nowpage+']').addClass('active').siblings().removeClass('active')//当前页面高亮
 }
 
+$(document).on('change','.checkbox-single input',function(){
+    var inputname = $(this).attr('name');
+    var classlength = $('.checkbox-single input:checkbox[name="plugin-name"]').length;
+    var checkedlength = $('.checkbox-single input:checkbox[name="plugin-name"]:checked').length;
 
+    if(classlength && classlength === checkedlength){
+        $('.checkbox-selectall input[name="'+inputname+'"]').prop("checked", true);
+    }else{
+        $('.checkbox-selectall input[name="'+inputname+'"]').prop("checked", false);
+    }
+})
+$(document).on('change','.checkbox-selectall input',function() {
+    var inputname = $(this).attr('name');
+    var checkedAll=$(this).prop('checked');
+    console.log($('input[name="'+inputname+'"]'));
+    $('.checkbox-single input[name="'+inputname+'"]').prop('checked', checkedAll)
+});
