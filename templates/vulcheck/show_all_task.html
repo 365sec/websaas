@@ -3,7 +3,7 @@
     <div class="main-content-card-title clearfix">
         <span style="float: left">任务概览</span>
         <div class="main-content-card-btngroup" style="float: left">
-            <button id="add-task-btn" type="button" data-toggle="modal">添加任务</button>
+            <button id="add-task-btn" type="button" data-toggle="modal" data-target='#model'>添加任务</button>
         </div>
         <div class="main-content-card-btngroup">
             <div class="main-content-card-btngroup-search">
@@ -29,40 +29,4 @@
         <div class="pagination task">
         </div>
     </div>
-</div>
-<div class="modal fade" id="add-task" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">添加任务</h4>
-            </div>
-            <div class="modal-body">
-
-                <form role="form" method="post" id="task_batch_form">
-                    <div>
-                        <span>任务名称</span>
-                        <input type="text">
-                    </div>
-
-                    <div class="content-w2">
-                        <label for="name">插件：</label>
-                        <div id="plug_check_list" class="checkbox" style="padding: 0 20px"></div>
-                    </div>
-                    <div class="content-w2 content-w2-r">
-                        <label for="name">spider：</label>
-                        <div id="spider_check_list" class="checkbox"></div>
-                    </div>
-                    <label for="name">输入</label>
-                    <textarea id="d_issue_task_text_batch" class="form-control" rows="18" name="url"></textarea>
-
-                </form>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" onclick="d_issue_task_batch_submit()">提交更改</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
 </div>

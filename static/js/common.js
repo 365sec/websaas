@@ -64,9 +64,9 @@ $(function() {
             case "vulcheck-show_all_task":
                 vulcheck_show_all_task();
                 break;
-            case "vulcheck-send_task":
-                vulcheck_send_task();
-                break;
+            // case "vulcheck-send_task":
+            //     vulcheck_send_task();
+            //     break;
             case "vulcheck-get_total_html":
                 vulcheck_get_total_html();
                 break;

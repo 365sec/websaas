@@ -4,22 +4,29 @@ function vulcheck_show_all_task() {
         dataType: "html",
         type: "get",
         success: function (res) {
+
             $('.tab-content').html(res);
+            vulcheck_all_task_able();
+
             // 更改title
             document.title = '任务列表';
+
             // console.log(res);
-            vulcheck_all_task_able();
-             // $('#add-task').modal('show');
-             $('#add-task').on('show.bs.modal', function () {
-                 vulcheck_send_task();
-             });
+
+            $('#model').off('shown.bs.modal').on('shown.bs.modal', function () {
+                $.when(vulcheck_send_task()).then(function () {
+                        $('#model-submit').off('click').on('click', d_issue_task_batch_submit).css('display', 'inline-block');
+                    }
+                )
+            });
+            $('#model').off('hide.bs.modal').on('hide.bs.modal', function () {
+                // 提前关闭，终止请求
+                // event.stopPropagation();
+            });
         }
+
     });
 }
-$(document).on('#add-task-btn','click',function () {
-             $('#add-task').modal('show');
-
-})
 function vulcheck_all_task_able() {
     // 获取页码刷新时的高亮显示
     let page = 1;
@@ -93,9 +100,11 @@ function vulcheck_send_task() {
         dataType: "html",
         type: "get",
         success: function (res) {
-            $('.tab-content').html(res);
+            $('#myModalLabel').text('添加任务');
+            $('#model .modal-body').html(res);
+
             //设置title
-            document.title = '下发任务'
+            // document.title = '下发任务'
             d_issue_tesk_batch_click()
         }
     });

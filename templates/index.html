@@ -48,12 +48,12 @@
                                 <span>&nbsp;&nbsp;总览</span>
                             </div>
                         </li>
-                    <li class="sidebar-secondItem">
-                        <div class="sidebar-secondNav" data-value="vulcheck-send_task">
-                            <i class="iconfont icon-default"></i>
-                            <span>&nbsp;&nbsp;下发任务</span>
-                        </div>
-                    </li>
+{#                    <li class="sidebar-secondItem">#}
+{#                        <div class="sidebar-secondNav" data-value="vulcheck-send_task">#}
+{#                            <i class="iconfont icon-default"></i>#}
+{#                            <span>&nbsp;&nbsp;下发任务</span>#}
+{#                        </div>#}
+{#                    </li>#}
                     <li class="sidebar-secondItem">
                         <div class="sidebar-secondNav" data-value="vulcheck-show_all_task">
                             <i class="iconfont icon-default"></i>
@@ -239,6 +239,25 @@
 {#    </div><!-- /.modal -->#}
 {#</div>#}
 
-
+<div class="modal fade" id="model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="loading_content">
+                    <div class="loading_circle"></div>
+                    加载中
+                </div>
+            </div>
+            <div class="modal-footer" >
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button id="model-submit" type="button" class="btn btn-primary" style="display: none">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 </body>
 </html>
