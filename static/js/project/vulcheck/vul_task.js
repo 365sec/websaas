@@ -118,9 +118,9 @@ function d_issue_tesk_batch_click() {
 
     let plug_html = ``;
     plug_html += `<div class="checkbox-selectall">
-                        <input id="checkbox-selectall" class="checkbox-on-off" type="checkbox" name="plugin-name" value="" style="display: none;">
+                        <input id="checkbox-selectall" class="checkbox-input" type="checkbox" name="plugin-name" value="" style="display: none;">
                         <label for="checkbox-selectall" >
-                            <div class="btn-on-off">
+                            <div class="checkbox-slide">
                                 <div class="move"></div>
                                 <div class="btn-background"></div>
                             </div>
@@ -133,9 +133,9 @@ function d_issue_tesk_batch_click() {
             let plug_name = plug['data'][key][x]['plugin_name'];
             let issue_name = plug['data'][key][x]['issue_name'];
             plug_html += `<div class="checkbox-single">
-                            <input id="${plug_name}" class="checkbox-on-off" type="checkbox" name="plugin-name" value="${plug_name}" style="display: none;">
+                            <input id="${plug_name}" class="checkbox-input" type="checkbox" name="plugin-name" value="${plug_name}" style="display: none;">
                             <label for="${plug_name}" >
-                                <div class="btn-on-off">
+                                <div class="checkbox-slide">
                                     <div class="move"></div>
                                     <div class="btn-background"></div>
                                 </div>
@@ -154,9 +154,37 @@ function d_issue_tesk_batch_click() {
     spider_html += `<lable>notscanurl<input type="text" name="notscanurl" placeholder="/.*?delete*,/.*?logout*,/.*?loginout*" class="form-control"></lable>`;
     spider_html += `<lable>crawlrule<input type="text" name="crawlrule" placeholder="0" class="form-control"></lable>`;
     spider_html += `<lable>notscanfile<input type="text" name="notscanfile" placeholder="" class="form-control"></lable>`;
-    spider_html += `<lable>phantomjs_enable<input type="text" name="phantomjs_enable" placeholder="False" class="form-control"></lable>`;
-    spider_html += `<lable>craw_current_directory<input type="text" name="craw_current_directory" placeholder="False" class="form-control"></lable>`;
+    spider_html += `
+<!--<lable>phantomjs_enable<input type="text" name="phantomjs_enable" placeholder="False" class="form-control"></lable>-->
+                    <div class='sipder-sildebtn'>
+                        <input id="phantomjs_enable" class="checkbox-input" type="checkbox" name="phantomjs_enable" value=""style="display: none;">
+                        <label for="phantomjs_enable" >
+                            <div class="checkbox-slide">
+                                <div class="move"></div>
+                                <div class="btn-background"></div>
+                            </div>
+                            <span>phantomjs_enable</span>
+                        </label>
+                    </div>
+`;
+    spider_html += `
+<!--                    <lable>craw_current_directory<input type="text" name="craw_current_directory" placeholder="False" class="form-control"></lable>-->
+                    <div class='sipder-sildebtn'>
+                        <input id="craw_current_directory" class="checkbox-input" type="checkbox" name="craw_current_directory" value=""style="display: none;">
+                        <label for="craw_current_directory" >
+                            <div class="checkbox-slide">
+                                <div class="move"></div>
+                                <div class="btn-background"></div>
+                            </div>
+                            <span>craw_current_directory</span>
+                        </label>
+                    </div>
+                    `;
     $("#spider_check_list").html("").append(spider_html);
+    //设置radio默认值
+    $('#notscanfile').prop('checked',true);
+    $('#phantomjs_enable').prop('checked',false);
+
 }
 
 function get_plug_list() {

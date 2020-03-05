@@ -21,6 +21,7 @@ a:visited,
 a:link {
     text-decoration: none;
     color: #333;
+    cursor: pointer;
 }
 a:hover{
     color: #00a5e3;
@@ -39,11 +40,14 @@ p {
 pre{
     min-height: 100px;
 }
+caption{
+    font-size: 16px;
+}
 table td{
     word-break: break-all;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+}
+.checkbox label, .radio label{
+    padding: 0;
 }
 .table{
     margin: 0;
@@ -103,6 +107,8 @@ table td{
     position: absolute;
     right: 24px;
     top: 0;
+    transition: transform .5s;
+
 }
 .sidebar-firstNav,.sidebar-secondNav{
     padding: 0 10px;
@@ -128,7 +134,6 @@ table td{
     -moz-transform:rotate(180deg); 	/* Firefox */
     -webkit-transform:rotate(180deg); /* Safari 和 Chrome */
     -o-transform:rotate(180deg);
-    transition: transform .5s;
 }
 
 .sidebar-firstDrop {
@@ -217,6 +222,8 @@ table td{
     padding: 0 8px;
     font-size: 24px;
     line-height: 38px;
+    transition: transform .5s;
+
 }
 .header-right{
     padding-right: 16px;
@@ -325,6 +332,16 @@ table td{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.table-sec-title{
+    padding: 12px 6px;
+}
+.table-sec-title i{
+    float: right;
+    transition: transform .5s;
+}
+.table-sec-content{
+    display: none;
+}
 /*tab-content start*/
 
 /*分页 start*/
@@ -428,7 +445,10 @@ table td{
 
 
 /*开关按钮 start*/
-.btn-on-off{
+
+
+/*checkbox*/
+.checkbox-slide{
     position: relative;
     border-radius: 10px;
     margin-top: 6px;
@@ -439,11 +459,11 @@ table td{
     border:1px solid #adadad;
 }
 
-.checkbox-on-off:checked + label .move{
+.checkbox-input:checked + label .move{
     left: 12px;
 }
 
-.checkbox-on-off:checked + label .btn-background{
+.checkbox-input:checked + label .btn-background{
     width: 20px;
 }
 .move{
@@ -471,13 +491,26 @@ table td{
     -ms-transition: width 0.3s ease;
     -moz-transition: width 0.3s ease;
 }
-.checkbox-selectall span,.checkbox-selectall span{
+.checkbox-selectall span,
+.checkbox-single span,
+.sipder-sildebtn span{
     vertical-align: super;
 }
-
+.sipder-sildebtn{
+    float: left;
+    width: 50%;
+}
 /*开关按钮 start*/
 
 
 .form-control{
     margin: 2px 0 4px 0;
 }
+
+
+/*模态框 start*/
+.modal-dialog{
+    width: 70%;
+}
+
+/*模态框 end*/

@@ -485,22 +485,29 @@ function get_detail_html(info) {
         html = ``;
         for(let i in info['result']['value']['vulnerables'])
         {
-            html+=`            <div class="row"  >
-                <table class="table table-condensed">
-                    <caption >${info['result']['value']['vulnerables'][i]['name']||""}</caption>
-                    <tbody >
-                    <tr><td>存在漏洞的URL</td><td>${info['result']['value']['vulnerables'][i]['url']||""}</td></tr>
-                    <tr><td>插件名称或POC名称</td><td>${info['result']['value']['vulnerables'][i]['plugin_name']||""}</td></tr>
-                    <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['vulnerables'][i]['headers']['host']||""}</td></tr>
-                    <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</td></tr>
-                    <tr><td>存在漏洞的变量</td><td>${info['result']['value']['vulnerables'][i]['variable']||""}</td></tr>
-                    <tr><td>漏洞结果描述</td><td>${info['result']['value']['vulnerables'][i]['result_desc']||""}</td></tr>
-                    <tr><td>fuzz测试构造的payload</td><td>${info['result']['value']['vulnerables'][i]['payload']||""}</td></tr>
-                    <tr><td>请求方法</td><td>${info['result']['value']['vulnerables'][i]['method']||""}</td></tr>
-                    <tr><td>漏洞严重等级</td><td>${info['result']['value']['vulnerables'][i]['severity']||""}</td></tr>
-                    </tbody>
-                </table>
-            </div>`;
+            html+=`<tr class=" table-sec">
+                    <td>
+                        <div class="table-sec-title">
+                            <span>${info['result']['value']['vulnerables'][i]['name']||""}</span>
+                            <i class="iconfont icon-arrow"></i>
+                        </div>
+                        <div class="table-sec-content">
+                            <table class="table table-condensed">
+                                <tbody >
+                                <tr><td>存在漏洞的URL</td><td>${info['result']['value']['vulnerables'][i]['url']||""}</td></tr>
+                                <tr><td>插件名称或POC名称</td><td>${info['result']['value']['vulnerables'][i]['plugin_name']||""}</td></tr>
+                                <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['vulnerables'][i]['headers']['host']||""}</td></tr>
+                                <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</td></tr>
+                                <tr><td>存在漏洞的变量</td><td>${info['result']['value']['vulnerables'][i]['variable']||""}</td></tr>
+                                <tr><td>漏洞结果描述</td><td>${info['result']['value']['vulnerables'][i]['result_desc']||""}</td></tr>
+                                <tr><td>fuzz测试构造的payload</td><td>${info['result']['value']['vulnerables'][i]['payload']||""}</td></tr>
+                                <tr><td>请求方法</td><td>${info['result']['value']['vulnerables'][i]['method']||""}</td></tr>
+                                <tr><td>漏洞严重等级</td><td>${info['result']['value']['vulnerables'][i]['severity']||""}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>`;
         }
         $("#vulnerables_div").show();
         $("#vulnerables_info").html("").append(html);
@@ -555,20 +562,27 @@ function get_detail_html(info) {
                     <tr><td>网页劫持跳转地址</td><td>${info['result']['value']['illegality'][i]['redirect_url']||""}</td></tr>`;
             }
 
-            html+=`            <div class="row"  >
-                <table class="table table-condensed">
-                    <caption >${info['result']['value']['illegality'][i]['name']||""}</caption>
-                    <tbody >
-                    <tr><td>存在问题的URL</td><td>${info['result']['value']['illegality'][i]['url']||""}</td></tr>
-                    <tr><td>插件名称或POC名称</td><td>${info['result']['value']['illegality'][i]['plugin_name']||""}</td></tr>
-                    <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['illegality'][i]['headers']['host']||""}</td></tr>
-                    <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['illegality'][i]['headers']['Referer']||""}</td></tr>
-                    <tr><td>请求方法</td><td>${info['result']['value']['illegality'][i]['method']||""}</td></tr>
-                    <tr><td>漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</td></tr>
-                    ${temp_html}
-                    </tbody>
-                </table>
-            </div>`;
+            html+=`<tr class=" table-sec">
+                    <td>
+                    <div class="table-sec-title">
+                        <span>${info['result']['value']['illegality'][i]['name']||""}</span>
+                        <i class="iconfont icon-arrow"></i>
+                    </div>
+                    <div class=" table-sec-content">
+                        <table class="table table-condensed">
+                            <tbody >
+                                <tr><td>存在问题的URL</td><td>${info['result']['value']['illegality'][i]['url']||""}</td></tr>
+                                <tr><td>插件名称或POC名称</td><td>${info['result']['value']['illegality'][i]['plugin_name']||""}</td></tr>
+                                <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['illegality'][i]['headers']['host']||""}</td></tr>
+                                <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['illegality'][i]['headers']['Referer']||""}</td></tr>
+                                <tr><td>请求方法</td><td>${info['result']['value']['illegality'][i]['method']||""}</td></tr>
+                                <tr><td>漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</td></tr>
+                                ${temp_html}
+                            </tbody>
+                        </table>
+                    </div>
+                    </td>
+                </tr>`;
         }
         $("#illegality_div").show();
         $("#illegality_info").html("").append(html);
@@ -583,9 +597,17 @@ function get_detail_html(info) {
 function getMap(x,y,div) {
     var map = new BMap.Map(div);            // 创建Map实例
     var point = new BMap.Point(x,y); // 创建点坐标
-    map.centerAndZoom(point,20);
+    map.centerAndZoom(point,17);
     map.enableScrollWheelZoom();
     var marker = new BMap.Marker(point);        // 创建标注
     map.addOverlay(marker);                     // 将标注添加到地图中
 
 }
+//二级嵌套table展开缩放
+$(document).on('click','.table-sec-title',function () {
+    $(this).next().slideToggle();
+    $(this).find('i').toggleClass('iconRotate');
+
+});
+
+//table内容过长
