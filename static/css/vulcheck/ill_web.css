@@ -1,10 +1,15 @@
 .ill-web-top{
     position: relative;
     float: left;
-    width: calc(33.3% - 16px);
-    height: 150px;
+    min-height: 130px;
     padding: 16px;
     color: #fff;
+}
+.c3{
+    width: calc(33.3% - 16px);
+}
+.c1{
+    width: 100%;
 }
 .ill-web-top + .ill-web-top{
    margin-left: 24px;
@@ -16,14 +21,14 @@
     border-bottom: 1px solid #fff;
 }
 .ill-web-top-content{
-    position: absolute;
-    width: calc(100% - 40px);
-    bottom: 20px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
 }
 .ill-web-top-number{
     float: left;
-    width: 33%;
     text-align: center;
+    padding: 12px;
 }
 .ill-web-top.heilian{
     background: #b6a2de;
@@ -34,4 +39,3 @@
 .ill-web-top.sense{
     background: #ffb980;
 }
-

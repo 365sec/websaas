@@ -729,7 +729,7 @@ def get_result_count(match):
 
 def get_vul_result_count(match):
     """:ivar获得所有含有漏洞 result长度总和"""
-    match = {'$match': {"result": {'$exists': True}}}
+    # match = {'$match': {"result": {'$exists': True}}}
     result_set = mongo_db['resultdb']
     pipeline = [
         {'$unwind': "$result"},
@@ -746,7 +746,7 @@ def get_vul_result_count(match):
 
 def get_ill_result_count(match):
     """:ivar获得所有违法网站 result长度总和"""
-    match = {'$match': {"result": {'$exists': True}}}
+    # match = {'$match': {"result": {'$exists': True}}}
     pipeline = [
         {'$unwind': "$result"},
         match,
