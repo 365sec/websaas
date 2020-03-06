@@ -39,7 +39,14 @@ mongo_db = mongo_client['webmap']
 project_set = mongo_db['projectdb']
 result_set = mongo_db['resultdb']
 
+def log_time(func):
+    def wrapper(*args, **kw):
+        start = time.time()
+        result = func(*args, **kw)
+        print("函数{0} 运行时间{1}".format(func.__name__, time.time() - start))
+        return result
 
+    return wrapper
 # reload(sys)
 # sys.setdefaultencoding('utf8')
 
@@ -712,17 +719,19 @@ def classify_by_key_plugins_reduce(match):
 def get_result_count(match):
     """:ivar获得所有result长度总和"""
     pipeline = [
+        {'$unwind': "$result"},
         match,
-        {
-            '$project': {
-                '_id': 0,
-                'size_of_result': {'$size': "$result"},
-            }
-        },
+        {'$group': {'_id': None, 'count': {'$sum': 1}}},
+        # {
+        #     '$project': {
+        #         '_id': 0,
+        #         'size_of_result': {'$size': "$result"},
+        #     }
+        # },
     ]
     sum = 0
     for i in result_set.aggregate(pipeline):
-        sum += i['size_of_result']
+        sum += i['count']
     logging.debug(sum)
     return sum
 
@@ -1126,6 +1135,7 @@ def illegality_by_key_by_domian_reduce():
         return result
 
 
+@log_time
 def get_beian_data(request):
     """:arg
         获得备案信息
@@ -1135,7 +1145,6 @@ def get_beian_data(request):
     param = json.loads(request.body)
     page = param['page']
     filter_param = param['param']
-    # project_set = mongo_db['resultdb']
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
@@ -1148,6 +1157,7 @@ def get_beian_data(request):
         match['$match'][key] = val
 
     max_num = get_result_count(match)
+    # max_num = 195
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
         {'$project': {"_id": 0,"task_id":1, 'result': 1}},

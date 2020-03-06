@@ -23,6 +23,7 @@ function get_vul_keyword() {
         // dataType: "json",
         type: "get",
         success: function (res) {
+            console.log(res);
 
             let html =`<select name="result.value.vulnerables.name">`;
             html+=` <option value="">漏洞名称</option>`;
@@ -106,7 +107,11 @@ function vul_web_table_page(page) {
                 {
                     segment_word+=i+"&nbsp;"
                 }
-                html+=`<td><p class="tabletd-overflow" title="${class_word||""}">${class_word||""}</p></td>`;
+                segment_word = segment_word.replace(/</g,"&lt")
+                                            .replace(/>/g,"&gt")
+                                            .replace(/\"/g,"&quot;");
+                // console.log(segment_word);
+                html+=`<td><p class="tabletd-overflow" title='${class_word||""}'>${class_word||""}</p></td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 let country_ch =res['data'][x]['result']['value']['location']['country_ch']||"";

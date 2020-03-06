@@ -128,7 +128,13 @@ function remove_filter(par,key) {
     classify_by_key(filter_param);
     get_scan_list(filter_param);
 }
-
+function btn_total_search() {
+    /*搜索被点击*/
+    let scheme_domain = $("#total_search_").val();
+    filter_param['result.scheme_domain'] = {'$regex': scheme_domain};
+    get_scan_list(filter_param);
+    classify_by_key(filter_param);
+}
 
 function get_scan_list(filter_param) {
     /*
@@ -552,7 +558,7 @@ function get_detail_html(info) {
         // console.log(url);
         html+=`<div>${url||""}</div>`;
     }
-    
+
     html+=`    </div>
                 <div class="columnT-tip">点击展开</div>
 
@@ -581,9 +587,10 @@ function get_detail_html(info) {
         html = ``;
         for(let i in info['result']['value']['vulnerables'])
         {
+            let url = info['result']['value']['vulnerables'][i]['url']||"";
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
-                        <span>${info['result']['value']['vulnerables'][i]['name']||""}</span>
+                        <span>${info['result']['value']['vulnerables'][i]['name']||""}&nbsp;${url}</span>
                         <i class="iconfont icon-arrow"></i>
                     </div>
                     <div class="columnT-sec-content">
@@ -719,10 +726,11 @@ function get_detail_html(info) {
                             <div class="columnT-tip">点击展开</div>
                         </div>`;
             }
-
+            //存在问题的URL
+            let url = info['result']['value']['illegality'][i]['url']||"";
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
-                        <span>${info['result']['value']['illegality'][i]['name']||""}</span>
+                        <span>${info['result']['value']['illegality'][i]['name']||""}&nbsp;${url}</span>
                         <i class="iconfont icon-arrow"></i>
                     </div>
                     <div class="columnT-sec-content">
@@ -785,5 +793,7 @@ function getMap(x,y,div) {
 $(document).on('click','.columnT-sec-title',function () {
     $(this).next().slideToggle();
     $(this).find('i').toggleClass('iconRotate');
+
 });
 
+//table内容过长
