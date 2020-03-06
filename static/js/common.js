@@ -165,6 +165,8 @@ function addPagination(nowpage,maxpage) {
     $('.pagination>ul li[data-page='+nowpage+']').addClass('active').siblings().removeClass('active')//当前页面高亮
 }
 
+
+// 全选
 $(document).on('change','.checkbox-single input',function(){
     var inputname = $(this).attr('name');
     var classlength = $('.checkbox-single input:checkbox[name="plugin-name"]').length;
@@ -182,3 +184,30 @@ $(document).on('change','.checkbox-selectall input',function() {
     console.log($('input[name="'+inputname+'"]'));
     $('.checkbox-single input[name="'+inputname+'"]').prop('checked', checkedAll)
 });
+
+// 内容过长缩放显示
+// 展开
+$(document).on('click','.columnT-tip',function(){
+    if($(this).siblings('.columnT-tr-right').height() > 100){
+        $(this).siblings('.columnT-tr-right').css('max-height','100px').css('overflow','hidden');
+        $(this).css('display','block').text('点击展开');
+
+    }else{
+        $(this).siblings('.columnT-tr-right').css('max-height','1200px')
+        $(this).text('点击收起');
+        var $this = $(this);
+        setTimeout(function () {
+            $this.siblings('.columnT-tr-right').css('overflow','auto');
+        },200)
+    }
+})
+//高度过高数据缩放
+function columnSlide() {
+
+    $('.columnT-tr').each(function(){
+        if($(this).height() > 100){
+            $(this).find('.columnT-tr-right').css('max-height','100px');
+            $(this).find('.columnT-tip').css('display','block').text('点击展开');
+        }
+    });
+}

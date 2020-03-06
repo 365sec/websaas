@@ -12,13 +12,14 @@ function vulcheck_show_all_task() {
             document.title = '任务列表';
 
             // console.log(res);
-
+            // 模态框出现后
             $('#model').off('shown.bs.modal').on('shown.bs.modal', function () {
                 $.when(vulcheck_send_task()).then(function () {
                         $('#model-submit').off('click').on('click', d_issue_task_batch_submit).css('display', 'inline-block');
                     }
                 )
             });
+            // 模态框关闭
             $('#model').off('hide.bs.modal').on('hide.bs.modal', function () {
                 // 提前关闭，终止请求
                 // event.stopPropagation();
@@ -235,7 +236,10 @@ function get_task_detail(task_info) {
 
     //任务下发信息
     $("#task_send_detail_div").show();
-    $("#task_send_detail_table_body").html("").append(html);
+    $("#task_send_detail_table_body .columnT").html("").append(html);
+
+    //高度过高数据缩放
+    columnSlide();
 
     //报道a标签
     //<button class="btn btn-default">  </button>
@@ -252,17 +256,63 @@ function get_send_task_info_html(task_info) {
 
     let html = ``;
     let url_num = task_info['url'].length;
-    html+=`<tr><td>task_id</td><td>${task_info['task_id']}</td></tr>`;
-    html+=`<tr><td>URL</td><td>${task_info['url']}</td></tr>`;
-    html+=`<tr><td>URL个数</td><td>${task_info['url'].length}</td></tr>`;
-    html+=`<tr><td>爬虫信息</td><td></td></tr>`;
-    html+=`<tr><td>notscanurl</td><td>${task_info['spider']['notscanurl']}</td></tr>`;
-    html+=`<tr><td>crawlrule</td><td>${task_info['spider']['crawlrule']}</td></tr>`;
-    html+=`<tr><td>craw_current_directory</td><td>${task_info['spider']['craw_current_directory']}</td></tr>`;
-    html+=`<tr><td>maxpage</td><td>${task_info['spider']['maxpage']}</td></tr>`;
-    html+=`<tr><td>notscanfile</td><td>${task_info['spider']['notscanfile']}</td></tr>`;
-    html+=`<tr><td>phantomjs_enable</td><td>${task_info['spider']['phantomjs_enable']}</td></tr>`;
-    html+=`<tr><td>maxdepth</td><td>${task_info['spider']['maxdepth']}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">task_id</div>
+                <div class="columnT-tr-right">${task_info['task_id']}</div>
+                <div class="columnT-tip">点击展开</div>
+
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL</div>
+                <div class="columnT-tr-right">${task_info['url']}</div>
+                <div class="columnT-tip">点击展开</div>
+
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL个数</div>
+                <div class="columnT-tr-right">${task_info['url'].length}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">爬虫信息</div>
+                <div class="columnT-tr-right"></div>
+                <div class="columnT-tip">点击展开</div>
+
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">notscanurl</div>
+                <div class="columnT-tr-right">${task_info['spider']['notscanurl']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">crawlrule</div>
+                <div class="columnT-tr-right">${task_info['spider']['crawlrule']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">craw_current_directory</div>
+                <div class="columnT-tr-right">${task_info['spider']['craw_current_directory']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">maxpage</div>
+                <div class="columnT-tr-right">${task_info['spider']['maxpage']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">notscanfile</div>
+                <div class="columnT-tr-right">${task_info['spider']['notscanfile']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">phantomjs_enable</div>
+                <div class="columnT-tr-right">${task_info['spider']['phantomjs_enable']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">maxdepth</div>
+                <div class="columnT-tr-right">${task_info['spider']['maxdepth']}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
 
     let plug = "";
     for(let i in task_info['plugins'])
@@ -276,11 +326,18 @@ function get_send_task_info_html(task_info) {
         }
         plug +=  ";&nbsp;" +task_info['plugins'][i]
     }
-    html+=`<tr><td>插件信息</td><td>${plug}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">插件信息</div>
+                <div class="columnT-tr-right">${plug}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
 
-    $("#task_send_detail_table_body").html("").append(html);
+    // $("#task_send_detail_table_body .columnT").html(html);
     return html;
 }
+$(function(){
+
+})
 
 function get_task_detail_html(task_id) {
     $.ajax({
@@ -436,7 +493,4 @@ function get_task_detail_result(task_id) {
         }
     })
 }
-// 模态框显示获取内容
-$(function () {
 
-})

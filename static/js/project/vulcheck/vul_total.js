@@ -400,21 +400,57 @@ function get_detail_html(info) {
     console.log(info);
     //基础信息
     $("#base_info_ip").html("").append(info['result']['value']['ip']||"");
-    html+=`<tr><td>国家/地区</td><td>${info['result']['value']['location']['country_ch']||""}</td></tr>`;
-    html+=`<tr><td>省份</td><td>${info['result']['value']['location']['province']||""}</td></tr>`;
-    html+=`<tr><td>城市</td><td>${info['result']['value']['location']['city']||""}</td></tr>`;
-    html+=`<tr><td>经度</td><td>${info['result']['value']['location']['lon']||""}</td></tr>`;
-    html+=`<tr><td>纬度</td><td>${info['result']['value']['location']['lat']||""}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">国家/地区</div>
+                <div class="columnT-tr-right">${info['result']['value']['location']['country_ch']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">省份</div>
+                <div class="columnT-tr-right">${info['result']['value']['location']['province']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">城市</div>
+                <div class="columnT-tr-right">${info['result']['value']['location']['city']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">经度</div>
+                <div class="columnT-tr-right">${info['result']['value']['location']['lon']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">纬度</div>
+                <div class="columnT-tr-right">${info['result']['value']['location']['lat']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
     $("#base_info_body").html("").append(html);
     //服务信息
     html =``;
     $("#base_info_server").html("").append("服务信息");
-    html+=`<tr><td>操作系统</td><td>${info['result']['value']['os']||""}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">操作系统</div>
+                <div class="columnT-tr-right">${info['result']['value']['os']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
     if (info['result']['value'].hasOwnProperty("server")) {
-        html+=`<tr><td>服务器</td><td>${info['result']['value']['server']['product']||""}</td></tr>`;
-        html+=`<tr><td>版本</td><td>${info['result']['value']['server']['version']||""}</td></tr>`;
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">服务器</div>
+                <div class="columnT-tr-right">${info['result']['value']['server']['product']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">版本</div>
+                <div class="columnT-tr-right">${info['result']['value']['server']['version']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
     }
-    html+=`<tr><td>端口</td><td>${info['result']['value']['protocols']||""}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">端口</div>
+                <div class="columnT-tr-right">${info['result']['value']['protocols']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
 
     if (info['result']['value'].hasOwnProperty("language"))
     {
@@ -425,10 +461,18 @@ function get_detail_html(info) {
             let version= info['result']['value']['language'][lang]['version'];
             language += product+":"+version+"<br>"
         }
-        html+=`<tr><td>语言</td><td>${language||""}</td></tr>`;
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">语言</div>
+                <div class="columnT-tr-right">${language||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
     }
 
-    html+=`<tr><td>返回状态码</td><td>${info['result']['value']['status_code']||""}</td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">返回状态码</div>
+                <div class="columnT-tr-right">${info['result']['value']['status_code']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
     $("#base_info_server_body").html("").append(html);
     //WHOIS
     if (info['result']['value'].hasOwnProperty("whois"))
@@ -437,19 +481,24 @@ function get_detail_html(info) {
         html=``;
         for(let key in temp_whois)
         {
-            html+=`<tr><td>${key}</td><td></td><td></td></tr>`;
+            html+=`<div  class="columnT-tr clearfix">
+                                <div class="columnT-tr-left">${key}</div>
+                                <div class="columnT-tr-right">`;
             for(let key_ in temp_whois[key]){
-                html+=`<tr><td></td><td>${key_}</td><td></td></tr>`;
                 if ( Array.isArray(temp_whois[key][key_])) {
                     for (let i in temp_whois[key][key_] )
                     {
-                        html+=`<tr><td></td><td></td><td>${temp_whois[key][key_][i]}</td></tr>`;
+                        html+=`<div>${temp_whois[key][key_][i]}</div>`;
                     }
                 }
                 else {
-                    html+=`<tr><td></td><td></td><td>${temp_whois[key][key_]}</td></tr>`;
+                    html+=`<div>${temp_whois[key][key_]}</div>`;
                 }
             }
+            html+=    `</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+
         }
         $("#base_info_whois").html("").append(html);
         $("#whois_div").show();
@@ -458,21 +507,57 @@ function get_detail_html(info) {
 
     //网站信息
     html =``;
-    html+=`<tr><td>域名</td><td>${info['result']['scheme_domain']||""}</td></tr>`;
-    html+=`<tr><td>URL</td><td>${info['result']['value']['url']||""}</td></tr>`;
-    html+=`<tr><td>标题</td><td>${info['result']['value']['title']||""}</td></tr>`;
-    html+=`<tr><td>描述</td><td>${info['result']['value']['description']||""}</td></tr>`;
-    html+=`<tr><td>关键词</td><td>${info['result']['value']['keywords']||""}</td></tr>`;
-    html+=`<tr><td>保存时间</td><td>${info['result']['value']['save_time']||""}</td></tr>`;
-    html+=`<tr><td></td><td></td></tr>`;
-    html+=`<tr><td>扫描URL总数</td><td>${info['result']['value']['statistics']['total']||""}</td></tr>`;
-    html+=`<tr><td>URL_LIST</td><td></td></tr>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">域名</div>
+                <div class="columnT-tr-right">${info['result']['scheme_domain']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL</div>
+                <div class="columnT-tr-right">${info['result']['value']['url']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">标题</div>
+                <div class="columnT-tr-right">${info['result']['value']['title']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">描述</div>
+                <div class="columnT-tr-right">${info['result']['value']['description']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">关键词</div>
+                <div class="columnT-tr-right">${info['result']['value']['keywords']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">保存时间</div>
+                <div class="columnT-tr-right">${info['result']['value']['save_time']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">扫描URL总数</div>
+                <div class="columnT-tr-right">${info['result']['value']['statistics']['total']||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL_LIST</div>
+                <div class="columnT-tr-right">
+                `;
     for (let i in info['result']['value']['statistics']['urls'])
     {
         let url = info['result']['value']['statistics']['urls'][i];
         // console.log(url);
-        html+=`<tr><td></td></td><td>${url||""}</td></tr>`;
+        html+=`<div>${url||""}</div>`;
     }
+    
+    html+=`    </div>
+                <div class="columnT-tip">点击展开</div>
+
+            </div>`;
+
     $("#web_info_body").html("").append(html);
 
     //网站相应信息
@@ -480,7 +565,11 @@ function get_detail_html(info) {
         html = ``;
         for (let key in info['result']['value']['response_headers'])
         {
-            html+=`<tr><td>${key}</td><td>${info['result']['value']['response_headers'][key]||""}</td></tr>`;
+            html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">${key}</div>
+                <div class="columnT-tr-right">${info['result']['value']['response_headers'][key]||""}</div>
+                <div class="columnT-tip">点击展开</div>
+            </div>`;
         }
         $("#web_response_info").html("").append(html);
         $("#web_response_info_div").show();
@@ -492,29 +581,60 @@ function get_detail_html(info) {
         html = ``;
         for(let i in info['result']['value']['vulnerables'])
         {
-            html+=`<tr class=" table-sec">
-                    <td>
-                        <div class="table-sec-title">
-                            <span>${info['result']['value']['vulnerables'][i]['name']||""}</span>
-                            <i class="iconfont icon-arrow"></i>
-                        </div>
-                        <div class="table-sec-content">
-                            <table class="table table-condensed">
-                                <tbody >
-                                <tr><td>存在漏洞的URL</td><td>${info['result']['value']['vulnerables'][i]['url']||""}</td></tr>
-                                <tr><td>插件名称或POC名称</td><td>${info['result']['value']['vulnerables'][i]['plugin_name']||""}</td></tr>
-                                <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['vulnerables'][i]['headers']['host']||""}</td></tr>
-                                <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</td></tr>
-                                <tr><td>存在漏洞的变量</td><td>${info['result']['value']['vulnerables'][i]['variable']||""}</td></tr>
-                                <tr><td>漏洞结果描述</td><td>${info['result']['value']['vulnerables'][i]['result_desc']||""}</td></tr>
-                                <tr><td>fuzz测试构造的payload</td><td>${info['result']['value']['vulnerables'][i]['payload']||""}</td></tr>
-                                <tr><td>请求方法</td><td>${info['result']['value']['vulnerables'][i]['method']||""}</td></tr>
-                                <tr><td>漏洞严重等级</td><td>${info['result']['value']['vulnerables'][i]['severity']||""}</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>`;
+            html+=`<div class="columnT-sec">
+                    <div class="columnT-sec-title">
+                        <span>${info['result']['value']['vulnerables'][i]['name']||""}</span>
+                        <i class="iconfont icon-arrow"></i>
+                    </div>
+                    <div class="columnT-sec-content">
+                            <div class="columnT">
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">存在漏洞的URL</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['url']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">插件名称或POC名称</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['plugin_name']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">FUZZ测试时的请求头部:host</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['headers']['host']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">FUZZ测试时的请求头部:Referer</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">存在漏洞的变量</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['variable']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                                 <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">漏洞结果描述</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['variable']||""}</div>
+                                    <div class="columnT-tip">${info['result']['value']['vulnerables'][i]['result_desc']||""}</div>
+                                </div> 
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">fuzz测试构造的payload</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['payload']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div> 
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">请求方法</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['method']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div> 
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">漏洞严重等级</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['severity']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                            </div>
+                </div>`;
         }
         $("#vulnerables_div").show();
         $("#vulnerables_info").html("").append(html);
@@ -540,9 +660,21 @@ function get_detail_html(info) {
                     }
                 }
                 temp_html+=`
-                    <tr><td>敏感关键词类型</td><td>${type||""}</td></tr>
-                    <tr><td>敏感关键词截取片段</td><td>${segment||""}</td></tr>
-                    <tr><td>敏感关键词内容</td><td>${value||""}</td></tr>`;
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">敏感关键词类型</div>
+                            <div class="columnT-tr-right">${type||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">敏感关键词截取片段</div>
+                            <div class="columnT-tr-right">${segment||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">敏感关键词内容</div>
+                            <div class="columnT-tr-right">${value||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>`;
             }else if(info['result']['value']['illegality'][i]['plugin_name']==="trojanhorse")
             {
                 let type = "";
@@ -557,48 +689,87 @@ function get_detail_html(info) {
                     }
                 }
                 temp_html+=`
-                    <tr><td>网页挂马类型</td><td>${type||""}</td></tr>
-                    <tr><td>网页挂马名称</td><td>${display||""}</td></tr>
-                    <tr><td>网页挂马截取片段</td><td>${value||""}</td></tr>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">网页挂马类型</div>
+                            <div class="columnT-tr-right">${type||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">网页挂马名称</div>
+                            <div class="columnT-tr-right">${display||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">网页挂马截取片段</div>
+                            <div class="columnT-tr-right">${value||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
                 `;
 
             }else if (info['result']['value']['illegality'][i]['plugin_name']==="domain_hijack")
             {
-                temp_html+=`                    
-                    <tr><td>网页劫持源地址</td><td>${info['result']['value']['illegality'][i]['orig_url']||""}</td></tr>
-                    <tr><td>网页劫持跳转地址</td><td>${info['result']['value']['illegality'][i]['redirect_url']||""}</td></tr>`;
+                temp_html+=`<div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">网页劫持源地址</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['orig_url']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">网页劫持跳转地址</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['redirect_url']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>`;
             }
 
-            html+=`<tr class=" table-sec">
-                    <td>
-                    <div class="table-sec-title">
+            html+=`<div class="columnT-sec">
+                    <div class="columnT-sec-title">
                         <span>${info['result']['value']['illegality'][i]['name']||""}</span>
                         <i class="iconfont icon-arrow"></i>
                     </div>
-                    <div class=" table-sec-content">
-                        <table class="table table-condensed">
-                            <tbody >
-                                <tr><td>存在问题的URL</td><td>${info['result']['value']['illegality'][i]['url']||""}</td></tr>
-                                <tr><td>插件名称或POC名称</td><td>${info['result']['value']['illegality'][i]['plugin_name']||""}</td></tr>
-                                <tr><td>FUZZ测试时的请求头部:host</td><td>${info['result']['value']['illegality'][i]['headers']['host']||""}</td></tr>
-                                <tr><td>FUZZ测试时的请求头部:Referer</td><td>${info['result']['value']['illegality'][i]['headers']['Referer']||""}</td></tr>
-                                <tr><td>请求方法</td><td>${info['result']['value']['illegality'][i]['method']||""}</td></tr>
-                                <tr><td>漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</td></tr>
-                                ${temp_html}
-                            </tbody>
-                        </table>
+                    <div class="columnT-sec-content">
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">存在问题的URL</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['url']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">插件名称或POC名称</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['plugin_name']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">FUZZ测试时的请求头部:host</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['plugin_name']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">FUZZ测试时的请求头部:Referer</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['plugin_name']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">请求方法</div>
+                            <div class="columnT-tr-right">${info['result']['value']['illegality'][i]['method']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        <div class="columnT-tr clearfix">
+                            <div class="columnT-tr-left">漏洞严重等级</div>
+                            <div class="columnT-tr-right">漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</div>
+                            <div class="columnT-tip">点击展开</div>
+                        </div>
+                        ${temp_html}
                     </div>
                     </td>
-                </tr>`;
+                </div>`;
         }
         $("#illegality_div").show();
         $("#illegality_info").html("").append(html);
 
 
     }
-
+    //高度过高数据缩放
+    columnSlide();
     // 地图
-    getMap(info['result']['value']['location']['lon'],info['result']['value']['location']['lat'],'map-canvas')
+    getMap(info['result']['value']['location']['lon'],info['result']['value']['location']['lat'],'map-canvas');
 }
 // 地图
 function getMap(x,y,div) {
@@ -611,10 +782,8 @@ function getMap(x,y,div) {
 
 }
 //二级嵌套table展开缩放
-$(document).on('click','.table-sec-title',function () {
+$(document).on('click','.columnT-sec-title',function () {
     $(this).next().slideToggle();
     $(this).find('i').toggleClass('iconRotate');
-
 });
 
-//table内容过长

@@ -41,7 +41,7 @@ pre{
     min-height: 100px;
 }
 caption{
-    font-size: 16px;
+    color: #00a5e3;
 }
 table td{
     word-break: break-all;
@@ -332,16 +332,10 @@ table td{
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.table-sec-title{
-    padding: 12px 6px;
-}
-.table-sec-title i{
-    float: right;
-    transition: transform .5s;
-}
-.table-sec-content{
-    display: none;
-}
+
+/*.table-column tbody tr:not(.table-sec) td:first-child{*/
+/*    width: 30%;*/
+/*}*/
 /*tab-content start*/
 
 /*分页 start*/
@@ -514,3 +508,51 @@ table td{
 }
 
 /*模态框 end*/
+
+.columnT-tr{
+    position: relative;
+    width: 100%;
+    line-height: 24px;
+    border-bottom: 1px solid #eee;
+}
+.columnT-tr>div{
+    float: left;
+    white-space: normal;
+    word-break: break-all;
+    overflow: hidden;
+}
+.columnT-title{
+    color: #00a5e3;
+    line-height: 36px;
+    border-bottom: 1px solid #eee;
+}
+.columnT-tr-left{
+    width: 30%;
+}
+.columnT-tr-right{
+    width: 70%;
+    -webkit-transition: max-height .2s;
+    -o-transition: max-height .2s;
+    -moz-transition: max-height .2s;
+    transition: max-height .2s;
+}
+.columnT-tr .columnT-tip{
+    display: none;
+    float: right;
+    width: 100px;
+    height: 24px;
+    text-align: center;
+    background: #eee;
+}
+.columnT-sec-title{
+    padding: 12px 6px;
+    border-bottom: 1px solid #eee;
+}
+.columnT-sec-title i{
+    float: right;
+    transition: transform .5s;
+}
+.columnT-sec-content{
+    display: none;
+    margin-left: 20px;
+}
