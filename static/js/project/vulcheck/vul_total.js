@@ -588,6 +588,7 @@ function get_detail_html(info) {
         for(let i in info['result']['value']['vulnerables'])
         {
             let url = info['result']['value']['vulnerables'][i]['url']||"";
+
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
                         <span>${info['result']['value']['vulnerables'][i]['name']||""}&nbsp;${url}</span>
@@ -728,6 +729,10 @@ function get_detail_html(info) {
             }
             //存在问题的URL
             let url = info['result']['value']['illegality'][i]['url']||"";
+            if (info['result']['value']['illegality'][i]['plugin_name'] === "black_link")
+            {
+                url = info['result']['value']['illegality'][i]['value']['dark_link']
+            }
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
                         <span>${info['result']['value']['illegality'][i]['name']||""}&nbsp;${url}</span>
@@ -761,7 +766,7 @@ function get_detail_html(info) {
                         </div>
                         <div class="columnT-tr clearfix">
                             <div class="columnT-tr-left">漏洞严重等级</div>
-                            <div class="columnT-tr-right">漏洞严重等级</td><td>${info['result']['value']['illegality'][i]['severity']||""}</div>
+                            <div class="columnT-tr-right"></td><td>${info['result']['value']['illegality'][i]['severity']||""}</div>
                             <div class="columnT-tip">点击展开</div>
                         </div>
                         ${temp_html}
