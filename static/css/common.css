@@ -265,11 +265,21 @@ table td{
     border-bottom: 1px solid #ddd;
 }
 .main-content-card-title span{
+    float: left;
     font-size: 16px;
     line-height: 30px;
 }
-.main-content-card-btngroup{
-    float: right;
+.main-content-card-title.clearfix span{
+    float: left;
+}
+
+.main-content-card-btngroup>form{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+}
+.main-content-card-btngroup>form>*{
+    margin-bottom: 10px;
 }
 .main-content-card-btngroup input,
 .main-content-card-btngroup select{
@@ -556,3 +566,5 @@ table td{
     display: none;
     margin-left: 20px;
 }
+
+
