@@ -38,6 +38,11 @@ urlpatterns = [
     url(r'^get_vul_keyword$', views.get_vul_keyword),  # 网页漏洞关键词下拉框
     url(r'^get_vul_total$', views.get_vul_total),  # 网页漏洞上部分统计信息
     url(r'^get_ill_total$', views.get_ill_total),  # 违法信息漏洞上部分统计信息
+
+    url(r'^get_keywords_library_html$', views.keywords_library_html),  # 关键词库的HTML
+    url(r'^get_black_domain_library_html$', views.domain_library_html),  # 黑域名的HTML
+    url(r'^get_beian_html$', views.get_beian_html),  # 备案的HTML
+    url(r'^get_beian_data$', views.get_beian_data),  # 备案的数据
     # url(r'/index/$', views.index),
     # url(r'.*', views.index),
     url(r'^index$', views.index),

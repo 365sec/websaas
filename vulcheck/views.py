@@ -30,8 +30,8 @@ coloredlogs.install(level='DEBUG',
                     )
 
 # glob_url = "http://172.16.39.65:9000"
-# glob_url = "http://127.0.0.1:9000"
-glob_url = "http://47.100.88.79:9000"
+glob_url = "http://127.0.0.1:9000"
+# glob_url = "http://47.100.88.79:9000"
 
 mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
 
@@ -119,6 +119,19 @@ def get_vul_web_html(request):
     context = {}
     return render(request, r'vulcheck\vulWebsites.html', context)
 
+def keywords_library_html(request):
+    context = {}
+    return render(request, r'vulcheck\keywords_library.html', context)
+
+def domain_library_html(request):
+    context = {}
+    return render(request, r'vulcheck\black_domain_library.html', context)
+
+
+def get_beian_html(request):
+    context = {}
+    return render(request, r'vulcheck\beian.html', context)
+
 
 def get_report_html(request):
     task_id = request.GET.get("task_id")
@@ -180,7 +193,9 @@ def get_issue_task_result(url, task):
         # task = json.loads(task)
         context['code'] = 200
         task = json.dumps(task)
-        result = requests.post(url, data=task)
+        logging.debug(url)
+        headers = {'Content-type': 'application/json'}
+        result = requests.post(url, data=task, headers=headers)
         # print(result.text)
         context['data'] = result.text
     except Exception as e:
@@ -474,6 +489,9 @@ def issue_task_list(request):
     check_url = check_url
     check_url = check_url.split("\r\n")
     plugins = request.POST.getlist("plugin_name")
+    # logging.debug(plugins)
+    if "" in plugins:
+        plugins.remove("")
     maxpage = request.POST.get("maxpage")
     maxdepth = request.POST.get("maxdepth")
     notscanurl = request.POST.get("notscanurl")
@@ -482,7 +500,7 @@ def issue_task_list(request):
     phantomjs_enable = request.POST.get("phantomjs_enable")
     craw_current_directory = request.POST.get("craw_current_directory")
     # plugins = request.POST.getlist("plugin_name")
-    print(request.POST)
+    logging.debug(request.POST)
     context = []
 
     check_url_list = []
@@ -505,7 +523,7 @@ def issue_task_list(request):
         else:
             check_url_list.append(str(x))
 
-    print(check_url_list)
+    # logging.debug(check_url_list)
 
     task_id = str(uuid.uuid4())
     spider_task_id = str(uuid.uuid4())
@@ -605,6 +623,7 @@ def classify_by_key(request):
         'result.value.language',
         'result.value.cdn',
         'result.value.component',
+        'result.value.illegal_feature.name',
     ]
     match = {'$match': {}}
     # match['$match']['result.value.location.province'] = "Hubei"
@@ -692,8 +711,6 @@ def classify_by_key_plugins_reduce(match):
 
 def get_result_count(match):
     """:ivar获得所有result长度总和"""
-
-    # project_set = mongo_db['resultdb']
     pipeline = [
         match,
         {
@@ -706,13 +723,46 @@ def get_result_count(match):
     sum = 0
     for i in result_set.aggregate(pipeline):
         sum += i['size_of_result']
+    logging.debug(sum)
+    return sum
+
+
+def get_vul_result_count(match):
+    """:ivar获得所有含有漏洞 result长度总和"""
+    match = {'$match': {"result": {'$exists': True}}}
+    result_set = mongo_db['resultdb']
+    pipeline = [
+        {'$unwind': "$result"},
+        match,
+        {'$group': {'_id': None, 'count': {'$sum': 1}}},
+
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        sum += i['count']
+    logging.debug(sum)
+    return sum
+
+
+def get_ill_result_count(match):
+    """:ivar获得所有违法网站 result长度总和"""
+    match = {'$match': {"result": {'$exists': True}}}
+    pipeline = [
+        {'$unwind': "$result"},
+        match,
+        {'$group': {'_id': None, 'count': {'$sum': 1}}},
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        sum += i['count']
     # logging.debug(sum)
     return sum
 
 
 def get_scan_list(request):
     context = {"max_page": 0}
-    page = request.GET.get("page")
+    # page = request.GET.get("page")
     logging.debug(json.loads(request.body))
     param = json.loads(request.body)
     page = param['page']
@@ -727,14 +777,15 @@ def get_scan_list(request):
         match['$match'][key] = val
     # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
     max_num = get_result_count(match)
+    logging.debug(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
         {'$project': {"_id": 0,"task_id":1, 'result': 1}},
-        match,
         {'$unwind': "$result"},
+        match,
+        {'$sort': {'result.value.save_time': -1}},
         {'$skip': skip},
         {'$limit': page_num},
-        {'$sort': {'result.value.save_time': -1}},
     ]
     result = []
     for i in result_set.aggregate(pipeline):
@@ -790,12 +841,13 @@ def get_ill_web_data(request):
     match = {'$match': {"result": {'$exists': True}}}
     match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
     for key in filter_param:
-        if key=="keyword":
+        if key == "keyword":
             continue
         val = filter_param[key]
         match['$match'][key] = val
 
-    max_num = get_result_count(match)
+    max_num = get_ill_result_count(match)
+    # logging.debug(max_num)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
         {'$project': {"_id": 0,"task_id":1, 'result': 1}},
@@ -838,15 +890,15 @@ def get_vul_web_data(request):
         val = filter_param[key]
         match['$match'][key] = val
 
-    max_num = get_result_count(match)
+    max_num = get_vul_result_count(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
         {'$project': {"_id": 0,"task_id":1, 'result': 1}},
         {'$unwind': "$result"},
         match,
+        {'$sort': {'result.value.save_time': -1}},
         {'$skip': skip},
         {'$limit': page_num},
-        {'$sort': {'result.value.save_time': -1}},
     ]
     result = []
     for i in result_set.aggregate(pipeline):
@@ -1002,7 +1054,7 @@ def get_vul_web_num():
     res = result_set.aggregate(pipeline)
     result = []
     for i in res:
-        logging.debug(i)
+        # logging.debug(i)
         result.append(i['domian_list'])
 
     return result
@@ -1072,3 +1124,45 @@ def illegality_by_key_by_domian_reduce():
             logging.debug(i)
             result.append(i)
         return result
+
+
+def get_beian_data(request):
+    """:arg
+        获得备案信息
+    """
+    context = {"max_page": 0}
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    page = param['page']
+    filter_param = param['param']
+    # project_set = mongo_db['resultdb']
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page * page_num)
+    match = {'$match': {"result": {'$exists': True}}}
+    # match['$match']['result.value.icp'] = {'$exists': True}
+    for key in filter_param:
+        if key == "keyword":
+            continue
+        val = filter_param[key]
+        match['$match'][key] = val
+
+    max_num = get_result_count(match)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+    pipeline = [
+        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$sort': {'result.value.save_time': -1}},
+        {'$skip': skip},
+        {'$limit': page_num},
+    ]
+    result = []
+    for i in result_set.aggregate(pipeline):
+        result.append(i)
+
+    logging.debug(match)
+    context['max_page'] = max_page
+    context['data'] = result
+
+    return HttpResponse(json.dumps(context), content_type="application/json")

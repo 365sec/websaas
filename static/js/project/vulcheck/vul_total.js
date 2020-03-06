@@ -38,6 +38,7 @@ class_dir['result.value.cdn'] = "CDN";
 class_dir['result.value.component'] = "组件";
 class_dir['result.value.illegality.plugin_name'] = "非法信息";
 class_dir['result.value.vulnerables.plugin_name'] = "检查插件";
+class_dir['result.value.illegal_feature.name'] = "网站类型";
 function classify_by_key(filter_param) {
     /*
     * 左侧统计信息*/
@@ -53,7 +54,7 @@ function classify_by_key(filter_param) {
                             <div class="key-title">${class_dir[key]}</div>
                             <ul  class="key-content clearfix">`;
         for (let i in data['data'][key]) {
-            let val = data['data'][key][i]['_id']
+            let val = data['data'][key][i]['_id'];
             html += `<li>
                                 <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a> 
                                 <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</span>
@@ -210,8 +211,14 @@ function get_scan_list_page_html(res) {
         let detail = JSON.stringify(res['data'][x]);
         let b = new Base64();
         detail = b.encode(detail);
+        // console.log(res['data'][x]['result']['value']);
+        let country =""
+        if (res['data'][x]['result']['value'].hasOwnProperty('location'))
+        {
+            country = res['data'][x]['result']['value']['location']['country_ch'] || "";
+        }
         let protocols = res['data'][x]['result']['value']['protocols'] || "";
-        let country = res['data'][x]['result']['value']['location']['country_ch'] || "";
+
         let save_time = res['data'][x]['result']['value']['save_time'] || "";
         let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
         let illegality = res['data'][x]['result']['value']['illegality'] || [];

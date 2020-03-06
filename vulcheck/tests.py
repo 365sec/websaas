@@ -58,21 +58,31 @@ def get_all_vul_count():
 def test():
     project_set = mongo_db['resultdb']
 
-    # for i in project_set.find({}, {'value.vulnerables.sqli': 1, '_id': 0}):
-    #     if i['value']:
-    #         logging.debug(i['value']['vulnerables']['sqli'])
-
-    logging.debug(project_set.count({"value.vulnerables.sqli": 1}))
-
+    match = {}
+    match['$match'] = {}
+    match['$match']['result.value.illegal_feature'] = {'$exists': True}
+    # match['$match']['result.value.illegal_feature.name'] = '色情网站'
+    # match['$match']['result.value.save_time'] = {'$gt': '2020-02-9'}
+    # match['$match']['result.value.save_time'] = {'$lt': '2020-02-26 '}
     pipeline = [
-        {'$match': {"value.vulnerables.sqli": {'$exists': True}}},
-        # {'$project': {'value.vulnerables.sqli': 1} },
-        {'$project': {'value.vulnerables.sqli': 1, "preIdx": "$_id"}},
-        # {'$unwind': '$value.vulnerables'},
-        # {'$unwind': '$value.vulnerables[{},{}]'},
-        #
-        # {'$group': {'_id': "$value.vulnerables", 'count': {'$sum': 1}}},
-        # { '$project': {'task_id': 1} }
+        {'$project': {"task_id": 1, 'result': 1}},
+        {'$unwind': '$result'},
+        match,
+        {'$group': {
+            '_id': {
+                'name':'$result.value.illegal_feature.name',
+                # 'protocols':'$result.value.protocols',
+                # 'city':'$result.value.location.city',
+                # 'province':'$result.value.location.province',
+            },
+            'count': {'$sum': 1},
+        }},
+
+
+        {'$sort': {'_id.save_time': -1}},
+        {'$skip': 0},
+        {'$limit': 10},
+        {'$project': {"_id": 1, 'count': 1}}
     ]
 
     k = 0
@@ -94,6 +104,7 @@ def classify_by_key():
                 'result.value.language',
                 'result.value.cdn',
                 'result.value.component',
+                'result.value.illegal_feature.name',
                 ]
 
     for x in classify:
@@ -101,7 +112,7 @@ def classify_by_key():
         match = {'$match': {}}
 
         # match['$match']['result.value.location.province'] = "Hubei"
-        match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+        # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
         # match['$match']['result.value.protocols'] = "9000/http"
         if x == 'result.value.language':
             pipeline = [
@@ -599,15 +610,43 @@ def get_array_count():
     logging.debug(sum)
 
 
+def get_vul_result_count():
+    """:ivar获得所有含有漏洞 result长度总和"""
+    # illegality
+    # vulnerables
+    match = {'$match': {"result": {'$exists': True}}}
+    match['$match']['result.value.vulnerables'] = {'$exists': True}
+
+    result_set = mongo_db['resultdb']
+    pipeline = [
+        {'$unwind': "$result"},
+        match,
+        # {'$group': {'_id': "$result.value.illegality.plugin_name", 'count': {'$sum': 1}}},
+
+        {
+            '$project': {
+                '_id': 1,
+                # 'size_of_result': {'$size': "$result"},
+            }
+        },
+        # {'$count': "$_id"}
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        logging.debug(i)
+        sum += 1
+    logging.debug(sum)
+    return sum
+
 if __name__ == '__main__':
     # get_all_vul_count()
     # classify_by_key_vulnerables()
     # classify_by_key_illegality()
     # classify_by_key_illegality()
     # classify_by_key_plugin_reduce()
-    classify_by_key_by_domian_reduce()
+    # classify_by_key_by_domian_reduce()
     # get_vul_iil_domain()
-    get_ill_keyword()
+    # get_ill_keyword()
     # get_vul_keyword()
     # get_vul_web()
     # get_all_web()
@@ -615,3 +654,5 @@ if __name__ == '__main__':
     # classify_by_key1()
     # get_scan_list()
     # get_array_count()
+    # test()
+    get_vul_result_count()

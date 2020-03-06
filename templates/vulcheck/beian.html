@@ -1,0 +1,70 @@
+{#<div class="main-content-card" style="margin-bottom: 24px">#}
+{#    <div class="main-content-card-content clearfix">#}
+{#        <div class="vul-web-top asset">#}
+{#            <i class="iconfont icon-asset"></i>#}
+{#            <div class="vul-web-top-content">#}
+{#                <div class="vul-web-top-title">检测资产总数</div>#}
+{#                <div id="vul-web-top-asset" class="vul-web-top-number"></div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="vul-web-top threat">#}
+{#            <i class="iconfont icon-threat"></i>#}
+{#            <div class="vul-web-top-content">#}
+{#                <div class="vul-web-top-title">备案总数</div>#}
+{#                <div id="vul-web-top-threat" class="vul-web-top-number"></div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="vul-web-top website">#}
+{#            <i class="iconfont icon-website"></i>#}
+{#            <div class="vul-web-top-content">#}
+{#                <div class="vul-web-top-title">未备案备案总数</div>#}
+{#                <div id="vul-web-top-website" class="vul-web-top-number"></div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+<div class="main-content-card">
+    <div class="main-content-card-title">
+        <span>备案网站分析</span>
+        <div class="main-content-card-btngroup">
+            <form  method="post" role="form" id="beian_form">
+                <input type="text" placeholder="任务id" name="keyword">
+                <div id="beian_select">
+                    <select name="result.value.icp">
+                        <option value="">是否备案选择</option>
+                        <option value="1">已备案</option>
+                        <option value="0">未备案</option>
+                    </select>
+                </div>
+                <input type="text" placeholder="关键字" name="keyword">
+                <input type="text" placeholder="地区" name="result.value.location">
+                <input type="text" placeholder="日期" name="result.value.save_time">
+                <button type="button" onclick="beian_search()" ><i class="iconfont icon-search"></i></button>
+
+            </form>
+        </div>
+    </div>
+    <div class="main-content-card-content">
+        <table class="table table-bordered">
+            <thead>
+            <th width="15%">网站名称</th>
+            <th width="120px">域名</th>
+            <th width="12%">IP地址</th>
+            {#            <th>命中关键字</th>#}
+            <th width="10%">归属地区</th>
+            <th>icp备案号</th>
+            <th>备案网站名称</th>
+            <th width="80px">备案域名</th>
+            <th width="80px">企业或事业单位名称</th>
+            <th width="80px">单位类型</th>
+            <th width="80px">首页地址</th>
+            <th width="80px">网页快照</th>
+            </thead>
+            <tbody>
+            <tr><td colspan="8" style="text-align: center">暂无数据</td></tr>
+            </tbody>
+        </table>
+        <div class="pagination vul-web">
+        </div>
+    </div>
+</div>

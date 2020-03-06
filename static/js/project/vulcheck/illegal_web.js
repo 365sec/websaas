@@ -20,9 +20,10 @@ function get_ill_total() {
         url: 'vulcheck/get_ill_total',
         type: "get",
         success: function (data) {
+            // console.log(data);
             let res = data['data'];
             let key_info = data['key_info'];
-            console.log(data)
+            // console.log(data)
             let keywords=0;
             let keywords_web=0;
             let trojanhorse=0;
@@ -86,7 +87,7 @@ function get_ill_total() {
             $("#ill-web-top-number-image-num").html("").append(yellow_image);
             $("#ill-web-top-number-image-web").html("").append(yellow_image_web);
 
-            console.log(res)
+            // console.log(res)
         }
     });
 
@@ -153,7 +154,7 @@ function ill_web_table_page(page) {
         data:data,
         type: "post",
         success: function (res) {
-            // console.log(res);
+            console.log(res);
             let max_page = parseInt(res['max_page']);
             let html = ``;
             for (let x in res['data'])
@@ -204,7 +205,11 @@ function ill_web_table_page(page) {
                 html+=`<td><p class="tabletd-overflow" title="${segment_word||""}">${segment_word||""}</p></td>`;
                 html+=`<td>${res['data'][x]['result']['value']['idc']||""}</td>`;
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
-                html+=`<td>${""}</td>`;
+                let detail = JSON.stringify(res['data'][x]);
+                let b = new Base64();
+                detail = b.encode(detail);
+                html+=`<td><a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`<td>${""}</td>`;
                 // html+=`<td>${res['data'][x]['finish_time']}</td>`;
                 // html+=`<td><div><a href="#" >停止</a></div></td>`;
                 html+=`</tr>`;

@@ -22,9 +22,9 @@ logging.basicConfig(level=logging.DEBUG,
                     )
 
 
-# glob_url = "http://127.0.0.1:9000"
+glob_url = "http://127.0.0.1:9000"
 # glob_url = "http://172.16.39.78:9000"
-glob_url = "http://47.100.88.79:9000"
+# glob_url = "http://47.100.88.79:9000"
 
 mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
 mongo_db = mongo_client['webmap']
@@ -89,6 +89,7 @@ def get_issue_task_result(url, task):
         # task = json.loads(task)
         context['code'] = 200
         task = json.dumps(task)
+        logging.debug(url)
         result = requests.post(url, data=task)
         # print(result.text)
         context['data'] = result.text

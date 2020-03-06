@@ -118,7 +118,7 @@ function d_issue_tesk_batch_click() {
 
     let plug_html = ``;
     plug_html += `<div class="checkbox-selectall">
-                        <input id="checkbox-selectall" class="checkbox-input" type="checkbox" name="plugin-name" value="" style="display: none;">
+                        <input id="checkbox-selectall" class="checkbox-input" type="checkbox" name="plugin_name" value="" style="display: none;">
                         <label for="checkbox-selectall" >
                             <div class="checkbox-slide">
                                 <div class="move"></div>
@@ -133,7 +133,7 @@ function d_issue_tesk_batch_click() {
             let plug_name = plug['data'][key][x]['plugin_name'];
             let issue_name = plug['data'][key][x]['issue_name'];
             plug_html += `<div class="checkbox-single">
-                            <input id="${plug_name}" class="checkbox-input" type="checkbox" name="plugin-name" value="${plug_name}" style="display: none;">
+                            <input id="${plug_name}" class="checkbox-input" type="checkbox" name="plugin_name" value="${plug_name}" style="display: none;">
                             <label for="${plug_name}" >
                                 <div class="checkbox-slide">
                                     <div class="move"></div>
@@ -157,7 +157,7 @@ function d_issue_tesk_batch_click() {
     spider_html += `
 <!--<lable>phantomjs_enable<input type="text" name="phantomjs_enable" placeholder="False" class="form-control"></lable>-->
                     <div class='sipder-sildebtn'>
-                        <input id="phantomjs_enable" class="checkbox-input" type="checkbox" name="phantomjs_enable" value=""style="display: none;">
+                        <input id="phantomjs_enable" class="checkbox-input" type="checkbox" name="phantomjs_enable" value="true" style="display: none;">
                         <label for="phantomjs_enable" >
                             <div class="checkbox-slide">
                                 <div class="move"></div>
@@ -170,7 +170,7 @@ function d_issue_tesk_batch_click() {
     spider_html += `
 <!--                    <lable>craw_current_directory<input type="text" name="craw_current_directory" placeholder="False" class="form-control"></lable>-->
                     <div class='sipder-sildebtn'>
-                        <input id="craw_current_directory" class="checkbox-input" type="checkbox" name="craw_current_directory" value=""style="display: none;">
+                        <input id="craw_current_directory" class="checkbox-input" type="checkbox" name="craw_current_directory" value="true" style="display: none;">
                         <label for="craw_current_directory" >
                             <div class="checkbox-slide">
                                 <div class="move"></div>
