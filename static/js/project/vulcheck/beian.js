@@ -41,9 +41,9 @@ function beian_table_page(page) {
             let html =``;
             for (let x in res['data']) {
                 html+=`<tr>`;
-                html+=`<td>${res['data'][x]['result']['value']['title']||""}</td>`;
-                html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`;
-                html+=`<td>${res['data'][x]['result']['value']['ip']||""}</td>`;
+                html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['title']||""}">${res['data'][x]['result']['value']['title']||""}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['domain']||""}">${res['data'][x]['result']['value']['domain']||""}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['ip']||""}">${res['data'][x]['result']['value']['ip']||""}</p></td>`;
                 let country_ch =res['data'][x]['result']['value']['location']['country_ch'] || "";
                 let province =res['data'][x]['result']['value']['location']['province']||"";
                 let city =res['data'][x]['result']['value']['location']['city']||"";
@@ -61,12 +61,12 @@ function beian_table_page(page) {
                     org_name =res['data'][x]['result']['value']['icp']['org_name']||"";
                     nature =res['data'][x]['result']['value']['icp']['nature']||"";
                 }
-                html+=`<td>${icp_code}</td>`;
-                html+=`<td>${site_name}</td>`;
-                html+=`<td>${beian_domain}</td>`;
-                html+=`<td>${org_name}</td>`;
-                html+=`<td>${nature}</td>`;
-                html+=`<td>${res['data'][x]['result']['value']['url']||""}</td>`;
+                html+=`<td><p class="tabletd-overflow" title="${icp_code}">${icp_code}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${site_name}">${site_name}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${beian_domain}">${beian_domain}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${org_name}">${org_name}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${nature}">${nature}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['url']||""}">${res['data'][x]['result']['value']['url']||""}</p></td>`;
                 let detail = JSON.stringify(res['data'][x]);
                 let b = new Base64();
                 detail = b.encode(detail);
