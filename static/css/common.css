@@ -46,6 +46,12 @@ caption{
 table td{
     word-break: break-all;
 }
+.w100{
+    width: 100%
+}
+.h100{
+    height: 100%;
+}
 .checkbox label, .radio label{
     padding: 0;
 }

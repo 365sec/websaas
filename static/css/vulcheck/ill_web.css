@@ -1,7 +1,6 @@
 .ill-web-top{
     position: relative;
     float: left;
-    min-height: 130px;
     padding: 16px;
     color: #fff;
 }
@@ -38,4 +37,14 @@
 }
 .ill-web-top.sense{
     background: #ffb980;
+}
+@media (min-width : 1920px) {
+    .ill-web-top{
+        min-height: 130px;
+    }
+}
+@media (min-width : 1366px ) and (max-width : 1919px) {
+    .ill-web-top{
+        min-height: 200px;
+    }
 }

@@ -39,12 +39,103 @@ function get_vul_keyword() {
 }
 
 function ill_web_top_content(res) {
-    let html = ``;
-    for(let x of res['data'])
-    {
-        html +=`<div class="ill-web-top-number all">${x['_id']} <div id="ill-web-top-number-heilian-web">${x['count']}</div></div>`;
+    // letthreat_content").html("").append(html); html = ``;
+    //     // for(let x of res['data'])
+    //     // {
+    //     //     html +=`<div class="ill-web-top-number all">${x['_id']} <div id="ill-web-top-number-heilian-web">${x['count']}</div></div>`;
+    //     // }
+    //     // $("#vue_web_
+
+    var data = [{
+        name: '漏洞统计',
+        children:[{'value': 273, 'name': "电子邮件地址泄漏"},
+            {'value': 31, 'name': "测试文件泄露"},
+            {'value': 30, 'name': "敏感目录泄露"},
+            {'value': 13, 'name': "敏感文件泄露"},
+            {'value': 11, 'name': "Flash参数配置风险"},
+            {'value': 10, 'name': "网站路径泄漏风险"},
+            {'value': 8, 'name': "CGI默认目录信息泄露"},
+            {'value': 8, 'name': "备份文件泄漏"},
+            {'value': 8, 'name': "跨站脚本攻击"},
+            {'value': 8, 'name': "SQL盲注"},
+            {'value': 8, 'name': "CKEditor编辑器泄漏"},
+            {'value': 7, 'name': "eWebEditor编辑器泄漏"},
+            {'value': 7, 'name': "数据库信息泄漏"},
+            {'value': 5, 'name': "PHPINFO文件信息泄漏"},
+            {'value': 3, 'name': "后台管理地址泄露"},
+            {'value': 3, 'name': "默认目录泄漏"},
+            {'value': 3, 'name': "服务端调试信息泄漏"},
+            {'value': 3, 'name': "内网IP地址泄漏"},
+            {'value': 2, 'name': "站点地图泄露"},
+            {'value': 1, 'name': "Dreamware远程数据库连接测试文件泄露"}]}
+
+    ];
+    var myChart = echarts.init(document.getElementById('vue_web_threat_content'));
+    var option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{b}:{c}"
+        },
+        series:[{
+            type: 'treemap',
+            width: '100%',
+            height: '100%',
+            nodeClick: false,
+            breadcrumb: false,
+            roam: false,
+            nodeClick: false,
+            color:[
+                "#893448",
+                "#b0475e",
+                "#c75e76",
+                "#cf607c",
+
+                "#d95850",
+                "#e6746f",
+                "#e88b88",
+                "#f0aca6",
+
+                "#f29564",
+                "#fab088",
+                "#fcbc96",
+                "#ffc06f",
+
+                "#ffb248",
+                "#ffcf92",
+                "#ffdbaf",
+                "#fff0b1",
+
+                "#ffe2c8",
+                "#ffeddd",
+                "rgb(247,238,173)",
+                "#ffeddd",
+
+            ],
+
+            itemStyle: {
+                normal: {
+                    label: {
+                        show: true,
+                        formatter: "{b}\n{c}"
+                    },
+                    borderWidth:2
+                },
+                emphasis: {
+                    label: {
+                        show: true
+                    }
+                }
+            },
+            label: {
+                normal: {
+                    fontSize: 12
+                }
+            },
+            data: data
+
+        }]
     }
-    $("#ill_web_top_content").html("").append(html);
+    myChart.setOption(option);
 }
 
 let vul_param;
