@@ -46,21 +46,38 @@ function classify_by_key(filter_param) {
     let send_data = {};
     send_data['param'] = filter_param;
     let  data = get_classify_by_key(send_data);
+    let temp_list =[];
+    // temp_list.push({"result.value.location.country_ch":data['data']["result.value.location.country_ch"]});
+    // temp_list.push({"result.value.location.province":data['data']["result.value.location.province"]});
+    // temp_list.push({"result.value.location.city":data['data']["result.value.location.city"]});
+    temp_list.push({"result.value.server":data['data']["result.value.server"]});
+    temp_list.push({"result.value.protocols":data['data']["result.value.protocols"]});
+    temp_list.push({"result.value.language":data['data']["result.value.language"]});
+    temp_list.push({"result.value.cdn":data['data']["result.value.cdn"]});
+    temp_list.push({"result.value.component":data['data']["result.value.component"]});
+    temp_list.push({"result.value.illegal_feature.name":data['data']["result.value.illegal_feature.name"]});
+    temp_list.push({"result.value.illegality.plugin_name":data['data']["result.value.illegality.plugin_name"]});
+    temp_list.push({"result.value.vulnerables.plugin_name":data['data']["result.value.vulnerables.plugin_name"]});
     let html = ``;
-    for (let key in data['data']) {
-        // console.log(key);
-        // console.log(data['data'][key]);
-        html += `<div>
-                            <div class="key-title">${class_dir[key]}</div>
-                            <ul  class="key-content clearfix">`;
-        for (let i in data['data'][key]) {
-            let val = data['data'][key][i]['_id'];
-            html += `<li>
-                                <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a> 
-                                <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${data['data'][key][i]['count']}</span>
-                            </li>`;
+    console.log(data['data']["result.value.location"]);
+    for(let value of temp_list)
+    {
+        for(let key in value)
+        {
+            html += `<div>
+                                <div class="key-title">${class_dir[key]}</div>
+                                <ul  class="key-content clearfix">`;
+                for (let i in value[key]) {
+                    let val = value[key][i]['_id'];
+                    html += `<li>
+                                        <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a>
+                                        <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${value[key][i]['count']}</span>
+                                    </li>`;
+                }
+                html += `</ul></div>`;
         }
-        html += `</ul></div>`;
+
+
     }
 
     $("#classify_list").html("").append(html);
@@ -509,6 +526,46 @@ function get_detail_html(info) {
         $("#base_info_whois").html("").append(html);
         $("#whois_div").show();
 
+    }
+
+    //备案
+    if (info['result']['value'].hasOwnProperty("icp"))
+    {
+        let tmp_class = {};
+        tmp_class['beian_domain'] = "备案域名";
+        tmp_class['icp_code'] = "ICP备案号";
+        tmp_class['site_name'] = "备案网站名称";
+        tmp_class['org_name'] = "企业或事业单位名称";
+        tmp_class['nature'] = "单位类型";
+        let temp = info['result']['value']['icp'];
+        html=``;
+        for(let key in temp)
+        {
+            html+=`<div  class="columnT-tr clearfix">
+                                <div class="columnT-tr-left">${tmp_class[key]}</div>
+                                <div class="columnT-tr-right">${temp[key]}</div>`;
+            html+=`<div class="columnT-tip">点击展开</div></div>`;
+
+        }
+        $("#base_info_beian").html("").append(html);
+        $("#beian_div").show();
+
+    }
+    //autonomous_system
+    if (info['result']['value'].hasOwnProperty("autonomous_system"))
+    {
+        let temp = info['result']['value']['autonomous_system'];
+        html=``;
+        for(let key in temp)
+        {
+            html+=`<div  class="columnT-tr clearfix">
+                                <div class="columnT-tr-left">${key}</div>
+                                <div class="columnT-tr-right">${temp[key]}</div>`;
+            html+=`<div class="columnT-tip">点击展开</div></div>`;
+
+        }
+        $("#base_info_autonomous_system").html("").append(html);
+        $("#autonomous_system_div").show();
     }
 
     //网站信息

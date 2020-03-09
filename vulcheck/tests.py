@@ -95,15 +95,16 @@ def test():
 def classify_by_key():
     project_set = mongo_db['resultdb']
     classify = [
-        'result.value.server',
-        'result.value.protocols',
-        'result.value.location.city',
-        'result.value.location.province',
-        'result.value.location.country_ch',
-        'result.value.language',
+        # 'result.value.server',
+        # 'result.value.protocols',
+        # 'result.value.location.city',
+        # 'result.value.location.province',
+        # 'result.value.location.country_ch',
+        'result.value.location',
+        # 'result.value.language',
         'result.value.cdn',
         'result.value.component',
-        'result.value.illegal_feature.name',
+        # 'result.value.illegal_feature.name',
     ]
 
     for x in classify:
@@ -122,6 +123,46 @@ def classify_by_key():
                 {'$group': {'_id': "$" + x, 'count': {'$sum': 1}}},
                 {'$sort': {'count': -1}},
                 {'$project': {"_id": 1, 'count': 1}}
+            ]
+        elif "result.value.location" in x:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                {'$group': {
+                    '_id': {
+                        "country":"$result.value.location.country_ch",
+                        "province":"$result.value.location.province",
+                        "city":"$result.value.location.city",
+                    },
+                    'city_count':  {'$sum': 1},
+
+
+                }},
+                {'$sort': {'city_count': -1}},
+                {
+                    '$group': {
+                        "_id": {
+                            "country": "$_id.country",
+                            "province": "$_id.province",
+                        },
+                        'city': {'$push':  {"city_name":"$_id.city","count":"$city_count"}},
+                        'province_count':  {'$sum': "$city_count"},
+                    }
+                },
+                {'$sort': {'province_count': -1}},
+                {
+                    '$group': {
+                        "_id": {
+                            "country": "$_id.country",
+                        },
+                        'province': {'$push':  {"province_name":"$_id.province","province_count":"$province_count", "city":"$city"}},
+                        'country_count':  {'$sum': '$province_count'},
+                    }
+                },
+                {'$sort': {'country_count': -1}},
+
+                # {'$project': {"_id": 1, 'count': 1}}
             ]
         else:
             pipeline = [
@@ -675,10 +716,10 @@ if __name__ == '__main__':
     # get_vul_keyword()
     # get_vul_web()
     # get_all_web()
-    # classify_by_key()
+    classify_by_key()
     # classify_by_key1()
     # get_scan_list()
     # get_array_count()
     # test()
     # get_vul_result_count()
-    mongo_search_like()
+    # mongo_search_like()

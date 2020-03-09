@@ -624,9 +624,10 @@ def classify_by_key(request):
     classify = [
         'result.value.server',
         'result.value.protocols',
-        'result.value.location.city',
-        'result.value.location.province',
-        'result.value.location.country_ch',
+        # 'result.value.location.city',
+        # 'result.value.location.province',
+        # 'result.value.location.country_ch',
+        'result.value.location',
         'result.value.language',
         'result.value.cdn',
         'result.value.component',
@@ -656,6 +657,44 @@ def classify_by_key(request):
                 {'$sort': {'count': -1}},
                 {'$project': {"_id": 1, 'count': 1}}
             ]
+        elif "result.value.location" in x:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                {'$group': {
+                    '_id': {
+                        "country":"$result.value.location.country_ch",
+                        "province":"$result.value.location.province",
+                        "city":"$result.value.location.city",
+                    },
+                    'city_count':  {'$sum': 1},
+
+                }},
+                {'$sort': {'city_count': -1}},
+                {
+                    '$group': {
+                        "_id": {
+                            "country": "$_id.country",
+                            "province": "$_id.province",
+                        },
+                        'city': {'$push':  {"city_name":"$_id.city","count":"$city_count"}},
+                        'province_count':  {'$sum': "$city_count"},
+                    }
+                },
+                {'$sort': {'province_count': -1}},
+                {
+                    '$group': {
+                        "_id": {
+                            "country": "$_id.country",
+                        },
+                        'province': {'$push':  {"province_name":"$_id.province","province_count":"$province_count", "city":"$city"}},
+                        'country_count':  {'$sum': '$province_count'},
+                    }
+                },
+                {'$sort': {'country_count': -1}},
+                # {'$project': {"_id": 1, 'count': 1}}
+            ]
         else:
             pipeline = [
                 {'$project': {"task_id": 1, 'result': 1}},
@@ -671,11 +710,14 @@ def classify_by_key(request):
         # logging.debug(x)
         context['data'][x] = []
         for i in result_set.aggregate(pipeline):
+            # logging.debug(i)
             if not i['_id']:
                 continue
             if isinstance(i['_id'], dict):
                 if 'version' in i['_id']:
                     i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
+                elif 'product' not in i['_id']:
+                    pass
                 else:
                     i['_id'] = i['_id']['product']
 

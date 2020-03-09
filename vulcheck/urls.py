@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^get_total_html$', views.get_total_html),  # 获得单个任务扫描的结果
     url(r'^delete_task$', views.delete_task),  # 删除任务
 
-    url(r'^classify_by_key$', views.classify_by_key),  # 获得单个任务扫描的结果
+    url(r'^classify_by_key$', views.classify_by_key),  # 统计信息左侧 各个数据的数目
     url(r'^get_scan_list$', views.get_scan_list),  # 获得每一条结果的list[]
     url(r'^get_scan_vul_iil_domain_list$', views.get_scan_vul_iil_domain_list),  # 获得只有漏洞和违法信息结果的list[]
     url(r'^total_one_detail_html$', views.total_one_detail_html),  # 单条数据的HTML
