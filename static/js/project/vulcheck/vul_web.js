@@ -23,7 +23,7 @@ function get_vul_keyword() {
         // dataType: "json",
         type: "get",
         success: function (res) {
-            console.log(res);
+            // console.log(res);
 
             let html = `<select name="result.value.vulnerables.name">`;
             html += ` <option value="">漏洞名称</option>`;
@@ -39,6 +39,7 @@ function get_vul_keyword() {
 }
 
 function ill_web_top_content(res) {
+    console.log(res)
     var data = [];//原始数据
     var dataafter =[];//超出范围处理后数据
     var maxvalue = 100;//最大值
@@ -52,7 +53,7 @@ function ill_web_top_content(res) {
         tooltip: {
             trigger: 'item',
             formatter: function(parames){
-                if(data[parames.dataIndex-2]) return parames.name + '\n' + data[parames.dataIndex-2].value;
+                if(data[parames.dataIndex-2]) return parames.name + ':' + data[parames.dataIndex-2].value;
             }
         },
         series:[{
@@ -91,32 +92,22 @@ function ill_web_top_content(res) {
             ],
 
             itemStyle: {
-                normal: {
-                    label: {
-                        show: true,
-                        formatter: function(parames){
-                            if(data[parames.dataIndex-2].value)
-
-                                return parames.name + '\n' + data[parames.dataIndex-2].value;
-                        }
-                    },
-                    borderWidth:2
-                },
-                emphasis: {
-                    label: {
-                        show: true
-                    }
-                }
+                borderWidth:2
             },
             label: {
-                normal: {
-                    fontSize: 12
+                fontSize: 12,
+                formatter: function(parames){
+                    if(data[parames.dataIndex-2].value)
+
+                        return parames.name + '\n' + data[parames.dataIndex-2].value;
                 }
             },
-            data: {
-                name: '漏洞统计',
-                children: dataafter
-            }
+            data: [
+                {
+                    name: '漏洞统计',
+                    children: dataafter
+                }
+            ]
 
         }]
     }
