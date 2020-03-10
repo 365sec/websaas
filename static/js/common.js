@@ -137,24 +137,36 @@ function refresh() {
 
 // 添加分页
 function addPagination(nowpage,maxpage) {
-    nowpage = Number(nowpage);
-    maxpage = Number(maxpage);
+    nowpage = Number(nowpage);//当前页码
+    maxpage = Number(maxpage);//最大页码
     var pagebtn = '';
-    var btnnum = 5;
+    var btnnum = 5;  //展示页码数 为奇数
     if(maxpage <= btnnum){
         for(var i = 1;i <= maxpage; i++){
             pagebtn +='<li data-page="'+i+'">'+i+'</li>';
         }
     }else{
         if(nowpage <= Math.ceil(btnnum/2)){
+            // 前几页
+
             for(var i = 1;i <= btnnum; i++){
                 pagebtn +='<li data-page="'+i+'">'+i+'</li>';
             }
+            pagebtn +='…<li data-page="'+maxpage+'">'+maxpage+'</li>';
         }else if(nowpage < maxpage - Math.floor(btnnum/2)){
+            // 中间页码
+            pagebtn +='<li data-page="1">'+1+'</li>';
+            if(nowpage !== (Math.ceil(btnnum/2)+1))pagebtn +='…'
             for(var i = nowpage-Math.floor(btnnum/2) ;i <= nowpage+Math.floor(btnnum/2); i++){
                 pagebtn +='<li data-page="'+i+'">'+i+'</li>';
             }
+            if(nowpage !== (maxpage-Math.floor(btnnum/2)-1))pagebtn +='…'
+
+            pagebtn +='<li data-page="'+maxpage+'">'+maxpage+'</li>';
+
         }else{
+            // 后几页
+            pagebtn +='<li data-page="1">'+1+'</li>…';
             for(var i = maxpage-btnnum+1;i <= maxpage; i++){
                 pagebtn +='<li data-page="'+i+'">'+i+'</li>';
             }
@@ -165,17 +177,19 @@ function addPagination(nowpage,maxpage) {
 
     var pagination = '<ul>' ;
     if(nowpage > 1){
-        pagination +='<button data-page="'+(nowpage-1)+'" class="pagination-link prev-link">上一页</button>' ;
+        pagination +='<li data-page="'+(nowpage-1)+'" class="pagination-link prev-link">上一页</li>' ;
     }else{
-        pagination +='<button data-page="" class="pagination-link prev-link disabled" disabled>上一页</button>' ;//nowpage=1不可选
+        pagination +='<li data-page="" class="pagination-link prev-link disabled" disabled>上一页</li>' ;//nowpage=1不可选
     }
     pagination += pagebtn;
     if(nowpage < maxpage){
-        pagination +='<button data-page="'+(Number(nowpage)+1)+'" class="pagination-link next-link">下一页</button>' ;
+        pagination +='<li data-page="'+(Number(nowpage)+1)+'" class="pagination-link next-link">下一页</li>' ;
     }else{
-        pagination +='<button data-page="" class="pagination-link next-link disabled" disabled>下一页</button> ';//nowpage=maxpage不可选
+        pagination +='<li data-page="" class="pagination-link next-link disabled" disabled>下一页</li> ';//nowpage=maxpage不可选
     }
-    pagination += '<span style="margin: 0 10px">'+nowpage + '/' + maxpage+'页</span></ul>';
+    pagination += '<span style="margin: 0 10px"><input class="pagination-input" type="text" placeholder="'+nowpage + '" value="'+nowpage+'" oninput="pageOverflow(this,'+maxpage+')"/>/' + maxpage+'页</span>' +
+        '<li  data-page="'+nowpage+'" class="pagination-link">跳转</li><span class="jump-text" style="color: red;"></span>' +
+        '</ul>';
     $('.pagination').html(pagination);
     if(location.hash.split('?')[1]){//若存在参数
         if ( nowpage !== location.hash.split('?')[1].split('=')[1]){
@@ -186,9 +200,17 @@ function addPagination(nowpage,maxpage) {
         // 不存在参数默认为1
         history.pushState(null,null,location.href.split('?')[0]+'?page=1');
     }
-    $('.pagination>ul li[data-page='+nowpage+']').addClass('active').siblings().removeClass('active')//当前页面高亮
+    $('.pagination>ul li[data-page='+nowpage+']:not(".pagination-link")').addClass('active').siblings().removeClass('active')//当前页面高亮
+    $('.pagination-input').on('change',function () {
+        $(this).parent().next().attr('data-page',$(this).val())
+    })
 }
-
+function pageOverflow(obj,maxpage){
+    if(obj.value<1 || obj.value > maxpage){
+        $('.jump-text').text('请输入正确页码');
+        obj.value = ''
+    }
+}
 
 // 全选
 $(document).on('change','.checkbox-single input',function(){

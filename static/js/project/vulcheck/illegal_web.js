@@ -223,7 +223,7 @@ function ill_web_table_page(page) {
     });
 }
 
-$(document).on('click', '.illgal-web.pagination>ul>*', function () {
+$(document).on('click', '.illgal-web.pagination>ul>li', function () {
     var page = $(this).attr('data-page'); // 获取按钮代表的页码
     ill_web_table_page(page)//点击页码获取数据
 });

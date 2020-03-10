@@ -376,6 +376,13 @@ table td{
     opacity: .2;
     cursor: not-allowed;
 }
+.pagination ul input {
+    padding: 4px 12px;
+    margin: 0 5px;
+    max-width: 50px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
 /*分页 end*/
 
 
