@@ -665,6 +665,7 @@ def classify_by_key(request):
                 {'$group': {
                     '_id': {
                         "country":"$result.value.location.country_ch",
+                        "country_code": "$result.value.location.country_code",
                         "province":"$result.value.location.province",
                         "city":"$result.value.location.city",
                     },
@@ -676,6 +677,7 @@ def classify_by_key(request):
                     '$group': {
                         "_id": {
                             "country": "$_id.country",
+                            "country_code": "$_id.country_code",
                             "province": "$_id.province",
                         },
                         'city': {'$push':  {"city_name":"$_id.city","count":"$city_count"}},
@@ -687,6 +689,8 @@ def classify_by_key(request):
                     '$group': {
                         "_id": {
                             "country": "$_id.country",
+                            "country_code": "$_id.country_code",
+
                         },
                         'province': {'$push':  {"province_name":"$_id.province","province_count":"$province_count", "city":"$city"}},
                         'country_count':  {'$sum': '$province_count'},

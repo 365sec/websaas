@@ -59,7 +59,41 @@ function classify_by_key(filter_param) {
     temp_list.push({"result.value.illegality.plugin_name":data['data']["result.value.illegality.plugin_name"]});
     temp_list.push({"result.value.vulnerables.plugin_name":data['data']["result.value.vulnerables.plugin_name"]});
     let html = ``;
+    let location = data['data']["result.value.location"];
     console.log(data['data']["result.value.location"]);
+    html += `<div>
+                <div class="key-title">国家\地区</div>
+                <ul  class="key-content clearfix">`;
+    for(let country in location){
+        let country_name = location[country]['_id']['country']||'其他';
+        html += `<li>
+                    <img src="/static/img/countries_flags/${location[country]['_id']['country_code']}.png" alt="${location[country]['_id']['country_code']}.png" width="16px" style="border: 1px solid #eee;">
+                    <a class="key-content-val" onclick="add_filter_param('result.value.location.country_ch','${country_name}')">${country_name}</a>
+                    <span class="key-content-data-country float-right">&nbsp;&nbsp;&nbsp;${location[country]['country_count']}<i class="iconfont icon-arrow float-right"></i></span>
+                </li>`;
+        html += `<div style="display: none">
+                    <ul  class="key-content clearfix">`;
+        for(let province in location[country]['province']){
+            let province_name = location[country]['province'][province]['province_name']||'未知';
+            html += `<li>
+                    <a class="key-content-val" onclick="add_filter_param('result.value.location.province','${province_name}')">${province_name}</a>
+                    <span class="key-content-data-province float-right">&nbsp;&nbsp;&nbsp;${location[country]['province'][province]['province_count']}<i class="iconfont icon-arrow float-right"></i></span>
+                </li>`;
+        html += `<div style="display: none">
+                    <ul  class="key-content clearfix">`;
+                for(let city in location[country]['province'][province]['city']){
+                    let city_name = location[country]['province'][province]['city'][city]['city_name']||'未知';
+                    html += `<li>
+                            <a class="key-content-val" onclick="add_filter_param('result.value.location.city','${city_name}')">${city_name}</a>
+                            <span class="key-content-data-city float-right">&nbsp;&nbsp;&nbsp;${location[country]['province'][province]['city'][city]['count']}</span>
+                        </li>`;
+                }
+                html += `</ul></div>`;
+        }
+        html += `</ul></div>`;
+    }
+    html += `</ul></div>`;
+
     for(let value of temp_list)
     {
         for(let key in value)
@@ -70,9 +104,9 @@ function classify_by_key(filter_param) {
                 for (let i in value[key]) {
                     let val = value[key][i]['_id'];
                     html += `<li>
-                                        <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a>
-                                        <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${value[key][i]['count']}</span>
-                                    </li>`;
+                                <a class="key-content-val" onclick="add_filter_param('${key}','${val}')">${val}</a>
+                                <span class="key-content-data float-right">&nbsp;&nbsp;&nbsp;${value[key][i]['count']}</span>
+                            </li>`;
                 }
                 html += `</ul></div>`;
         }
@@ -186,7 +220,7 @@ function get_scan_list_page(page, filter_param) {
         data: data,
         success: function (res) {
             let max_page = parseInt(res['max_page']);
-            console.log(res);
+            // console.log(res);
             let html = get_scan_list_page_html(res);
             $('.classify-content-data-all').html(html);
             addPagination(page, max_page);
@@ -235,10 +269,13 @@ function get_scan_list_page_html(res) {
         let b = new Base64();
         detail = b.encode(detail);
         // console.log(res['data'][x]['result']['value']);
-        let country =""
+        let country ="";
+        let country_code =""
+
         if (res['data'][x]['result']['value'].hasOwnProperty('location'))
         {
             country = res['data'][x]['result']['value']['location']['country_ch'] || "";
+            country_code = res['data'][x]['result']['value']['location']['country_code'] || "";
         }
         let protocols = res['data'][x]['result']['value']['protocols'] || "";
 
@@ -249,7 +286,7 @@ function get_scan_list_page_html(res) {
 
         if (vulnerables.length>0)
         {
-            vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
+            vul_html =`<li><i class="iconfont icon-vulnerables"></i>&nbsp;&nbsp;插件扫描：${vulnerables.length}</li>`;
             let vul_reduce = vulnerables.reduce(function (prev,res) {
                 if(prev.hasOwnProperty(res['name']))
                 {
@@ -268,7 +305,7 @@ function get_scan_list_page_html(res) {
         let ill_html =``;
         if (illegality.length>0)
         {
-            ill_html =`<li>非法信息：${illegality.length}</li>`;
+            ill_html =`<li><i class="iconfont icon-warn"></i>&nbsp;&nbsp;非法信息：${illegality.length}</li>`;
 
             let ill_reduce = illegality.reduce(function (prev,res) {
                 if(prev.hasOwnProperty(res['name']))
@@ -286,18 +323,20 @@ function get_scan_list_page_html(res) {
             }
         }
 
-        // console.log(res['data'][x]['result']);
+        // 获取国家国旗
+        let countryline='';
+        if(country)countryline= `<li><i class="iconfont icon-country"></i>&nbsp;&nbsp;国家/地区：<img src="/static/img/countries_flags/`+country_code+`.png" alt="`+country_code+`.png" width="16px" style="border: 1px solid #eee;">&nbsp;&nbsp;${country}</li>`;
         html += `<div class="classify-content-data">
                             <div class="classify-content-data-ip">
                                 <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']} <i class="iconfont icon-link"></i></a>
                              </div>
                              <div class="classify-content-data-content clearfix">
                                 <ul class="classify-content-data-content-info float-left">
-                                    <li>标题：${title}</li>
-                                    <li>ip：${ip}</li>
-                                    <li>国家/地区：${country}</li>
-                                    <li>端口：${protocols}</li>
-                                    <li>保存时间：${save_time}</li>
+                                    <li><i class="iconfont icon-title"></i>&nbsp;&nbsp;标题：${title}</li>
+                                    <li><i class="iconfont icon-ip"></i>&nbsp;&nbsp;ip：${ip}</li>
+                                    ${countryline}
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;端口：${protocols}</li>
+                                    <li><i class="iconfont icon-time"></i>&nbsp;&nbsp;保存时间：${save_time}</li>
                                     ${vul_html}
                                     ${ill_html}
                                 </ul>
@@ -310,6 +349,7 @@ function get_scan_list_page_html(res) {
 
     return html
 }
+
 function get_scan_list_page_report_html(res) {
     let html = ``;
     for (let x in res['data']) {
@@ -858,4 +898,8 @@ $(document).on('click','.columnT-sec-title',function () {
 
 });
 
-//table内容过长
+//总览左侧国家展开
+$(document).on('click','.key-content-data-country,.key-content-data-province',function () {
+    $(this).find('.icon-arrow').toggleClass('iconRotate');
+    $(this).parent().next().slideToggle();
+});

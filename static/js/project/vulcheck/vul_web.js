@@ -39,48 +39,26 @@ function get_vul_keyword() {
 }
 
 function ill_web_top_content(res) {
-    // letthreat_content").html("").append(html); html = ``;
-    //     // for(let x of res['data'])
-    //     // {
-    //     //     html +=`<div class="ill-web-top-number all">${x['_id']} <div id="ill-web-top-number-heilian-web">${x['count']}</div></div>`;
-    //     // }
-    //     // $("#vue_web_
-
-    var data = [{
-        name: '漏洞统计',
-        children:[{'value': 273, 'name': "电子邮件地址泄漏"},
-            {'value': 31, 'name': "测试文件泄露"},
-            {'value': 30, 'name': "敏感目录泄露"},
-            {'value': 13, 'name': "敏感文件泄露"},
-            {'value': 11, 'name': "Flash参数配置风险"},
-            {'value': 10, 'name': "网站路径泄漏风险"},
-            {'value': 8, 'name': "CGI默认目录信息泄露"},
-            {'value': 8, 'name': "备份文件泄漏"},
-            {'value': 8, 'name': "跨站脚本攻击"},
-            {'value': 8, 'name': "SQL盲注"},
-            {'value': 8, 'name': "CKEditor编辑器泄漏"},
-            {'value': 7, 'name': "eWebEditor编辑器泄漏"},
-            {'value': 7, 'name': "数据库信息泄漏"},
-            {'value': 5, 'name': "PHPINFO文件信息泄漏"},
-            {'value': 3, 'name': "后台管理地址泄露"},
-            {'value': 3, 'name': "默认目录泄漏"},
-            {'value': 3, 'name': "服务端调试信息泄漏"},
-            {'value': 3, 'name': "内网IP地址泄漏"},
-            {'value': 2, 'name': "站点地图泄露"},
-            {'value': 1, 'name': "Dreamware远程数据库连接测试文件泄露"}]}
-
-    ];
+    var data = [];//原始数据
+    var dataafter =[];//超出范围处理后数据
+    var maxvalue = 100;//最大值
+    for(let x of res['data'])
+    {
+        data.push({'name': x['_id'],'value':x['count']});
+        dataafter.push(x['count']> maxvalue?{'name': x['_id'],'value':100}:{'name': x['_id'],'value':x['count']});
+    }
     var myChart = echarts.init(document.getElementById('vue_web_threat_content'));
     var option = {
         tooltip: {
             trigger: 'item',
-            formatter: "{b}:{c}"
+            formatter: function(parames){
+                if(data[parames.dataIndex-2]) return parames.name + '\n' + data[parames.dataIndex-2].value;
+            }
         },
         series:[{
             type: 'treemap',
             width: '100%',
             height: '100%',
-            nodeClick: false,
             breadcrumb: false,
             roam: false,
             nodeClick: false,
@@ -116,7 +94,11 @@ function ill_web_top_content(res) {
                 normal: {
                     label: {
                         show: true,
-                        formatter: "{b}\n{c}"
+                        formatter: function(parames){
+                            if(data[parames.dataIndex-2].value)
+
+                                return parames.name + '\n' + data[parames.dataIndex-2].value;
+                        }
                     },
                     borderWidth:2
                 },
@@ -131,7 +113,10 @@ function ill_web_top_content(res) {
                     fontSize: 12
                 }
             },
-            data: data
+            data: {
+                name: '漏洞统计',
+                children: dataafter
+            }
 
         }]
     }
