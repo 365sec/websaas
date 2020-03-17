@@ -140,6 +140,11 @@ def get_beian_html(request):
     return render(request, r'vulcheck\beian.html', context)
 
 
+def get_abnormal_html(request):
+    context = {}
+    return render(request, r'AbnormalWebsite\index.html', context)
+
+
 def get_report_html(request):
     task_id = request.GET.get("task_id")
     task_id = str(task_id)

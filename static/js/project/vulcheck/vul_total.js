@@ -151,7 +151,12 @@ function add_filter_param(key, val) {
         filter_param[key1] = product;
         filter_param[key2] = version;
     } else {
+        if (val ==="未知"||val==="其他")
+        {
+            val = null;
+        }
         filter_param[key] = val
+
     }
 
     classify_by_key(filter_param);
@@ -270,7 +275,7 @@ function get_scan_list_page_html(res) {
         detail = b.encode(detail);
         // console.log(res['data'][x]['result']['value']);
         let country ="";
-        let country_code =""
+        let country_code ="";
 
         if (res['data'][x]['result']['value'].hasOwnProperty('location'))
         {
@@ -325,7 +330,20 @@ function get_scan_list_page_html(res) {
 
         // 获取国家国旗
         let countryline='';
-        if(country)countryline= `<li><i class="iconfont icon-country"></i>&nbsp;&nbsp;国家/地区：<img src="/static/img/countries_flags/`+country_code+`.png" alt="`+country_code+`.png" width="16px" style="border: 1px solid #eee;">&nbsp;&nbsp;${country}</li>`;
+        if(country)
+        {
+            let tmp = country;
+            let province = res['data'][x]['result']['value']['location']['province'] || "";
+            let city = res['data'][x]['result']['value']['location']['city'] || "";
+            if (province)
+            {
+                tmp +="&nbsp;"+province;
+            }
+            if (city) {
+                tmp +="&nbsp;"+city;
+            }
+            countryline= `<li><i class="iconfont icon-country"></i>&nbsp;&nbsp;国家/地区：<img src="/static/img/countries_flags/`+country_code+`.png" alt="`+country_code+`.png" width="16px" style="border: 1px solid #eee;">&nbsp;&nbsp;${tmp}</li>`;
+        }
         html += `<div class="classify-content-data">
                             <div class="classify-content-data-ip">
                                 <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']} <i class="iconfont icon-link"></i></a>
@@ -463,6 +481,13 @@ function get_detail_html(info) {
     console.log(info);
     //基础信息
     $("#base_info_ip").html("").append(info['result']['value']['ip']||"");
+    if (!info['result']['value'].hasOwnProperty("location"))
+    {
+        info['result']['value']['location']= {};
+        info['result']['value']['location']['country_ch']= "";
+        info['result']['value']['location']['province']= "";
+        info['result']['value']['location']['city']= "";
+    }
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">国家/地区</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['country_ch']||""}</div>

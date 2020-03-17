@@ -43,8 +43,11 @@ urlpatterns = [
     url(r'^get_black_domain_library_html$', views.domain_library_html),  # 黑域名的HTML
     url(r'^get_beian_html$', views.get_beian_html),  # 备案的HTML
     url(r'^get_beian_data$', views.get_beian_data),  # 备案的数据
-    # url(r'/index/$', views.index),
-    # url(r'.*', views.index),
+
+    # --------------- 异常网站---------------
+    url(r'^get_abnormal_html$', views.get_abnormal_html),  # 备案的HTML
+
+
     url(r'^index$', views.index),
     url(r'', views.index1),
 ]

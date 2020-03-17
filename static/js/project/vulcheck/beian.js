@@ -44,9 +44,15 @@ function beian_table_page(page) {
                 html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['title']||""}">${res['data'][x]['result']['value']['title']||""}</p></td>`;
                 html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['domain']||""}">${res['data'][x]['result']['value']['domain']||""}</p></td>`;
                 html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['value']['ip']||""}">${res['data'][x]['result']['value']['ip']||""}</p></td>`;
-                let country_ch =res['data'][x]['result']['value']['location']['country_ch'] || "";
-                let province =res['data'][x]['result']['value']['location']['province']||"";
-                let city =res['data'][x]['result']['value']['location']['city']||"";
+                let country_ch = "";
+                let province= "";
+                let city= "";
+                if (res['data'][x]['result']['value'].hasOwnProperty("location"))
+                {
+                    country_ch = res['data'][x]['result']['value']['location']['country_ch'] || "";
+                    province =res['data'][x]['result']['value']['location']['province']||"";
+                    city =res['data'][x]['result']['value']['location']['city']||"";
+                }
                 html+=`<td><p class="tabletd-overflow" title="${country_ch+"&nbsp;"+province+"&nbsp;"+city}">${country_ch+"&nbsp;"+province+"&nbsp;"+city}</p></td>`;
                 let icp_code = ""; //icp备案号
                 let site_name = "";//备案网站名称 如人民网

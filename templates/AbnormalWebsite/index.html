@@ -1,0 +1,35 @@
+{#任务扫描 index#}
+<div class="main-content-card">
+    <div class="main-content-card-title">
+        <title>首页</title>
+        <link rel="icon" type="image/x-icon" href="/static/img/icon.ico" />
+        <span>漏洞检测概览</span>
+        <div class="main-content-card-btngroup">
+            <div class="main-content-card-btngroup-search">
+                <input type="text" placeholder="查找"><!--
+                --><button type="button"><i class="iconfont icon-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="main-content-card-table">
+        <table class="table table-bordered">
+            <thead>
+            <th width="15%">task_id</th>
+            <th width="120px">域名</th>
+            <th width="120px">重定向信息</th>
+            <th width="8%">状态码</th>
+            <th width="12%" >ip</th>
+            <th width="80px">是否存活</th>
+            <th width="80px">网页变化</th>
+            <th width="80px">是否警告</th>
+            <th width="80px" >更新时间</th>
+            </thead>
+            <tbody id="abnormal_tbody">
+            <tr><td colspan="8" style="text-align: center">暂无数据</td></tr>
+            </tbody>
+        </table>
+        <div class="pagination abnormal ">
+
+        </div>
+    </div>
+</div>
