@@ -22,10 +22,6 @@ function vulcheckIndexTable() {
     vulcheckIndexTablePage(page)//刷新后退加载页码表格数据
 }
 
-$(document).on('click', '.index.pagination>ul>li', function () {
-    var page = $(this).attr('data-page'); // 获取按钮代表的页码
-    vulcheckIndexTablePage(page)//点击页码获取数据
-});
 
 function vulcheckIndexTablePage(page) {
     // 模拟ajax异步获取数据
