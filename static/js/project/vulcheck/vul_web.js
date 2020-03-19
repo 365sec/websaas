@@ -206,12 +206,6 @@ function vul_web_table_page(page) {
     });
 }
 
-$(document).on('click', '.vul-web.pagination>ul>li', function () {
-    var page = $(this).attr('data-page'); // 获取按钮代表的页码
-    vul_web_table_page(page)//点击页码获取数据
-});
-
-
 function get_vul_total() {
     /*获得漏洞列表上部分的统计信息*/
     $.ajax({

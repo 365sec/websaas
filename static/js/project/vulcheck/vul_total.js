@@ -205,11 +205,6 @@ function get_scan_list(filter_param) {
 
 }
 
-$(document).off('click', '.total.pagination>ul>li').on('click', '.total.pagination>ul>li', function () {
-    var page = $(this).attr('data-page'); // 获取按钮代表的页码
-    get_scan_list_page(page, filter_param)//点击页码获取数据
-});
-
 
 function get_scan_list_page(page, filter_param) {
     let data = {

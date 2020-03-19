@@ -37,10 +37,10 @@ function vulcheck_all_task_able() {
     get_task_list(page);//刷新后退加载页码表格数据
 }
 
-$(document).off('click','.task.pagination>ul>li').on('click', '.task.pagination>ul>li', function () {
-    let page = $(this).attr('data-page'); // 获取按钮代表的页码
-    get_task_list(page)//点击页码获取数据
-});
+// $(document).off('click','.task.pagination>ul>li').on('click', '.task.pagination>ul>li', function () {
+//     let page = $(this).attr('data-page'); // 获取按钮代表的页码
+//     get_task_list(page)//点击页码获取数据
+// });
 
 
 

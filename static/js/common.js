@@ -183,13 +183,13 @@ function addPagination(nowpage,maxpage) {
     if(nowpage > 1){
         pagination +='<li data-page="'+(nowpage-1)+'" class="pagination-link prev-link">上一页</li>' ;
     }else{
-        pagination +='<li data-page="" class="pagination-link prev-link disabled" disabled>上一页</li>' ;//nowpage=1不可选
+        pagination +='<li data-page="" class="pagination-link prev-link disabled">上一页</li>' ;//nowpage=1不可选
     }
     pagination += pagebtn;
     if(nowpage < maxpage){
         pagination +='<li data-page="'+(Number(nowpage)+1)+'" class="pagination-link next-link">下一页</li>' ;
     }else{
-        pagination +='<li data-page="" class="pagination-link next-link disabled" disabled>下一页</li> ';//nowpage=maxpage不可选
+        pagination +='<li data-page="" class="pagination-link next-link disabled">下一页</li> ';//nowpage=maxpage不可选
     }
     pagination += '<span style="margin: 0 10px"><input class="pagination-input" type="text" placeholder="'+nowpage + '" value="'+nowpage+'" oninput="pageOverflow(this,'+maxpage+')"/>/' + maxpage+'页</span>' +
         '<li  data-page="'+nowpage+'" class="pagination-link">跳转</li><span class="jump-text" style="color: red;"></span>' +
@@ -215,7 +215,12 @@ function pageOverflow(obj,maxpage){
         obj.value = ''
     }
 }
-
+$(document).off('click', '.pagination>ul>li:not(".disabled")').on('click', '.pagination>ul>li:not(".disabled")', function () {
+    var page = $(this).attr('data-page'); // 获取按钮代表的页码
+    var func = $(this).parents('.pagination').attr('data-func');
+    var method = func+'(page,filter_param)';
+    eval(method);
+});
 // 全选
 $(document).on('change','.checkbox-single input',function(){
     var inputname = $(this).attr('name');

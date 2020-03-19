@@ -86,10 +86,6 @@ function beian_table_page(page) {
         }
     });
 }
-$(document).on('click', '.beian.pagination>ul>li', function () {
-    var page = $(this).attr('data-page'); // 获取按钮代表的页码
-    beian_table_page(page)//点击页码获取数据
-});
 
 function beian_search() {
     let post_data = $('#beian_form').serializeArray();
