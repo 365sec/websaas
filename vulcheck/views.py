@@ -145,6 +145,11 @@ def get_abnormal_html(request):
     return render(request, r'AbnormalWebsite\index.html', context)
 
 
+def get_abnormal_task_html(request):
+    context = {}
+    return render(request, r'AbnormalWebsite\task.html', context)
+
+
 def get_report_html(request):
     task_id = request.GET.get("task_id")
     task_id = str(task_id)
@@ -703,6 +708,19 @@ def classify_by_key(request):
                 },
                 {'$sort': {'country_count': -1}},
                 # {'$project': {"_id": 1, 'count': 1}}
+            ]
+        elif "result.value.illegal_feature.name" in x:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                {'$unwind': "$result.value.illegal_feature"},
+                {'$group': {
+                    '_id': "$" + x,
+                    'count': {'$sum': 1},
+                }},
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
             ]
         else:
             pipeline = [

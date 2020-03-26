@@ -45,7 +45,8 @@ urlpatterns = [
     url(r'^get_beian_data$', views.get_beian_data),  # 备案的数据
 
     # --------------- 异常网站---------------
-    url(r'^get_abnormal_html$', views.get_abnormal_html),  # 备案的HTML
+    url(r'^get_abnormal_html$', views.get_abnormal_html),  # 异常网站的HTML
+    url(r'^get_abnormal_task_html$', views.get_abnormal_task_html),  # 异常网站的HTML
 
 
     url(r'^index$', views.index),

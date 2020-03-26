@@ -6,8 +6,36 @@
         <span>漏洞检测概览</span>
         <div class="main-content-card-btngroup float-right">
             <div class="main-content-card-btngroup-search" >
-                <input type="text" placeholder="查找" id="total_search_"><!--
-                --><button type="button" ><i class="iconfont icon-search"></i></button>
+                <form  method="post" role="form" id="abnormal_form">
+                    <input type="text" placeholder="任务id" name="task_id">
+{#                    <input type="text" placeholder="任务名称"  name="task_name">#}
+
+                    <div >
+                        <select  id="abnormal_select_name" name="task_id">
+
+
+                        </select>
+                    </div>
+                    <div >
+                        <select name="alive">
+                            <option value="">是否存活</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                    <input type="text" placeholder="status_code" name="status_code">
+{#                    <input type="text" placeholder="is_alarm" name="is_alarm">#}
+                    <div >
+                        <select name="is_alarm">
+                            <option value="">是否警告</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+{#                    <input type="text" placeholder="日期" name="result.value.save_time">#}
+                    <button type="button" onclick="abnormal_web_table_page(1)" ><i class="iconfont icon-search"></i></button>
+
+                </form>
             </div>
         </div>
     </div>

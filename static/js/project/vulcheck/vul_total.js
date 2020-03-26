@@ -660,21 +660,26 @@ function get_detail_html(info) {
                 <div class="columnT-tr-right">${info['result']['value']['save_time']||""}</div>
                 <div class="columnT-tip">点击展开</div>
             </div>`;
-    html+=`<div  class="columnT-tr clearfix">
+    if (info['result']['value'].hasOwnProperty("statistics"))
+    {
+        html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">扫描URL总数</div>
                 <div class="columnT-tr-right">${info['result']['value']['statistics']['total']||""}</div>
                 <div class="columnT-tip">点击展开</div>
             </div>`;
-    html+=`<div  class="columnT-tr clearfix">
+        html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">URL_LIST</div>
                 <div class="columnT-tr-right">
                 `;
-    for (let i in info['result']['value']['statistics']['urls'])
-    {
-        let url = info['result']['value']['statistics']['urls'][i];
-        // console.log(url);
-        html+=`<div>${url||""}</div>`;
+        for (let i in info['result']['value']['statistics']['urls'])
+        {
+            let url = info['result']['value']['statistics']['urls'][i];
+            // console.log(url);
+            html+=`<div>${url||""}</div>`;
+        }
     }
+
+
 
     html+=`    </div>
                 <div class="columnT-tip">点击展开</div>

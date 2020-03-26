@@ -7,6 +7,7 @@ document.write("<script type='text/javascript' src='/static/js/project/vulcheck/
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/vul_web.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/vulcheck/beian.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/AbnormalWebsite/index.js'></script>");
+document.write("<script type='text/javascript' src='/static/js/project/AbnormalWebsite/task.js'></script>");
 $(function() {
     // 左侧手风琴点击样式变化
     $('.sidebar-firstNav').click(function () { //点击一级触发
@@ -83,6 +84,9 @@ $(function() {
                 break;
             case "vulcheck-get_abnormal_html":
                 get_abnormal_html();
+                break;
+            case "vulcheck-get_abnormal_task_html":
+                get_abnormal_task_html();
                 break;
             default:
         }

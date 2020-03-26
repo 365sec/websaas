@@ -100,16 +100,16 @@ def classify_by_key():
         # 'result.value.location.city',
         # 'result.value.location.province',
         # 'result.value.location.country_ch',
-        'result.value.location',
+        # 'result.value.location',
         # 'result.value.language',
-        'result.value.cdn',
-        'result.value.component',
-        # 'result.value.illegal_feature.name',
+        # 'result.value.cdn',
+        # 'result.value.component',
+        'result.value.illegal_feature.name',
     ]
 
     for x in classify:
-        # match = {'$match': {x: {'$exists': True}}}
-        match = {'$match': {}}
+        match = {'$match': {x: {'$exists': True}}}
+        # match = {'$match': {}}
 
         # match['$match']['result.value.location.province'] = "Hubei"
         # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
@@ -167,6 +167,19 @@ def classify_by_key():
 
                 # {'$project': {"_id": 1, 'count': 1}}
             ]
+        elif "result.value.illegal_feature.name" in x:
+            pipeline = [
+                {'$project': {"task_id": 1, 'result': 1}},
+                {'$unwind': '$result'},
+                match,
+                {'$unwind': "$result.value.illegal_feature"},
+                {'$group': {
+                    '_id': "$" + x,
+                    'count': {'$sum': 1},
+                }},
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
+            ]
         else:
             pipeline = [
                 {'$project': {"task_id": 1, 'result': 1}},
@@ -176,8 +189,8 @@ def classify_by_key():
                     '_id': "$" + x,
                     'count': {'$sum': 1},
                 }},
-                {'$sort': {'count': -1}},
-                {'$project': {"_id": 1, 'count': 1}}
+                # {'$sort': {'count': -1}},
+                # {'$project': {"_id": 1, 'count': 1}}
             ]
         k = 0
         logging.debug(x)
