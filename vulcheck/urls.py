@@ -32,7 +32,10 @@ urlpatterns = [
     url(r'^total_one_detail_html$', views.total_one_detail_html),  # 单条数据的HTML
     url(r'^get_ill_web_html$', views.get_ill_web_html),  # 网页非法信息的HTML
     url(r'^get_ill_web_data$', views.get_ill_web_data),  # 网页非法信息数据
+    url(r'^get_ill_web_data_wei_fa$', views.get_ill_web_data_wei_fa),  # 网页feature非法信息数据
+    url(r'^get_image_bs64$', views.get_image_bs64),  # 网页非法信息数据
     url(r'^get_ill_keyword$', views.get_ill_keyword),  # 网页非法信息关键词下拉框
+    url(r'^get_ill_feature_keyword$', views.get_ill_feature_keyword),  # 网站非法信息关键词下拉框
     url(r'^get_vul_web_html$', views.get_vul_web_html),  # 网页非法信息的HTML
     url(r'^get_vul_web_data$', views.get_vul_web_data),  # 网页漏洞信息数据
     url(r'^get_vul_keyword$', views.get_vul_keyword),  # 网页漏洞关键词下拉框

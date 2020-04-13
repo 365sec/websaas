@@ -1,17 +1,20 @@
 <div class="main-content-card" style="margin-bottom: 24px">
     <div class="main-content-card-content clearfix">
         <div class="ill-web-top c3 heilian">
-            <div class="ill-web-top-title">暗链检测告警</div>
+            <div class="ill-web-top-title">违法网站检测告警</div>
             <div class="ill-web-top-content">
-                <div class="ill-web-top-number all">发现暗链网站 <div id="ill-web-top-number-heilian-web">0</div></div>
-                <div class="ill-web-top-number read">发现暗链总数 <div id="ill-web-top-number-heilian-num">0</div></div>
+               <div id="ill_feature_top_div">
+
+               </div>
 {#                <div class="ill-web-top-number read">已读警告<div>1212</div></div>#}
 {#                <div class="ill-web-top-number unread">未读警告<div>1212</div></div>#}
             </div>
         </div>
         <div class="ill-web-top c3 guama">
-            <div class="ill-web-top-title">挂马检测告警</div>
+            <div class="ill-web-top-title">暗链\挂马检测告警</div>
             <div class="ill-web-top-content">
+                <div class="ill-web-top-number all">发现暗链网站 <div id="ill-web-top-number-heilian-web">0</div></div>
+                <div class="ill-web-top-number read">发现暗链总数 <div id="ill-web-top-number-heilian-num">0</div></div>
                 <div class="ill-web-top-number all">发现挂马网站<div id="ill-web-top-number-guama-web">0</div></div>
                 <div class="ill-web-top-number all">发现挂马总数<div id="ill-web-top-number-guama-num">0</div></div>
                 <div class="ill-web-top-number all">网页劫持网站<div id="ill-web-top-number-hijack-web">0</div></div>
@@ -40,29 +43,39 @@
         <span>违法网站分析</span>
         <div class="main-content-card-btngroup">
             <form  method="post" role="form" id="ill_web_form">
-                <input type="text" placeholder="关键字" name="keyword">
+{#                <input type="text" placeholder="关键字" name="keyword">#}
                 <div id="ill_web_keyword_select">
                 </div>
-                <input type="text" placeholder="地区" name="result.value.location">
-                <input type="text" placeholder="日期" name="result.value.save_time">
+                <div id="ill_feature_web_keyword_select">
+                </div>
+{#                <input type="text" placeholder="地区" name="result.value.location">#}
+{#                <input type="text" placeholder="日期" name="result.value.save_time">#}
                 <button type="button" onclick="ill_web_search()" ><i class="iconfont icon-search"></i></button>
 
             </form>
         </div>
+        <button onclick="ill_web_table_page_gua_ma(1)">网页挂马</button>
+        <button onclick="ill_web_table_page_an_lian(1)">网站暗链</button>
+        <button onclick="ill_web_table_page_min_gan_ci(1)">敏感关键词</button>
+        <button onclick="ill_web_table_page_jie_chi(1)">网页劫持</button>
+        <button onclick="ill_web_table_page_yellow_img(1)">黄色图片</button>
+        <button onclick="ill_web_table_page_wei_fa(1)">违法特征网站</button>
     </div>
     <div class="main-content-card-content">
         <table class="table table-bordered">
-            <thead>
+
+            <thead id="ill_web_tab_div">
             <th width="15%">网站域名</th>
             <th width="120px">关联IP</th>
             <th width="10%">分类</th>
             <th width="12%">命中关键字</th>
-{#            <th>等级</th>#}
+            <th width="12%">网站类型</th>
             <th width="10%">归属地区</th>
             <th>内容</th>
             <th width="10%">IDC名称</th>
             <th width="160px">扫描时间</th>
             <th width="80px">网页快照</th>
+            <th width="80px">详情</th>
             </thead>
             <tbody>
             <tr><td colspan="8" style="text-align: center">暂无数据</td></tr>
@@ -71,4 +84,25 @@
         <div class="pagination" data-func="ill_web_table_page">
         </div>
     </div>
+</div>
+
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">网页截图</h4>
+            </div>
+            <div class="modal-body">
+                <div id="test_image_div">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
 </div>

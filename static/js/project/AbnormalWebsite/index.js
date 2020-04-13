@@ -25,7 +25,7 @@ function get_all_task_name()
 
         type: "get",
         success: function (res) {
-            console.log(res);
+            // console.log(res);
             res = JSON.parse(res);
             let html = ``;
             html+=`<option value="">选择任务名称</option>`;
@@ -114,6 +114,22 @@ function change_task(task_id)
             location.reload();
         }});
 }
+function stop_task(task_id)
+{
+    let data = {
+        "task_id":task_id,
+    };
+    data= JSON.stringify(data);
+    $.ajax({
+        url: SERVER_IP+'/stop_task',
+        // dataType: "html",
+        data:data,
+        type: "post",
+        success: function (res) {
+        console.log(res);
+            location.reload();
+        }});
+}
 
 function abnormal_delete_task(task_id)
 {
@@ -136,11 +152,8 @@ function abnormal_delete_task(task_id)
         }});
 }
 
-function send_task(url_list,task_name) {
-    let data = {
-        "task_name": task_name,
-        "url":url_list,
-    };
+function send_task(send_data) {
+    let data = send_data;
     data= JSON.stringify(data);
     $.ajax({
         url: SERVER_IP+'/url',

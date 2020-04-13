@@ -17,6 +17,8 @@
             <thead>
             <th width="15%">task_id</th>
             <th width="120px">任务名称</th>
+            <th width="120px">运行总时间（秒）</th>
+            <th width="120px">扫描间隔（秒）</th>
             <th width="120px">任务状态</th>
             <th width="120px">任务下发时间</th>
             <th width="5%" >操作</th>
@@ -44,8 +46,11 @@
                 <h4 class="modal-title" id="myModalLabel">异常网站任务</h4>
             </div>
             <div class="modal-body">
-                <label for="name">任务名称</label>
-                <input id="abnormal_task_name" type="text" name="task_name">
+                <label for="name">任务名称</label> <input id="abnormal_task_name" type="text" name="task_name"><br>
+                <label for="name">运行总时间（秒）</label> <input id="run_all_time" type="text" name="run_all_time" placeholder="1800"><br>
+                <label for="name">扫描间隔时间（秒）</label> <input id="scan_intervals_time" type="text" name="scan_intervals_time" placeholder="300"><br>
+                <label for="name">触发规则次数</label> <input id="alarm_count" type="text" name="alarm_count" placeholder="5"><br>
+
                 <textarea id="abnormal_task_text" class="form-control" rows="18" name="url"></textarea>
                 </div>
             <div class="modal-footer">

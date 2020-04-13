@@ -137,8 +137,6 @@ def classify_by_key():
                         "city": "$result.value.location.city",
                     },
                     'city_count':  {'$sum': 1},
-
-
                 }},
                 {'$sort': {'city_count': -1}},
                 {
@@ -189,8 +187,8 @@ def classify_by_key():
                     '_id': "$" + x,
                     'count': {'$sum': 1},
                 }},
-                # {'$sort': {'count': -1}},
-                # {'$project': {"_id": 1, 'count': 1}}
+                {'$sort': {'count': -1}},
+                {'$project': {"_id": 1, 'count': 1}}
             ]
         k = 0
         logging.debug(x)
@@ -199,7 +197,8 @@ def classify_by_key():
                 continue
             if "result.value.server" in x:
                 i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
-            logging.debug(i)
+            print(i)
+            # logging.debug(i)
         #     k += 1
         # logging.debug(k)
 
@@ -440,19 +439,28 @@ def get_ill_keyword():
     result_set = mongo_db['resultdb']
     # logging.debug(project_set)
     result = {}
+    match = {}
+    match['$match'] = {}
+    match['$match']['$or'] = [
+        {'result.value.illegality.plugin_name': {'$exists': True}},
+        # {'result.value.illegal_feature.name': {'$exists': True}}
+    ]
 
     pipeline = [
         # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+
         {'$project': {'result': 1, 'task_id': 1}},
         {'$unwind': '$result'},
+        match,
         {'$unwind': '$result.value.illegality'},
         {'$group': {
             # '_id': '$result.value.illegality.plugin_name',
             '_id': {
-                'url': '$result.scheme_domain',
-                'plugin_name': '$result.value.illegality.plugin_name',
+                # 'url': '$result.scheme_domain',
+                # 'plugin_name': '$result.value.illegality.plugin_name',
+                'plugin_name': '$result.value.illegality.image_snapshot',
             },
-            # 'count': {'$sum': 1},
+            'count': {'$sum': 1},
         }},
 
     ]
@@ -460,6 +468,29 @@ def get_ill_keyword():
     for i in res:
         logging.debug(i)
 
+
+def get_ill_feature_keyword():
+    """:arg获得违法网站关键词的个数
+    """
+    result_set = mongo_db['resultdb']
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.illegal_feature'},
+        {'$group': {
+            # '_id': '$result.value.illegality.plugin_name',
+            '_id': {
+                'plugin_name': '$result.value.illegal_feature.name',
+            },
+            'count': {'$sum': 1},
+        }},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
 
 def get_vul_keyword():
     """:arg
@@ -538,6 +569,33 @@ def get_all_web():
     for i in res:
         logging.debug(i)
 
+
+
+def get_ill_feature():
+    """:arg
+    违法加上feature
+    """
+    result_set = mongo_db['resultdb']
+    # logging.debug(project_set)
+    result = {}
+    match = {}
+    match = {'$match': {}}
+    match['$match']['$or'] = [
+                            {'result.value.illegality.plugin_name': {'$exists': True}},
+                              {'result.value.illegal_feature.name': {'$exists': True}}
+                              ]
+    pipeline = [
+        {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$skip': 0},
+        {'$limit': 10},
+        {'$sort': {'result.value.save_time': -1}},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    for i in res:
+        logging.debug(i)
 
 def get_vul_iil_domain():
     result_set = mongo_db['resultdb']
@@ -720,7 +778,37 @@ def mongo_search_like():
         result.append(i)
 
 
+def get_image():
+
+    match = {'$match': {"result": {'$exists': True}}}
+    match['$match']['result.value.illegal_feature'] = {'$exists': True}
+
+    result_set = mongo_db['resultdb']
+    pipeline = [
+        {'$unwind': "$result"},
+
+        match,
+        # {'$group': {'_id': "$result.value.illegality.plugin_name", 'count': {'$sum': 1}}},
+        {'$unwind': "$result.value.illegal_feature"},
+        {"$match":{"result.value.illegal_feature.image_snapshot": {'$exists': True}}},
+        {'$project': {
+                '_id': 1,
+                'result.value.illegal_feature.image_snapshot': 1,
+            }
+        },
+        # {'$count': "$_id"}
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        logging.debug(i)
+        sum += 1
+    logging.debug(sum)
+
+
+
 if __name__ == '__main__':
+    # get_image(
+    # get_ill_feature()
     # get_all_vul_count()
     # classify_by_key_vulnerables()
     # classify_by_key_illegality()
@@ -728,11 +816,12 @@ if __name__ == '__main__':
     # classify_by_key_plugin_reduce()
     # classify_by_key_by_domian_reduce()
     # get_vul_iil_domain()
-    # get_ill_keyword()
+    get_ill_keyword()
+    # get_ill_feature_keyword()
     # get_vul_keyword()
     # get_vul_web()
     # get_all_web()
-    classify_by_key()
+    # classify_by_key()
     # classify_by_key1()
     # get_scan_list()
     # get_array_count()

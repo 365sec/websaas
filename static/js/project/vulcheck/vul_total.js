@@ -46,13 +46,57 @@ function classify_by_key(filter_param) {
     let send_data = {};
     send_data['param'] = filter_param;
     let  data = get_classify_by_key(send_data);
+    // console.log(data);
     let temp_list =[];
+    let language = data['data']["result.value.language"].reduce(function (prev,item) {
+        let key = item['_id'].split(":")[0];
+        let version = item['_id'].split(":")[1]||"";
+        let count = item['count'];
+        if (prev.hasOwnProperty(key))
+        {
+            prev[key]['count']+=count;
+            prev[key]['data'].push([version,count]);
+        }
+        else
+        {
+            let res = {};
+            res['count'] = count;
+            res['data'] = [];
+            res['data'].push([version,count]);
+            prev[key] = res;
+        }
+        return prev
+    },{});
+    let server = data['data']["result.value.server"].reduce(function (prev,item) {
+        let key = item['_id'].split(":")[0];
+        let version = item['_id'].split(":")[1]||"-";
+        let count = item['count'];
+        if (prev.hasOwnProperty(key))
+        {
+            prev[key]['count']+=count;
+            prev[key]['data'].push([version,count]);
+        }
+        else
+        {
+            let res = {};
+            res['count'] = count;
+            res['data'] = [];
+            res['data'].push([version,count]);
+            prev[key] = res;
+        }
+        return prev
+    },{});
+    // console.log(server);
+    // console.log(language);
+    let temp_list1 = [];
+    temp_list1.push({"result.value.language":language});
+    temp_list1.push({"result.value.server":server});
     // temp_list.push({"result.value.location.country_ch":data['data']["result.value.location.country_ch"]});
     // temp_list.push({"result.value.location.province":data['data']["result.value.location.province"]});
     // temp_list.push({"result.value.location.city":data['data']["result.value.location.city"]});
-    temp_list.push({"result.value.server":data['data']["result.value.server"]});
+    // temp_list.push({"result.value.server":data['data']["result.value.server"]});
     temp_list.push({"result.value.protocols":data['data']["result.value.protocols"]});
-    temp_list.push({"result.value.language":data['data']["result.value.language"]});
+    // temp_list.push({"result.value.language":data['data']["result.value.language"]});
     temp_list.push({"result.value.cdn":data['data']["result.value.cdn"]});
     temp_list.push({"result.value.component":data['data']["result.value.component"]});
     temp_list.push({"result.value.illegal_feature.name":data['data']["result.value.illegal_feature.name"]});
@@ -60,9 +104,9 @@ function classify_by_key(filter_param) {
     temp_list.push({"result.value.vulnerables.plugin_name":data['data']["result.value.vulnerables.plugin_name"]});
     let html = ``;
     let location = data['data']["result.value.location"];
-    console.log(data['data']["result.value.location"]);
+    // console.log(data['data']["result.value.location"]);
     html += `<div>
-                <div class="key-title">国家\地区</div>
+                <div class="key-title">国家/地区</div>
                 <ul  class="key-content clearfix">`;
     for(let country in location){
         let country_name = location[country]['_id']['country']||'其他';
@@ -89,6 +133,60 @@ function classify_by_key(filter_param) {
                         </li>`;
                 }
                 html += `</ul></div>`;
+        }
+        html += `</ul></div>`;
+    }
+    html += `</ul></div>`;
+
+
+    html += `<div>
+                <div class="key-title">开发语言</div>
+                <ul  class="key-content clearfix">`;
+    for(let name in language)
+    {
+        html += `<li>
+                    <a class="key-content-val" onclick="add_filter_param('result.value.language.product','${name}')">${name}</a>
+                    <span class="key-content-data-country float-right">&nbsp;&nbsp;&nbsp;${language[name]['count']}<i class="iconfont icon-arrow float-right"></i></span>
+                </li>`;
+        html += `<div style="display: none">
+                    <ul  class="key-content clearfix">`;
+        // console.log(language[name]);
+        for(let i in language[name]['data'])
+        {
+            // console.log(language[name][i])
+            let version = language[name]['data'][i][0]||'';
+            let version_count = language[name]['data'][i][1]||'';
+            let _name = name+":"+version;
+            html += `<li>
+                            <a class="key-content-val" onclick="add_filter_param('result.value.language','${_name}')">${_name}</a>
+                            <span class="key-content-data-city float-right">&nbsp;&nbsp;&nbsp;${version_count}</span>
+                        </li>`;
+        }
+        html += `</ul></div>`;
+    }
+    html += `</ul></div>`;
+    html += `<div>
+                <div class="key-title">服务信息</div>
+                <ul  class="key-content clearfix">`;
+    for(let name in server)
+    {
+        html += `<li>
+                    <a class="key-content-val" onclick="add_filter_param('result.value.server.product','${name}')">${name}</a>
+                    <span class="key-content-data-country float-right">&nbsp;&nbsp;&nbsp;${server[name]['count']}<i class="iconfont icon-arrow float-right"></i></span>
+                </li>`;
+        html += `<div style="display: none">
+                    <ul  class="key-content clearfix">`;
+        // console.log(language[name]);
+        for(let i in server[name]['data'])
+        {
+            // console.log(language[name][i])
+            let version = server[name]['data'][i][0]||'';
+            let version_count = server[name]['data'][i][1]||'';
+            let _name = name+":"+version;
+            html += `<li>
+                            <a class="key-content-val" onclick="add_filter_param('result.value.server','${_name}')">${_name}</a>
+                            <span class="key-content-data-city float-right">&nbsp;&nbsp;&nbsp;${version_count}</span>
+                        </li>`;
         }
         html += `</ul></div>`;
     }
@@ -149,7 +247,17 @@ function add_filter_param(key, val) {
         let key1 = key + ".product";
         let key2 = key + ".version";
         filter_param[key1] = product;
-        filter_param[key2] = version;
+        if (version) {
+            if (version==="未知"||version==="-")
+            {
+                filter_param[key2] = "";
+            }
+            else {
+                filter_param[key2] = version;
+            }
+
+        }
+
     } else {
         if (val ==="未知"||val==="其他")
         {
@@ -278,6 +386,35 @@ function get_scan_list_page_html(res) {
             country_code = res['data'][x]['result']['value']['location']['country_code'] || "";
         }
         let protocols = res['data'][x]['result']['value']['protocols'] || "";
+        let language =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("language"))
+        {
+             language =  "";
+            // language = res['data'][x]['result']['value']['language'][0]['product']
+            for (let j in res['data'][x]['result']['value']['language'])
+            {
+                language +="&nbsp"+res['data'][x]['result']['value']['language'][j]['product'];
+            }
+        }
+        let server =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("server"))
+        {
+            server = res['data'][x]['result']['value']['server']['product']
+        }
+        let web_type =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("illegal_feature"))
+        {
+            let web_map_set = new Set();
+            web_type =  "";
+            for (let j in res['data'][x]['result']['value']['illegal_feature'])
+            {
+                web_map_set.add(res['data'][x]['result']['value']['illegal_feature'][j]['name'])
+            }
+            web_map_set.forEach(function (item) {
+                web_type+=item +"&nbsp"
+            });
+        }
+        // let server = res['data'][x]['result']['value']['server']['product'] || "";
 
         let save_time = res['data'][x]['result']['value']['save_time'] || "";
         let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
@@ -348,7 +485,10 @@ function get_scan_list_page_html(res) {
                                     <li><i class="iconfont icon-title"></i>&nbsp;&nbsp;标题：${title}</li>
                                     <li><i class="iconfont icon-ip"></i>&nbsp;&nbsp;ip：${ip}</li>
                                     ${countryline}
-                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;端口：${protocols}</li>
+<!--                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;端口：${protocols}</li>-->
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;开发语言：${language}</li>
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;服务：${server}</li>
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;网站类型：${web_type}</li>
                                     <li><i class="iconfont icon-time"></i>&nbsp;&nbsp;保存时间：${save_time}</li>
                                     ${vul_html}
                                     ${ill_html}
@@ -702,6 +842,36 @@ function get_detail_html(info) {
         $("#web_response_info").html("").append(html);
         $("#web_response_info_div").show();
 
+    }
+    //网站类型
+    if (info['result']['value'].hasOwnProperty("illegal_feature")) {
+        html = ``;
+        for(let i in info['result']['value']['illegal_feature'])
+        {
+            let url = info['result']['value']['illegal_feature'][i]['url']||"";
+
+            html+=`<div class="columnT-sec">
+                    <div class="columnT-sec-title">
+                        <span>${info['result']['value']['illegal_feature'][i]['name']||""}&nbsp;${url}</span>
+                        <i class="iconfont icon-arrow"></i>
+                    </div>
+                    <div class="columnT-sec-content">
+                            <div class="columnT">
+                                <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">URL</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['illegal_feature'][i]['url']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                              <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">描述</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['illegal_feature'][i]['description']||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                            </div>
+                </div>`;
+        }
+        $("#illegality_feature_div").show();
+        $("#illegality_feature_info").html("").append(html);
     }
 
     //漏洞信息

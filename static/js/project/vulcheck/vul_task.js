@@ -49,6 +49,7 @@ function get_task_list(page) {
         data:data,
         type: "get",
         success: function (res) {
+            // console.log(res);
             let max_page = parseInt(res['max_page']);
             let html = ``;
             for (let x in res['data'])
@@ -248,7 +249,7 @@ function get_task_detail(task_info) {
 
 function get_send_task_info_html(task_info) {
     /*发送的任务信息*/
-
+    // console.log(task_info);
     let html = ``;
     let url_num = task_info['url'].length;
     html+=`<div  class="columnT-tr clearfix">
@@ -285,7 +286,7 @@ function get_send_task_info_html(task_info) {
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">craw_current_directory</div>
-                <div class="columnT-tr-right">${task_info['spider']['craw_current_directory']}</div>
+                <div class="columnT-tr-right">${task_info['spider']['craw_current_directory']||"false"}</div>
                 <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
@@ -300,7 +301,7 @@ function get_send_task_info_html(task_info) {
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">phantomjs_enable</div>
-                <div class="columnT-tr-right">${task_info['spider']['phantomjs_enable']}</div>
+                <div class="columnT-tr-right">${task_info['spider']['phantomjs_enable']||"false"}</div>
                 <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">

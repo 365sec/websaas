@@ -26,7 +26,7 @@ function get_vul_keyword() {
             // console.log(res);
 
             let html = `<select name="result.value.vulnerables.name">`;
-            html += ` <option value="">漏洞名称</option>`;
+            html += ` <option value="null">漏洞名称</option>`;
             for (let x of res['data']) {
                 html += ` <option value="${x['_id']}">${x['_id']}</option>`;
             }
@@ -110,7 +110,7 @@ function ill_web_top_content(res) {
             ]
 
         }]
-    }
+    };
     myChart.setOption(option);
 }
 
@@ -128,11 +128,19 @@ function vul_web_table() {
 
 function vul_web_search() {
     let post_data = $('#vul_web_form').serializeArray();
-    // console.log(post_data);
+    console.log(post_data);
     for (let x in post_data) {
         let key = post_data[x]['name'] || "";
         let value = post_data[x]['value'] || "";
-        if (value) {
+        if(value ==="null"||value ==="")
+        {
+            vul_param[key]=value;
+            if (vul_param.hasOwnProperty(key))
+            {
+                delete vul_param[key]
+            }
+        }
+        if (value&&value!=="null") {
             vul_param[key] = value;
         }
 
@@ -187,9 +195,25 @@ function vul_web_table_page(page) {
                 html += `<td><p class="tabletd-overflow" title='${class_word || ""}'>${class_word || ""}</p></td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 // html+=`<td>${key_word||""}</td>`;
-                let country_ch = res['data'][x]['result']['value']['location']['country_ch'] || "";
-                let province = res['data'][x]['result']['value']['location']['province'] || "";
-                let city = res['data'][x]['result']['value']['location']['city'] || "";
+                let country_ch = "";
+                let province = "";
+                let city = "";
+                if (res['data'][x]['result']['value'].hasOwnProperty("location"))
+                {
+                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('country_ch'))
+                    {
+                        country_ch = res['data'][x]['result']['value']['location']['country_ch'] || "";
+                    }
+                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('province'))
+                    {
+                        province = res['data'][x]['result']['value']['location']['province'] || "";
+                    }
+                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('city'))
+                    {
+                        city = res['data'][x]['result']['value']['location']['city'] || "";
+                    }
+                }
+
                 html += `<td><p class="tabletd-overflow" title="${country_ch + "&nbsp;" + province + "&nbsp;" + city}">${country_ch + "&nbsp;" + province + "&nbsp;" + city}</p></td>`;
                 html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['save_time'] || ""}</td>`;

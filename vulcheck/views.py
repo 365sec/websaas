@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import base64
 from imp import reload
 
 import math
@@ -83,7 +84,7 @@ def show_all_task(request):
     logging.debug(max_num)
     task_list = []
     for x in result:
-        # logging.debug(x)
+        logging.debug(x)
         x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time'])) if x[
             'finish_time'] else ""
         x['start_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['start_time'])) if x['start_time'] else ""
@@ -469,7 +470,11 @@ def get_plug(request):
     print(u"获得插件列表")
     url = glob_url + "/v1/getpluginlist"
     print(url)
-    result = requests.get(url)
+    try:
+        result = requests.get(url)
+    except Exception as e:
+        context = {'data': "连接插件API失败", 'code': 200}
+        return HttpResponse(json.dumps(context), content_type="application/json")
     context = {'data': "", 'code': result.status_code}
     if result.status_code == 200:
         res = json.loads(result.text)
@@ -746,7 +751,7 @@ def classify_by_key(request):
                 elif 'product' not in i['_id']:
                     pass
                 else:
-                    i['_id'] = i['_id']['product']
+                    i['_id'] = i['_id']['product'] + ":"
 
             context['data'][x].append(i)
 
@@ -853,7 +858,7 @@ def get_scan_list(request):
     for key in filter_param:
         val = filter_param[key]
         match['$match'][key] = val
-    # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    # match['$match']['task_id'] = "fe444dc0-65ea-46a2-ac04-5ff9588b0adf"
     max_num = get_result_count(match)
     logging.debug(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
@@ -910,14 +915,20 @@ def get_ill_web_data(request):
     context = {"max_page": 0}
     logging.debug(json.loads(request.body))
     param = json.loads(request.body)
-    page = param['page']
+    page = param.get("page",0)
     filter_param = param['param']
     # project_set = mongo_db['resultdb']
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
     match = {'$match': {"result": {'$exists': True}}}
-    match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    # match['$match']['result.value.illegal_feature.name'] = {'$exists': True}
+    # match = {'$match': {}}
+    match['$match']['$or'] = [
+        {'result.value.illegality.plugin_name': {'$exists': True}},
+        {'result.value.illegal_feature.name': {'$exists': True}},
+        # {'result.value.illegality.image_snapshot': {'$exists': True}}
+]
     for key in filter_param:
         if key == "keyword":
             continue
@@ -927,25 +938,126 @@ def get_ill_web_data(request):
     max_num = get_ill_result_count(match)
     # logging.debug(max_num)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
-    pipeline = [
-        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
-        {'$unwind': "$result"},
-        match,
-        {'$skip': skip},
-        {'$limit': page_num},
-        {'$sort': {'result.value.save_time': -1}},
-    ]
+    if 'result.value.illegality.name' in filter_param and filter_param['result.value.illegality.name'] == '黄色图片':
+        logging.debug("黄色图片")
+        pipeline = [
+            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$unwind': "$result"},
+            {'$unwind': "$result.value.illegality"},
+            match,
+            {'$skip': skip},
+            {'$limit': page_num},
+            {'$sort': {'result.value.save_time': -1}},
+        ]
+    elif 'result.value.illegal_feature.name' in filter_param :
+        pipeline = [
+            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$unwind': "$result"},
+            {'$unwind': "$result.value.illegal_feature"},
+            # {'$unwind': "$result.value.illegality.value"},
+            match,
+            {'$skip': skip},
+            {'$limit': page_num},
+            {'$sort': {'result.value.save_time': -1}},
+        ]
+    else:
+        pipeline = [
+            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$unwind': "$result"},
+            {'$unwind': "$result.value.illegality"},
+            {'$unwind': "$result.value.illegality.value"},
+            match,
+            {'$skip': skip},
+            {'$limit': page_num},
+            {'$sort': {'result.value.save_time': -1}},
+        ]
     result = []
     for i in result_set.aggregate(pipeline):
         # logging.debug(i)
         result.append(i)
-
     # logging.debug(max_page)
     context['max_page'] = max_page
     context['data'] = result
 
     return HttpResponse(json.dumps(context), content_type="application/json")
 
+
+def get_ill_web_data_wei_fa(request):
+    """:arg
+        获得违法网站信息
+    """
+    context = {"max_page": 0}
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    page = param['page']
+    filter_param = param['param']
+    # project_set = mongo_db['resultdb']
+    page = 0 if not page else int(page) - 1
+    page_num = 10
+    skip = int(page * page_num)
+    match = {'$match': {"result": {'$exists': True}}}
+    # match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
+    # match = {'$match': {}}
+    match['$match']['$or'] = [
+        # {'result.value.illegal_feature': {'$exists': True}},
+        {'result.value.illegal_feature.image_snapshot': {'$exists': True}}
+    ]
+    for key in filter_param:
+        if key == "keyword":
+            continue
+        val = filter_param[key]
+        match['$match'][key] = val
+
+    max_num = get_ill_result_count(match)
+    # logging.debug(max_num)
+    max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
+
+    pipeline = [
+        {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+        {'$unwind': "$result"},
+        {'$unwind': "$result.value.illegal_feature"},
+        # {'$unwind': "$result.value.illegality.value"},
+        match,
+        {'$skip': skip},
+        {'$limit': page_num},
+        {'$sort': {'result.value.save_time': -1}},
+    ]
+
+    result = []
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        result.append(i)
+    # logging.debug(max_page)
+    context['max_page'] = max_page
+    context['data'] = result
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+def get_image_bs64(request):
+    context = {}
+    request_param = json.loads(request.body)
+    logging.debug(request_param)
+    img_bs64_list = []
+    for x in request_param['img_url']:
+        logging.debug(x)
+        tmp = img_to_base64(x)
+        if tmp:
+            img_bs64_list.append(bytes.decode(tmp))
+    context['img_bs64_list'] = img_bs64_list
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def img_to_base64(img_path):
+    try:
+        with open(img_path, "rb") as f:
+            # b64encode是编码，b64decode是解码
+            base64_data = base64.b64encode(f.read())
+            # base64.b64decode(base64data)
+            # print(base64_data)
+    except Exception as e:
+        logging.warning(e)
+        base64_data = b""
+    return base64_data
 
 def get_vul_web_data(request):
     """:arg
@@ -982,6 +1094,10 @@ def get_vul_web_data(request):
     for i in result_set.aggregate(pipeline):
         # logging.debug(i)
         result.append(i)
+        if "illegal_feature" in i["result"]['value']:
+            # logging.debug(i["result"]['value']['illegal_feature'])
+            if "image_snapshot" in i["result"]['value']['illegal_feature']:
+                logging.debug(i["result"]['value']['illegal_feature']['image_snapshot'])
 
     # logging.debug(max_page)
     context['max_page'] = max_page
@@ -1013,6 +1129,34 @@ def get_ill_keyword(request):
 
     context['data'] = result
 
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
+def get_ill_feature_keyword(request):
+    """:arg获得违法网站关键词的个数
+    """
+    context = {}
+    pipeline = [
+        # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
+
+        {'$project': {'result': 1, 'task_id': 1}},
+        {'$unwind': '$result'},
+        {'$unwind': '$result.value.illegal_feature'},
+        {'$group': {
+            # '_id': '$result.value.illegality.plugin_name',
+            '_id': "$result.value.illegal_feature.name",
+            'count': {'$sum': 1},
+        }},
+        {'$sort': {'count': -1}},
+
+    ]
+    res = result_set.aggregate(pipeline)
+    result = []
+    for i in res:
+        # logging.debug(i)
+        result.append(i)
+
+    context['data'] = result
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
@@ -1078,7 +1222,7 @@ def get_vul_total(request):
 
 
 def get_ill_total(request):
-    """:arg漏洞列表上面统计部分"""
+    """:arg违法列表上面统计部分"""
     data = get_ill_keyword_num()
     key_info = illegality_by_key_by_domian_reduce()
     context = {'data':data,'key_info':key_info}
@@ -1204,7 +1348,7 @@ def illegality_by_key_by_domian_reduce():
         return result
 
 
-@log_time
+# @log_time
 def get_beian_data(request):
     """:arg
         获得备案信息
