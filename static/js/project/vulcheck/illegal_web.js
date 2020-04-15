@@ -265,7 +265,7 @@ function ill_web_table_page_gua_ma(page) {
               <th width="10%">归属地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">截图</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -295,9 +295,9 @@ function ill_web_table_page_gua_ma(page) {
                 //网页快照
                 html+=get_images(res['data'][x]['result']['value']);
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -327,7 +327,7 @@ function ill_web_table_page_jie_chi(page) {
             <th width="10%">劫持前url</th>
             <th width="10%">劫持前url</th>
             <th width="160px">扫描时间</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -359,9 +359,9 @@ function ill_web_table_page_jie_chi(page) {
                     // //网页快照
                     // html+=get_images(res['data'][x]['result']['value']);
                     //详情
-                    let detail = get_detail_bs4(res['data'][x]);
-                    html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                    html+=`</tr>`;
+                    // let detail = get_detail_bs4(res['data'][x]);
+                    // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                    // html+=`</tr>`;
 
 
             }
@@ -393,7 +393,7 @@ function ill_web_table_page_an_lian(page) {
             <th width="10%">暗链类型</th>
             <th width="160px">归属地区</th>
             <th width="160px">扫描时间</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -419,9 +419,9 @@ function ill_web_table_page_an_lian(page) {
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
 
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -451,7 +451,7 @@ function ill_web_table_page_min_gan_ci(page) {
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">截图</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -484,9 +484,9 @@ function ill_web_table_page_min_gan_ci(page) {
                 //网页快照
                 html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -515,7 +515,7 @@ function ill_web_table_page_yellow_img(page) {
             <th width="10%">黄色图片地址</th>
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -539,9 +539,9 @@ function ill_web_table_page_yellow_img(page) {
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
 
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -572,7 +572,7 @@ function ill_web_table_page_wei_fa(page) {
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">图片</th>
-            <th width="80px">详情</th>
+<!--            <th width="80px">详情</th>-->
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -605,9 +605,9 @@ function ill_web_table_page_wei_fa(page) {
                 //网页快照
                 html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);

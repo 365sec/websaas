@@ -201,10 +201,10 @@ function vul_web_table_page(page) {
                 html += `<td><p class="tabletd-overflow" title="${country_ch + "&nbsp;" + province + "&nbsp;" + city}">${country_ch + "&nbsp;" + province + "&nbsp;" + city}</p></td>`;
                 // html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['save_time'] || ""}</td>`;
-                let detail = JSON.stringify(res['data'][x]);
-                let b = new Base64();
-                detail = b.encode(detail);
-                html += `<td><a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
+                // let detail = JSON.stringify(res['data'][x]);
+                // let b = new Base64();
+                // detail = b.encode(detail);
+                // html += `<td><a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
 
                 html += `</tr>`;
             }
