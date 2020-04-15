@@ -391,8 +391,8 @@ function ill_web_table_page_an_lian(page) {
             <th width="120px">关联IP</th>
             <th width="10%">暗链URL</th>
             <th width="10%">暗链类型</th>
+            <th width="160px">归属地区</th>
             <th width="160px">扫描时间</th>
-            <th width="160px">地区</th>
             <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);

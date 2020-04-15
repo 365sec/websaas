@@ -31,10 +31,12 @@ coloredlogs.install(level='DEBUG',
                     )
 
 # glob_url = "http://172.16.39.65:9000"
-glob_url = "http://127.0.0.1:9000"
+glob_url = "http://172.16.39.81:22222"
 # glob_url = "http://47.100.88.79:9000"
 
-mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
+# mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
+# mongo_client = pymongo.MongoClient('mongodb://172.16.39.178:27017/?authSource=webmap')
+mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/webmap')
 
 mongo_db = mongo_client['webmap']
 project_set = mongo_db['projectdb']
@@ -472,6 +474,7 @@ def get_plug(request):
     print(url)
     try:
         result = requests.get(url)
+        logging.debug(result)
     except Exception as e:
         context = {'data': "连接插件API失败", 'code': 200}
         return HttpResponse(json.dumps(context), content_type="application/json")
@@ -813,9 +816,15 @@ def get_result_count(match):
 def get_vul_result_count(match):
     """:ivar获得所有含有漏洞 result长度总和"""
     # match = {'$match': {"result": {'$exists': True}}}
-    result_set = mongo_db['resultdb']
+    # result_set = mongo_db['resultdb']
     pipeline = [
+        {'$project': {
+            "_id": 0,
+            "task_id":1,
+            'result.value.vulnerables': 1,
+        }},
         {'$unwind': "$result"},
+        {'$unwind': "$result.value.vulnerables"},
         match,
         {'$group': {'_id': None, 'count': {'$sum': 1}}},
 
@@ -941,7 +950,15 @@ def get_ill_web_data(request):
     if 'result.value.illegality.name' in filter_param and filter_param['result.value.illegality.name'] == '黄色图片':
         logging.debug("黄色图片")
         pipeline = [
-            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$project': {
+                "_id": 0,
+                "task_id":1,
+                'result.value.illegality': 1,
+                'result.scheme_domain': 1,
+                'result.value.ip': 1,
+                'result.value.location': 1,
+                'result.value.save_time': 1,
+            }},
             {'$unwind': "$result"},
             {'$unwind': "$result.value.illegality"},
             match,
@@ -951,7 +968,15 @@ def get_ill_web_data(request):
         ]
     elif 'result.value.illegal_feature.name' in filter_param :
         pipeline = [
-            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$project': {
+                "_id": 0,
+                "task_id":1,
+                'result.value.illegal_feature': 1,
+                'result.scheme_domain': 1,
+                'result.value.ip': 1,
+                'result.value.location': 1,
+                'result.value.save_time': 1,
+            }},
             {'$unwind': "$result"},
             {'$unwind': "$result.value.illegal_feature"},
             # {'$unwind': "$result.value.illegality.value"},
@@ -962,7 +987,15 @@ def get_ill_web_data(request):
         ]
     else:
         pipeline = [
-            {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+            {'$project': {
+                "_id": 0,
+                "task_id":1,
+                'result.value.illegality': 1,
+                'result.scheme_domain': 1,
+                'result.value.ip': 1,
+                'result.value.location': 1,
+                'result.value.save_time': 1,
+            }},
             {'$unwind': "$result"},
             {'$unwind': "$result.value.illegality"},
             {'$unwind': "$result.value.illegality.value"},
@@ -1083,13 +1116,24 @@ def get_vul_web_data(request):
     max_num = get_vul_result_count(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
-        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$project': {
+            "_id": 0,
+            "task_id":1,
+            'result.value.vulnerables': 1,
+            'result.scheme_domain': 1,
+            'result.value.ip': 1,
+            'result.value.location': 1,
+            'result.value.save_time': 1,
+        }},
         {'$unwind': "$result"},
+        {'$unwind': "$result.value.vulnerables"},
         match,
         {'$sort': {'result.value.save_time': -1}},
         {'$skip': skip},
         {'$limit': page_num},
+
     ]
+    logging.debug(pipeline)
     result = []
     for i in result_set.aggregate(pipeline):
         # logging.debug(i)

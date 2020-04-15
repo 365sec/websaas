@@ -11,8 +11,11 @@ coloredlogs.install(level='DEBUG',
                     fmt="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
                     )
 
-mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
+mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/webmap')
+
 mongo_db = mongo_client['webmap']
+project_set = mongo_db['projectdb']
+result_set = mongo_db['resultdb']
 
 
 def log_time(func):
@@ -804,7 +807,35 @@ def get_image():
         sum += 1
     logging.debug(sum)
 
+@log_time
+def get_vul_web_data():
+    match = {'$match': {"result": {'$exists': True}}}
+    # match['$match']['result.value.illegal_feature'] = {'$exists': True}
 
+    pipeline = [
+        # {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$project': {
+            "_id": 0,
+            "task_id":1,
+            'result.value.vulnerables': 1,
+            'result.scheme_domain': 1,
+            'result.value.ip': 1,
+            'result.value.location': 1,
+        }},
+        {'$unwind': "$result"},
+        {'$unwind': "$result.value.vulnerables"},
+        match,
+        {'$sort': {'result.value.save_time': -1}},
+        {'$skip': 0},
+        {'$limit': 10},
+
+        # {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        logging.debug(i)
+        sum += 1
+    logging.debug(sum)
 
 if __name__ == '__main__':
     # get_image(
@@ -816,7 +847,7 @@ if __name__ == '__main__':
     # classify_by_key_plugin_reduce()
     # classify_by_key_by_domian_reduce()
     # get_vul_iil_domain()
-    get_ill_keyword()
+    # get_ill_keyword()
     # get_ill_feature_keyword()
     # get_vul_keyword()
     # get_vul_web()
@@ -828,3 +859,4 @@ if __name__ == '__main__':
     # test()
     # get_vul_result_count()
     # mongo_search_like()
+    get_vul_web_data()

@@ -159,7 +159,7 @@ function vul_web_table_page(page) {
         data: data,
         type: "post",
         success: function (res) {
-            // console.log(res);
+            console.log(res);
             let max_page = parseInt(res['max_page']);
             let html = ``;
             for (let x in res['data']) {
@@ -167,33 +167,17 @@ function vul_web_table_page(page) {
                 // html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`;
                 html += `<td><p class="tabletd-overflow" title="${res['data'][x]['result']['scheme_domain'] || ""}">${res['data'][x]['result']['scheme_domain'] || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['ip'] || ""}</td>`;
-                let class_word_set = new Set();
-                let key_word_set = new Set();
-                let segment_word_set = new Set();
-                for (let i in res['data'][x]['result']['value']['vulnerables']) {
-                    class_word_set.add(res['data'][x]['result']['value']['vulnerables'][i]['name']);
-                    segment_word_set.add(res['data'][x]['result']['value']['vulnerables'][i]['result_desc'])
+                let class_word = res['data'][x]['result']['value']['vulnerables']['name']||"";
+                let segment_word = res['data'][x]['result']['value']['vulnerables']['result_desc']||"";
 
-                }
-                let class_word = ``;
-                for (let i of class_word_set) {
-                    class_word += i + "&nbsp;"
-                }
-
-                let key_word = ``;
-                for (let i of key_word_set) {
-                    key_word += i + "&nbsp;"
-                }
-                let segment_word = ``;
-                for (let i of segment_word_set) {
-                    segment_word += i + "&nbsp;"
-                }
                 segment_word = segment_word.replace(/</g, "&lt")
                     .replace(/>/g, "&gt")
                     .replace(/\"/g, "&quot;");
                 // console.log(segment_word);
                 html += `<td><p class="tabletd-overflow" title='${class_word || ""}'>${class_word || ""}</p></td>`;
-                // html+=`<td>${key_word||""}</td>`;
+                html += `<td><p class="tabletd-overflow" title='${segment_word || ""}'>${segment_word || ""}</p></td>`;
+
+                html+=`<td>${res['data'][x]['result']['value']['vulnerables']['severity']||""}</td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 let country_ch = "";
                 let province = "";
@@ -215,7 +199,7 @@ function vul_web_table_page(page) {
                 }
 
                 html += `<td><p class="tabletd-overflow" title="${country_ch + "&nbsp;" + province + "&nbsp;" + city}">${country_ch + "&nbsp;" + province + "&nbsp;" + city}</p></td>`;
-                html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
+                // html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['save_time'] || ""}</td>`;
                 let detail = JSON.stringify(res['data'][x]);
                 let b = new Base64();
