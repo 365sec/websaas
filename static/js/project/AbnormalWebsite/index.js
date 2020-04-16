@@ -1,6 +1,7 @@
 
-var SERVER_IP= "http://127.0.0.1:5000";
+// var SERVER_IP= "http://127.0.0.1:5000";
 // var SERVER_IP= "http://47.100.88.79:5000";
+var SERVER_IP= "http://172.16.39.81:5000";
 function get_abnormal_html() {
     $.ajax({
         url: 'vulcheck/get_abnormal_html',
@@ -43,7 +44,7 @@ function abnormal_web_table() {
     // 获取页码刷新时的高亮显示
     var page = 1;
     if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1] || 1;//获取当前页码
+        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
     abnormal_web_table_page(page)//刷新后退加载页码表格数据
 

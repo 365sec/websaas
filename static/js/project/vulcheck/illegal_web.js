@@ -144,17 +144,31 @@ function get_ill_feature_keyword() {
 function ill_web_table() {
     // 获取页码刷新时的高亮显示
     var page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1] || 1;//获取当前页码
-    }
+    page = getURLString('page');
     param ={};
-    // ill_web_table_page(page)//刷新后退加载页码表格数据
-    // ill_web_table_page_jie_chi(page)//刷新后退加载页码表格数据
-    ill_web_table_page_gua_ma(page)//刷新后退加载页码表格数据
-    // ill_web_table_page_an_lian(page)//刷新后退加载页码表格数据
-    // ill_web_table_page_min_gan_ci(page)//刷新后退加载页码表格数据
-    // ill_web_table_page_yellow_img(page)//刷新后退加载页码表格数据
-    // ill_web_table_page_wei_fa(page)
+    var type = getURLString('type');
+    switch (type) {
+        case '1':
+            ill_web_table_page_gua_ma(page);
+            break;
+        case '2':
+            ill_web_table_page_an_lian(page);
+            break;
+        case '3':
+            ill_web_table_page_min_gan_ci(page);
+            break;
+        case '4':
+            ill_web_table_page_jie_chi(page);
+            break;
+        case '5':
+            ill_web_table_page_yellow_img(page);
+            break;
+        case '6':
+            ill_web_table_page_wei_fa(page);
+            break;
+        default:
+            ill_web_table_page_gua_ma(page);
+    }
 }
 
 let param;//用来存储过滤时的变量
@@ -183,11 +197,10 @@ function ill_web_search() {
     }
     ill_web_table_page(1)
 
+
 }
 
 function ill_web_table_page(page) {
-
-    // $("#ill_web_tab_div").html("eweqweqwe");
     let data = {
         "param": param,
         "page":page,
@@ -198,7 +211,6 @@ function ill_web_table_page(page) {
         data:data,
         type: "post",
         success: function (res) {
-            console.log(res);
             let max_page = parseInt(res['max_page']);
             let html = ``;
             for (let x in res['data'])
@@ -208,32 +220,28 @@ function ill_web_table_page(page) {
                 html+=`<td><p class="tabletd-overflow" title="${res['data'][x]['result']['scheme_domain']||""}">${res['data'][x]['result']['scheme_domain']||""}</p></td>`;
                 //关联IP
                 html+=`<td>${res['data'][x]['result']['value']['ip']||""}</td>`;
-                let class_keyword_segment = get_class_keyword_segment(res['data'][x]['result']['value']);
-                let class_word = class_keyword_segment['class_word'];
-                let key_word = class_keyword_segment['key_word'];
-                let segment_word = class_keyword_segment['segment_word'];
-                //	分类
-                html+=`<td>${class_word||""}</td>`;
-                //	命中关键字
-                html+=`<td><p class="tabletd-overflow" title="${key_word||""}">${key_word||""}</p></td>`;
-                //网站类型
-                let web_type =get_web_type(res['data'][x]['result']['value']);
-                html+=`<td><p class="tabletd-overflow" title="${web_type||""}">${web_type||""}</p></td>`;
+
+                let web_type = res['data'][x]['result']['value']['illegal_feature']['name'];
+                let web_url = res['data'][x]['result']['value']['illegal_feature']['url'];
+                let web_description = htmlEncode(res['data'][x]['result']['value']['illegal_feature']['description']);
+                //	网站类型
+                html+=`<td>${web_type||""}</td>`;
+                //	描述
+                html+=`<td><p class="tabletd-overflow" title="${web_description||""}">"${web_description}"</p></td>`;
+                //	URL
+                html+=`<td><p class="tabletd-overflow" title="${web_url||""}">${web_url||""}</p></td>`;
                 let addr = get_addr(res['data'][x]['result']['value']);
                 //	归属地区
                 html+=`<td><p class="tabletd-overflow" title="${addr}">${addr}</td>`;
-                //内容
-                html+=`<td><p class="tabletd-overflow" title="${segment_word||""}">${segment_word||""}</p></td>`;
-                //IDC名称
-                html+=`<td>${res['data'][x]['result']['value']['idc']||""}</td>`;
+
                 //扫描时间
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
                 //网页快照
-                html+=get_images(res['data'][x]['result']['value']);
+                html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                let detail = get_detail_bs4(res['data'][x]);
-                html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                html+=`</tr>`;
+                // let detail = get_detail_bs4(res['data'][x]);
+                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -243,6 +251,8 @@ function ill_web_table_page(page) {
 
 
 function ill_web_table_page_gua_ma(page) {
+    $('#ill_web_form').css('visibility','hidden');
+
     param = {'result.value.illegality.name': '网页挂马'};
     /*网页挂马*/
     let data = {
@@ -300,14 +310,18 @@ function ill_web_table_page_gua_ma(page) {
                 // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_gua_ma');
             addPagination(page,max_page);
         }
     });
-
+    $('#ill-tab li:eq(0) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',1))
 }
 function ill_web_table_page_jie_chi(page) {
     /*网页劫持
     * */
+    $('#ill_web_form').css('visibility','hidden');
+
     param = {'result.value.illegality.name': '网页劫持'};
     let data = {
         "param": {'result.value.illegality.name': '网页劫持'},
@@ -366,13 +380,17 @@ function ill_web_table_page_jie_chi(page) {
 
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_jie_chi')
             addPagination(page,max_page);
         }
     });
+    $('#ill-tab li:eq(3) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',4))
 
 }
 
 function ill_web_table_page_an_lian(page) {
+    $('#ill_web_form').css('visibility','hidden');
 
     param = {'result.value.illegality.name': '网站暗链'};
     // $("#ill_web_tab_div").html("eweqweqwe");
@@ -424,12 +442,18 @@ function ill_web_table_page_an_lian(page) {
                 // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_an_lian')
             addPagination(page,max_page);
         }
     });
+    $('#ill-tab li:eq(1) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',2))
+
 }
 
 function ill_web_table_page_min_gan_ci(page) {
+    $('#ill_web_form').css('visibility','hidden');
+
     param = {'result.value.illegality.name': '敏感关键词'};
     /*
     * 敏感词*/
@@ -489,12 +513,17 @@ function ill_web_table_page_min_gan_ci(page) {
                 // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_min_gan_ci')
             addPagination(page,max_page);
         }
     });
+    $('#ill-tab li:eq(2) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',3))
+
 }
 
 function ill_web_table_page_yellow_img(page) {
+    $('#ill_web_form').css('visibility','hidden');
     param = {'result.value.illegality.name': '黄色图片'};
     /*
     * 敏感词*/
@@ -544,13 +573,17 @@ function ill_web_table_page_yellow_img(page) {
                 // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_yellow_img')
             addPagination(page,max_page);
         }
     });
+    $('#ill-tab li:eq(4) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',5))
+
 }
 
 function ill_web_table_page_wei_fa(page) {
-
+    $('#ill_web_form').css('visibility','visible');
     // $("#ill_web_tab_div").html("eweqweqwe");
     param = {};
     let data = {
@@ -588,12 +621,11 @@ function ill_web_table_page_wei_fa(page) {
 
                 let web_type = res['data'][x]['result']['value']['illegal_feature']['name'];
                 let web_url = res['data'][x]['result']['value']['illegal_feature']['url'];
-                let web_description = res['data'][x]['result']['value']['illegal_feature']['description'];
-
+                let web_description = htmlEncode(res['data'][x]['result']['value']['illegal_feature']['description']);
                 //	网站类型
                 html+=`<td>${web_type||""}</td>`;
                 //	描述
-                html+=`<td><p class="tabletd-overflow" title="${web_description||""}">${web_description||""}</p></td>`;
+                html+=`<td><p class="tabletd-overflow" title="${web_description||""}">"${web_description}"</p></td>`;
                 //	URL
                 html+=`<td><p class="tabletd-overflow" title="${web_url||""}">${web_url||""}</p></td>`;
                 let addr = get_addr(res['data'][x]['result']['value']);
@@ -610,9 +642,13 @@ function ill_web_table_page_wei_fa(page) {
                 // html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
+            $('.pagination').attr('data-func','ill_web_table_page_wei_fa')
             addPagination(page,max_page);
         }
     });
+    $('#ill-tab li:eq(5) a').tab('show');
+    history.replaceState(null,null,changeURLArg(location.href,'type',6))
+
 }
 
 
@@ -720,7 +756,7 @@ function get_images(res) {
     else {
         image_url_list= JSON.stringify(image_url_list);
         let image_url_bs64 = b.encode(image_url_list);
-        html+=`<td><button data-toggle="modal" data-target="#imageModal" onclick=show_images('${image_url_bs64}')>详情<i class="iconfont icon-link"></i></button></td>`;
+        html+=`<td><a data-toggle="modal" data-target="#imageModal" onclick=show_images('${image_url_bs64}')>详情<i class="iconfont icon-link"></i></a></td>`;
 
     }
     return html;
@@ -755,7 +791,7 @@ function get_images1(res) {
     else {
         image_url_list= JSON.stringify(image_url_list);
         let image_url_bs64 = b.encode(image_url_list);
-        html+=`<td><button data-toggle="modal" data-target="#imageModal" onclick=show_images('${image_url_bs64}')>详情<i class="iconfont icon-link"></i></button></td>`;
+        html+=`<td><a data-toggle="modal" data-target="#imageModal" onclick=show_images('${image_url_bs64}')>详情<i class="iconfont icon-link"></i></a></td>`;
 
     }
     return html;
@@ -786,7 +822,7 @@ function show_images(bs_64) {
             {
                 let img_bs64 = res['img_bs64_list'][i];
                 html+=`<img src="data:image/jpg;base64,${img_bs64}">`;
-                // console.log(html)
+                console.log(html)
             }
             $("#test_image_div").html("").append(html);
             // $("#imageModal").show();

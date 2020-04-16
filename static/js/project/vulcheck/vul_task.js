@@ -32,7 +32,7 @@ function vulcheck_all_task_able() {
     // 获取页码刷新时的高亮显示
     let page = 1;
     if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1] || 1;//获取当前页码
+        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
     get_task_list(page);//刷新后退加载页码表格数据
 }

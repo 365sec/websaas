@@ -307,7 +307,7 @@ function get_scan_list(filter_param) {
     // 获取页码刷新时的高亮显示
     var page = 1;
     if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1] || 1;//获取当前页码
+        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
     get_scan_list_page(page, filter_param)//刷新后退加载页码表格数据
 

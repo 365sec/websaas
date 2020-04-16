@@ -58,9 +58,9 @@ $(function() {
             }
         }
         switch (value) {
-            case "vulcheck-index":
-                vulcheckIndex();
-                break;
+            // case "vulcheck-index":
+            //     vulcheckIndex();
+            //     break;
             case "vulcheck-quickstart":
                 vulcheckQuickstart();
                 break;
@@ -70,7 +70,7 @@ $(function() {
             // case "vulcheck-send_task":
             //     vulcheck_send_task();
             //     break;
-            case "vulcheck-get_total_html":
+            case "vulcheck-index":
                 vulcheck_get_total_html();
                 break;
             case "vulcheck-get_ill_web_html":
@@ -130,14 +130,14 @@ function refresh() {
     if(!hash){
         if(!req){
             //默认页面
-            $('.sidebar-secondNav[data-value="vulcheck-get_total_html"], .sidebar-firstNav[data-value="vulcheck-get_total_html"]').trigger('click');
+            $('.sidebar-secondNav[data-value="vulcheck-index"], .sidebar-firstNav[data-value="vulcheck-indexl"]').trigger('click');
         }else{
             //只有一级的默认页面为data-value为一级-index的内页
             $('.sidebar-secondNav[data-value="'+req+'-index"], .sidebar-firstNav[data-value="'+req+'-index"]').trigger('click');
         }
     }else{
         //模拟触发点击事件加载页面
-        $('.sidebar-secondNav[data-value='+req+'-'+hash+'], .sidebar-firstNav[data-value='+req+'-'+hash+']').trigger('click');
+        $('.sidebar-secondNav[data-value="'+req+'-'+hash+'"], .sidebar-firstNav[data-value="'+req+'-'+hash+'"]').trigger('click');
     }
 }
 
@@ -202,11 +202,12 @@ function addPagination(nowpage,maxpage) {
     if(location.hash.split('?')[1]){//若存在参数
         if ( nowpage !== location.hash.split('?')[1].split('=')[1]){
             // 不为当前页面则改变url（返回时也调用，不判断则当前重复进入history列表，上一页仍为当前页面）
-            history.pushState(null,null,location.href.split('?')[0]+'?page='+nowpage); //更改当前路径
+            history.pushState(null,null,changeURLArg(location.href,'page',nowpage)); //更改当前路径
         }
     }else {
         // 不存在参数默认为1
-        history.pushState(null,null,location.href.split('?')[0]+'?page=1');
+        history.replaceState(null,null,changeURLArg(location.href,'page',1)); //更改当前路径
+
     }
     $('.pagination>ul li[data-page='+nowpage+']:not(".pagination-link")').addClass('active').siblings().removeClass('active')//当前页面高亮
     $('.pagination-input').on('change',function () {
@@ -269,4 +270,52 @@ function columnSlide() {
             $(this).find('.columnT-tip').css('display','block').text('点击展开');
         }
     });
+}
+
+/**
+ * 引用获取url里的参数
+ *
+ * */
+
+function changeURLArg(url,arg,arg_val){
+    var pattern=arg+'=([^&]*)';
+    var replaceText=arg+'='+arg_val;
+    if(url.match(pattern)){
+        var tmp='/('+ arg+'=)([^&]*)/gi';
+        tmp=url.replace(eval(tmp),replaceText);
+        return tmp;
+    }else{
+        if(url.match('[\?]')){
+            return url+'&'+replaceText;
+        }else{
+            return url+'?'+replaceText;
+        }
+    }
+}
+
+/**
+ * 获取url里的参数
+ * @param arg 参数名
+ * @returns
+ */
+function getURLString(arg) {
+    if(!location.href.split('?')[1])return null;//无参数
+    var reg = new RegExp("(^|&)" + arg + "=([^&]*)(&|$)", "i");
+    var r = location.href.split('?')[1].match(reg);
+    if (r != null)
+        return unescape(r[2]);
+    return null;
+}
+// 字符转转义  字符转包含html代码时使用
+function htmlEncode(str){
+    var s = "";
+    if(str.length == 0) return "";
+    s = str.replace(/&/g,"&amp;");
+    s = s.replace(/</g,"&lt;");
+    s = s.replace(/>/g,"&gt;");
+    s = s.replace(/ /g,"&nbsp;");
+    s = s.replace(/\'/g,"'");
+    s = s.replace(/\"/g,'"');
+    return s;
+
 }

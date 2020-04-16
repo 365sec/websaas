@@ -268,10 +268,18 @@ table td{
     padding: 18px 20px;
     border-bottom: 1px solid #ddd;
 }
+.main-content-card-title.tab{
+    padding: 18px 20px 0;
+    border:none;
+}
+
 .main-content-card-title span{
     float: left;
     font-size: 16px;
     line-height: 30px;
+}
+.main-content-card-title.tab span{
+    float: unset;
 }
 .main-content-card-title.clearfix span{
     float: left;

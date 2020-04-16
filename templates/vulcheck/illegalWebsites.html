@@ -39,27 +39,36 @@
 
 
 <div class="main-content-card">
-    <div class="main-content-card-title">
+    <div class="main-content-card-title tab">
         <span>违法网站分析</span>
-        <div class="main-content-card-btngroup">
-            <form  method="post" role="form" id="ill_web_form">
-{#                <input type="text" placeholder="关键字" name="keyword">#}
-                <div id="ill_web_keyword_select">
-                </div>
-                <div id="ill_feature_web_keyword_select">
-                </div>
-{#                <input type="text" placeholder="地区" name="result.value.location">#}
-{#                <input type="text" placeholder="日期" name="result.value.save_time">#}
-                <button type="button" onclick="ill_web_search()" ><i class="iconfont icon-search"></i></button>
+        <div>
+            <ul class="nav nav-tabs" id="ill-tab">
+                <li class="active"><a onclick="ill_web_table_page_gua_ma(1)" data-toggle="tab">网页挂马</a></li>
+                <li><a onclick="ill_web_table_page_an_lian(1)" data-toggle="tab">网站暗链</a></li>
+                <li><a onclick="ill_web_table_page_min_gan_ci(1)" data-toggle="tab">敏感关键词</a></li>
+                <li><a onclick="ill_web_table_page_jie_chi(1)" data-toggle="tab">网页劫持</a></li>
+                <li><a onclick="ill_web_table_page_yellow_img(1)" data-toggle="tab">黄色图片</a></li>
+                <li><a onclick="ill_web_table_page_wei_fa(1)" data-toggle="tab">违法特征网站</a></li>
+                <div class="main-content-card-btngroup">
+                    <form  method="post" role="form" id="ill_web_form" style="visibility: hidden">
+                        <div id="ill_feature_web_keyword_select">
+                        </div>
+                        {#                <input type="text" placeholder="地区" name="result.value.location">#}
+                        {#                <input type="text" placeholder="日期" name="result.value.save_time">#}
+                        <button type="button" onclick="ill_web_search()" ><i class="iconfont icon-search"></i></button>
 
-            </form>
+                    </form>
+                </div>
+            </ul>
         </div>
-        <button onclick="ill_web_table_page_gua_ma(1)">网页挂马</button>
-        <button onclick="ill_web_table_page_an_lian(1)">网站暗链</button>
-        <button onclick="ill_web_table_page_min_gan_ci(1)">敏感关键词</button>
-        <button onclick="ill_web_table_page_jie_chi(1)">网页劫持</button>
-        <button onclick="ill_web_table_page_yellow_img(1)">黄色图片</button>
-        <button onclick="ill_web_table_page_wei_fa(1)">违法特征网站</button>
+
+
+{#        <button onclick="ill_web_table_page_gua_ma(1)">网页挂马</button>#}
+{#        <button onclick="ill_web_table_page_an_lian(1)">网站暗链</button>#}
+{#        <button onclick="ill_web_table_page_min_gan_ci(1)">敏感关键词</button>#}
+{#        <button onclick="ill_web_table_page_jie_chi(1)">网页劫持</button>#}
+{#        <button onclick="ill_web_table_page_yellow_img(1)">黄色图片</button>#}
+{#        <button onclick="ill_web_table_page_wei_fa(1)">违法特征网站</button>#}
     </div>
     <div class="main-content-card-content">
         <table class="table table-bordered">
