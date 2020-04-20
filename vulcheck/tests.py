@@ -621,18 +621,46 @@ def get_vul_iil_domain():
 def get_vul_iil_domain1():
     result_set = mongo_db['resultdb']
 
-    task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
-    param = {}
-    if task_id:
-        param['task_id'] = task_id
-    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
-                    {'result.value.vulnerables.plugin_name': {'$exists': True}}]
-    # param['_id'] = 0
-    logging.debug(param)
-    res = result_set.find(param, {"_id": 0})
+    task_id = "53a702aa-390b-46dd-91c6-5879b79e25e4"
+    # task_id = None
+    match = {'$match': {}}
+    match['$match']['$or'] = [
+        {'result.value.vulnerables.plugin_name': {'$exists': True}}
+    ]
+    pipeline = [
+        {'$match': {'task_id': task_id}},
+        {'$project': {"_id": 0,'result.value.vulnerables': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$unwind': "$result.value.vulnerables"},
+        {'$group':{
+
+            '_id': {
+                "severity": "$result.value.vulnerables.severity",
+                "plugin_name": "$result.value.vulnerables.plugin_name",
+            },
+            'plugin_count':  {'$sum': 1},
+            'info': {'$push':  {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
+        }},
+        {'$sort': {'plugin_count': -1}},
+        {'$group':{
+
+            '_id': {
+                "severity": "$_id.severity",
+            },
+            'severity_count':  {'$sum': "$plugin_count"},
+            'plugin': {'$push':  {"plugin_name": "$_id.plugin_name","name1":"$info", "count": "$plugin_count"}},
+        }},
+        {'$sort': {'severity_count': -1}},
+        {'$skip': 0},
+        {'$limit': 10},
+        {'$sort': {'result.value.save_time': -1}},
+
+    ]
+    res = result_set.aggregate(pipeline)
     result = []
     for i in res:
-        logging.debug(i)
+        # logging.debug(i)
         result.append(i)
 
 
@@ -859,4 +887,5 @@ if __name__ == '__main__':
     # test()
     # get_vul_result_count()
     # mongo_search_like()
-    get_vul_web_data()
+    # get_vul_web_data()
+    get_vul_iil_domain1()

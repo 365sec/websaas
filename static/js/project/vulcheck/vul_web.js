@@ -148,6 +148,12 @@ function vul_web_search() {
     vul_web_table_page(1)
 }
 
+let severity_dir = {}
+severity_dir['Urgent'] = "严重"
+severity_dir['High'] = "高危"
+severity_dir['Medium'] = "中危"
+severity_dir['Low'] = "低级"
+severity_dir['Information'] = "信息"
 function vul_web_table_page(page) {
     let data = {
         "param": vul_param,
@@ -176,8 +182,8 @@ function vul_web_table_page(page) {
                 // console.log(segment_word);
                 html += `<td><p class="tabletd-overflow" title='${class_word || ""}'>${class_word || ""}</p></td>`;
                 html += `<td><p class="tabletd-overflow" title='${segment_word || ""}'>${segment_word || ""}</p></td>`;
-
-                html+=`<td>${res['data'][x]['result']['value']['vulnerables']['severity']||""}</td>`;
+                let severity = res['data'][x]['result']['value']['vulnerables']['severity'];
+                html+=`<td>${severity_dir[severity]||""}</td>`;
                 // html+=`<td>${key_word||""}</td>`;
                 let country_ch = "";
                 let province = "";
@@ -201,10 +207,10 @@ function vul_web_table_page(page) {
                 html += `<td><p class="tabletd-overflow" title="${country_ch + "&nbsp;" + province + "&nbsp;" + city}">${country_ch + "&nbsp;" + province + "&nbsp;" + city}</p></td>`;
                 // html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['save_time'] || ""}</td>`;
-                // let detail = JSON.stringify(res['data'][x]);
-                // let b = new Base64();
-                // detail = b.encode(detail);
-                // html += `<td><a onclick='get_total_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
+                let detail = JSON.stringify(res['data'][x]['result']['value']['vulnerables']);
+                let b = new Base64();
+                detail = b.encode(detail);
+                html += `<td><a data-toggle="modal" data-target="#vul_detail_modal" onclick='get_vul_one_detail("${detail}")'>详情<i class="iconfont icon-link"></i></a></td>`;
 
                 html += `</tr>`;
             }
@@ -239,4 +245,43 @@ function get_vul_total() {
         }
     });
 
+}
+
+function get_vul_one_detail(data) {
+    let tmp_list =[];
+    tmp_list.push({"url":"存在漏洞的URL"})
+    tmp_list.push({"plugin_name":"插件名称或POC名称"})
+    tmp_list.push({"host":"FUZZ测试时的请求头部:host"})
+    tmp_list.push({"Referer":"FUZZ测试时的请求头部:Referer"})
+    tmp_list.push({"variable":"存在漏洞的变量"})
+    tmp_list.push({"result_desc":"漏洞结果描述"})
+    tmp_list.push({"payload":"fuzz测试构造的payload"})
+    tmp_list.push({"method":"请求方法"})
+    tmp_list.push({"severity":"漏洞严重等级"})
+    let b = new Base64();
+    data = b.decode(data);
+    data = JSON.parse(data);
+
+    let html1 = ``;
+    for(let item of tmp_list)
+    {
+        for (let key in item) {
+            if (data.hasOwnProperty(key)&&data[key])
+            {
+                let val = data[key];
+                if (key==="severity")
+                {
+                    val = severity_dir[data[key]];
+                }
+                html1+=`
+                 <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">${item[key]}</div>
+                                    <div class="columnT-tr-right">${val||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                `
+            }
+        }
+    }
+    $("#vul_detail_div").html("").append(html1);
 }

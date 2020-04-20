@@ -58,9 +58,10 @@ function get_task_list(page) {
                 let b = new Base64();
                 let task_info = JSON.stringify(res['data'][x]['task_info']);
                 task_info = b.encode(task_info);
+                let task_name = res['data'][x]['task_info']['name']||""
                 html+=`<tr>`;
-                html+=`<td><p class="tabletd-overflow"><a onclick='get_task_detail("${task_info}")' title="${res['data'][x]['task_id']}">${res['data'][x]['task_id']}</a></p></td>`;
-                html+=`<td><p class="tabletd-overflow"></p></td>`;
+                html+=`<td><p class="tabletd-overflow"><a onclick='get_task_detail("${task_info}")' title="${res['data'][x]['task_id']}">${task_name||"-"}</a></p></td>`;
+                html+=`<!--<td><p class="tabletd-overflow"></p></td>-->`;
                 html+=`<td>${res['data'][x]['status']}</td>`;
                 html+=`<td>${res['data'][x]['start_time']}</td>`;
                 html+=`<td>${res['data'][x]['finish_time']}</td>`;
@@ -110,10 +111,11 @@ function vulcheck_send_task() {
 function d_issue_tesk_batch_click() {
 
     let plug = get_plug_list();
-    console.log(plug);
+    // console.log(plug);
 
 
     let plug_html = ``;
+
     plug_html += `<div class="checkbox-selectall">
                         <input id="checkbox-selectall" class="checkbox-input" type="checkbox" name="plugin_name" value="" style="display: none;">
                         <label for="checkbox-selectall" >

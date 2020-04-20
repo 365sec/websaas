@@ -31,7 +31,8 @@ coloredlogs.install(level='DEBUG',
                     )
 
 # glob_url = "http://172.16.39.65:9000"
-glob_url = "http://172.16.39.81:22222"
+# glob_url = "http://172.16.39.81:22222"
+glob_url = "http://172.16.39.78:24444"
 # glob_url = "http://47.100.88.79:9000"
 
 # mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
@@ -86,7 +87,7 @@ def show_all_task(request):
     logging.debug(max_num)
     task_list = []
     for x in result:
-        logging.debug(x)
+        # logging.debug(x)
         x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time'])) if x[
             'finish_time'] else ""
         x['start_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['start_time'])) if x['start_time'] else ""
@@ -495,6 +496,7 @@ def issue_task_list(request):
     """:arg下发任务"""
     task_content = {
         "task_id": "",
+        "name": "",
         "spider_task_id": "",
         "url": "",
         "spider": {
@@ -517,6 +519,7 @@ def issue_task_list(request):
     # logging.debug(plugins)
     if "" in plugins:
         plugins.remove("")
+    name = request.POST.get("name")
     maxpage = request.POST.get("maxpage")
     maxdepth = request.POST.get("maxdepth")
     notscanurl = request.POST.get("notscanurl")
@@ -526,7 +529,7 @@ def issue_task_list(request):
     craw_current_directory = request.POST.get("craw_current_directory")
     # plugins = request.POST.getlist("plugin_name")
     logging.debug(request.POST)
-    context = []
+    # context = []
 
     check_url_list = []
     for x in check_url:
@@ -556,6 +559,7 @@ def issue_task_list(request):
     # task = task_content['']
     task = task_content
     task['task_id'] = task_id
+    task['name'] = name if name else "-"
     task['spider_task_id'] = spider_task_id
     task['url'] = ",".join(check_url_list)
     task['plugins'] = plugins
@@ -568,10 +572,10 @@ def issue_task_list(request):
     task['spider']['craw_current_directory'] = phantomjs_enable if craw_current_directory else False
 
     res = get_issue_task_result(glob_url + "/v1/sendtask", task)
-    # print(res)
-    context.append(res)
+    # logging.warning(res)
+    # context.append(res)
 
-    return HttpResponse(json.dumps(context), content_type="application/json")
+    return HttpResponse(json.dumps(res), content_type="application/json")
 
 
 # 一次扫描任务的结果统计
@@ -890,6 +894,32 @@ def get_scan_list(request):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
+# def get_scan_vul_iil_domain_list(request):
+#     """:arg
+#         获得违法信息和存在漏洞的域名
+#     """
+#     # logging.debug(json.loads(request.body))
+#     request_param = json.loads(request.body)
+#     logging.debug(request_param)
+#     task_id = request_param['param']['task_id']
+#
+#     context = {}
+#     # task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+#     param = {}
+#     if task_id:
+#         param['task_id'] = task_id
+#     param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
+#                     {'result.value.vulnerables.plugin_name': {'$exists': True}}]
+#     res = result_set.find(param, {"result": 1, "task_id": 1, "_id": 0})
+#     result = []
+#     for i in res:
+#         # logging.debug(i)
+#         result.append(i)
+#
+#     context['data'] = result
+#
+#     return HttpResponse(json.dumps(context), content_type="application/json")
+
 def get_scan_vul_iil_domain_list(request):
     """:arg
         获得违法信息和存在漏洞的域名
@@ -900,13 +930,43 @@ def get_scan_vul_iil_domain_list(request):
     task_id = request_param['param']['task_id']
 
     context = {}
-    # task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
-    param = {}
-    if task_id:
-        param['task_id'] = task_id
-    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
-                    {'result.value.vulnerables.plugin_name': {'$exists': True}}]
-    res = result_set.find(param, {"result": 1, "task_id": 1, "_id": 0})
+    match = {'$match': {}}
+    if(task_id):
+        match['$match']['task_id'] = task_id
+    match['$match']['$or'] = [
+        {'result.value.vulnerables.plugin_name': {'$exists': True}}
+    ]
+    pipeline = [
+        {'$match': {'task_id': task_id}},
+        {'$project': {"_id": 0,"task_id":1, 'result.value.vulnerables': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$unwind': "$result.value.vulnerables"},
+        {'$group':{
+
+            '_id': {
+                "severity": "$result.value.vulnerables.severity",
+                "plugin_name": "$result.value.vulnerables.plugin_name",
+            },
+            'plugin_count':  {'$sum': 1},
+            'info': {'$push':  {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
+        }},
+        {'$sort': {'plugin_count': -1}},
+        {'$group':{
+
+            '_id': {
+                "severity": "$_id.severity",
+            },
+            'severity_count':  {'$sum': "$plugin_count"},
+            'plugin': {'$push':  {"plugin_name": "$_id.plugin_name","data":"$info", "count": "$plugin_count"}},
+        }},
+        {'$sort': {'severity_count': -1}},
+        {'$skip': 0},
+        {'$limit': 10},
+        {'$sort': {'result.value.save_time': -1}},
+
+    ]
+    res = result_set.aggregate(pipeline)
     result = []
     for i in res:
         # logging.debug(i)

@@ -351,12 +351,12 @@ function get_scan_val_iil_list_page(filter_param) {
         data: data,
         success: function (res) {
             console.log(res)
-            for (let i in res['data'])
-            {
-                res['data'][i]['result'] = res['data'][i]['result'][0]
-            }
-            let html = get_scan_list_page_html(res);
-            $('#report_vul_ill_list').html(html);
+            // for (let i in res['data'])
+            // {
+            //     res['data'][i]['result'] = res['data'][i]['result'][0]
+            // }
+            // let html = get_scan_list_page_html(res);
+            // $('#report_vul_ill_list').html(html);
 
         }
     })
@@ -880,9 +880,46 @@ function get_detail_html(info) {
         for(let i in info['result']['value']['vulnerables'])
         {
             let url = info['result']['value']['vulnerables'][i]['url']||"";
+            let host = "";
+            if (info['result']['value']['vulnerables'][i]['headers']&&info['result']['value']['vulnerables'][i]['headers'].hasOwnProperty("host"))
+            {
+                host = info['result']['value']['vulnerables'][i]['headers']['host']||"";
+            }
+            let Referer = "";
+            if (info['result']['value']['vulnerables'][i]['headers']&&info['result']['value']['vulnerables'][i]['headers'].hasOwnProperty("Referer"))
+            {
+                Referer = info['result']['value']['vulnerables'][i]['headers']['Referer']||"";
+            }
+            let severity = info['result']['value']['vulnerables'][i]['severity']||"";
+            let _style = `style="background-color: red"`;
+            // severity_dir['Urgent'] = "严重"
+            // severity_dir['High'] = "高级"
+            // severity_dir['Medium'] = "中级"
+            // severity_dir['Low'] = "低级"
+            // severity_dir['Information'] = "信息"
+            switch (severity) {
+                case "Urgent":
+                    _style = `style="color: darkred"`;
+                    break;
+                case "High":
+                    _style = `style="color: red"`;
+                    break;
+                case "Medium":
+                    _style = `style="color: orange"`;
+                    break;
+                case "Low":
+                    _style = `style="color: yellowgreen"`;
+                    break;
+                case "Information":
+                    _style = `style="color: green"`;
+                    break;
+                default:
+                    _style = ``;
+            }
 
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
+                        <span ${_style} >漏洞等级&nbsp;${severity_dir[severity]}</span>
                         <span>${info['result']['value']['vulnerables'][i]['name']||""}&nbsp;${url}</span>
                         <i class="iconfont icon-arrow"></i>
                     </div>
@@ -898,14 +935,15 @@ function get_detail_html(info) {
                                     <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['plugin_name']||""}</div>
                                     <div class="columnT-tip">点击展开</div>
                                 </div>
+                             
                                 <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">FUZZ测试时的请求头部:host</div>
-                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['headers']['host']||""}</div>
+                                    <div class="columnT-tr-right">${host||""}</div>
                                     <div class="columnT-tip">点击展开</div>
                                 </div>
                                 <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">FUZZ测试时的请求头部:Referer</div>
-                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['headers']['Referer']||""}</div>
+                                    <div class="columnT-tr-right">${Referer||""}</div>
                                     <div class="columnT-tip">点击展开</div>
                                 </div>
                                 <div class="columnT-tr clearfix">

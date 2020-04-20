@@ -239,9 +239,9 @@ function ill_web_table_page(page) {
                 //网页快照
                 html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegal_feature']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_feature_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             addPagination(page,max_page);
@@ -275,7 +275,7 @@ function ill_web_table_page_gua_ma(page) {
               <th width="10%">归属地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">截图</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -305,9 +305,10 @@ function ill_web_table_page_gua_ma(page) {
                 //网页快照
                 html+=get_images(res['data'][x]['result']['value']);
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegality']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
+                html+=`</tr>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             $('.pagination').attr('data-func','ill_web_table_page_gua_ma');
@@ -341,7 +342,7 @@ function ill_web_table_page_jie_chi(page) {
             <th width="10%">劫持前url</th>
             <th width="10%">劫持前url</th>
             <th width="160px">扫描时间</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -373,9 +374,9 @@ function ill_web_table_page_jie_chi(page) {
                     // //网页快照
                     // html+=get_images(res['data'][x]['result']['value']);
                     //详情
-                    // let detail = get_detail_bs4(res['data'][x]);
-                    // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                    // html+=`</tr>`;
+                    let detail = get_detail_bs4(res['data'][x]['result']['value']['illegality']);
+
+                    html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
 
 
             }
@@ -411,7 +412,7 @@ function ill_web_table_page_an_lian(page) {
             <th width="10%">暗链类型</th>
             <th width="160px">归属地区</th>
             <th width="160px">扫描时间</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -437,9 +438,9 @@ function ill_web_table_page_an_lian(page) {
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
 
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegality']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             $('.pagination').attr('data-func','ill_web_table_page_an_lian')
@@ -475,7 +476,7 @@ function ill_web_table_page_min_gan_ci(page) {
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">截图</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -508,9 +509,10 @@ function ill_web_table_page_min_gan_ci(page) {
                 //网页快照
                 html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                //详情
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegality']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             $('.pagination').attr('data-func','ill_web_table_page_min_gan_ci')
@@ -544,7 +546,7 @@ function ill_web_table_page_yellow_img(page) {
             <th width="10%">黄色图片地址</th>
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -568,9 +570,9 @@ function ill_web_table_page_yellow_img(page) {
                 html+=`<td>${res['data'][x]['result']['value']['save_time']||""}</td>`;
 
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegality']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             $('.pagination').attr('data-func','ill_web_table_page_yellow_img')
@@ -605,7 +607,7 @@ function ill_web_table_page_wei_fa(page) {
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">图片</th>
-<!--            <th width="80px">详情</th>-->
+            <th width="80px">详情</th>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -637,9 +639,9 @@ function ill_web_table_page_wei_fa(page) {
                 //网页快照
                 html+=get_images1(res['data'][x]['result']['value']);
                 //详情
-                // let detail = get_detail_bs4(res['data'][x]);
-                // html+=`<td><a onclick=get_total_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
-                // html+=`</tr>`;
+                let detail = get_detail_bs4(res['data'][x]['result']['value']['illegal_feature']);
+
+                html+=`<td><a data-toggle="modal" data-target="#ill_detail_modal" onclick=get_ill_feature_one_detail("${detail}")>详情<i class="iconfont icon-link"></i></a></td>`;
             }
             $('.pagination').prev().find('tbody').html(html);
             $('.pagination').attr('data-func','ill_web_table_page_wei_fa')
@@ -827,4 +829,125 @@ function show_images(bs_64) {
             $("#test_image_div").html("").append(html);
             // $("#imageModal").show();
         }});
+}
+
+function get_ill_one_detail(data) {
+
+    let tmp_list =[];
+    tmp_list.push({"headers":""});
+    tmp_list.push({"url":"存在漏洞的URL"});
+    tmp_list.push({"plugin_name":"插件名称或POC名称"});
+    tmp_list.push({"host":"FUZZ测试时的请求头部:host"});
+    tmp_list.push({"Referer":"FUZZ测试时的请求头部:Referer"});
+    tmp_list.push({"variable":"存在漏洞的变量"});
+    tmp_list.push({"result_desc":"漏洞结果描述"});
+    tmp_list.push({"payload":"fuzz测试构造的payload"});
+    tmp_list.push({"method":"请求方法"});
+    tmp_list.push({"severity":"漏洞严重等级"});
+    tmp_list.push({"value":""});
+    let b = new Base64();
+    data = b.decode(data);
+    data = JSON.parse(data);
+
+    let html1 = ``;
+    for(let item of tmp_list)
+    {
+        for (let key in item) {
+            if (data.hasOwnProperty(key)&&data[key])
+            {
+                if (typeof (data[key])==="object")
+                {
+                    for (let k in data[key])
+                    {
+                        if ( k==="keyword_list")
+                        {
+                            for (let i in data[key][k])
+                            {
+                                html1+=`
+                                 <div class="columnT-tr clearfix">
+                                                    <div class="columnT-tr-left">关键词</div>
+                                                    <div class="columnT-tr-right">${data[key][k][i]['value']}</div>
+                                                    <div class="columnT-tip">点击展开</div>
+                                                </div>
+                                                
+                                 <div class="columnT-tr clearfix">
+                                            <div class="columnT-tr-left">内容</div>
+                                            <div class="columnT-tr-right">${data[key][k][i]['segment']}</div>
+                                            <div class="columnT-tip">点击展开</div>
+                                        </div>
+                                    `
+                            }
+                        }
+                        else {
+                            html1+=`
+                     <div class="columnT-tr clearfix">
+                                        <div class="columnT-tr-left">${k}</div>
+                                        <div class="columnT-tr-right">${data[key][k]||""}</div>
+                                        <div class="columnT-tip">点击展开</div>
+                                    </div>
+                        `
+                        }
+
+
+                    }
+                }
+                else {
+                    let val = data[key];
+                    if (key==="severity")
+                    {
+                        val = severity_dir[data[key]];
+                    }
+                    html1+=`
+                 <div class="columnT-tr clearfix">
+                                    <div class="columnT-tr-left">${item[key]}</div>
+                                    <div class="columnT-tr-right">${val||""}</div>
+                                    <div class="columnT-tip">点击展开</div>
+                                </div>
+                `
+                }
+
+            }
+        }
+    }
+
+    $("#ill_detail_div").html("").append(html1);
+}function get_ill_feature_one_detail(data) {
+    let tmp_list =[];
+    tmp_list.push({"url":"地址"});
+    tmp_list.push({"description":"描述"});
+    tmp_list.push({"name":"网站类型"});
+    tmp_list.push({"image_snapshot":"网页截图"});
+    tmp_list.push({"snapshot_time":"保存时间"});
+
+
+    let b = new Base64();
+    data = b.decode(data);
+    data = JSON.parse(data);
+    console.log(data)
+    let html1 = ``;
+    html1+=`
+        <div class="columnT-tr clearfix">
+            <div class="columnT-tr-left">URL</div>
+            <div class="columnT-tr-right">${data['url']||""}</div>
+            <div class="columnT-tip">点击展开</div>
+        </div>
+    `;
+    for(let item of  tmp_list){
+        for (let key in item)
+        {
+            if (data.hasOwnProperty(key)&&data[key])
+            {
+                html1+=`
+                 <div class="columnT-tr clearfix">
+                    <div class="columnT-tr-left">${item[key]||""}</div>
+                    <div class="columnT-tr-right">${data[key]||""}</div>
+                    <div class="columnT-tip">点击展开</div>
+                </div>
+                `;
+            }
+        }
+    }
+
+
+    $("#ill_detail_div").html("").append(html1);
 }
