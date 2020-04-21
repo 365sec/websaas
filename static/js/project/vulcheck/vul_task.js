@@ -5,7 +5,7 @@ function vulcheck_show_all_task() {
         type: "get",
         success: function (res) {
 
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             vulcheck_all_task_able();
 
             // 更改title
@@ -30,13 +30,18 @@ function vulcheck_show_all_task() {
 }
 function vulcheck_all_task_able() {
     // 获取页码刷新时的高亮显示
-    let page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+    if(getURLString('id')){
+        get_total_one_detail(getURLString('id'))
+    }else if (getURLString('task')) {
+        get_task_detail(getURLString('task'))
+    } else {
+        let page = 1;
+        if (location.href.split('?')[1]) {
+            page = location.href.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+        }
+        get_task_list(page);//刷新后退加载页码表格数据
     }
-    get_task_list(page);//刷新后退加载页码表格数据
 }
-
 
 
 function get_task_list(page) {
@@ -220,6 +225,8 @@ function d_issue_task_batch_submit() {
 }
 
 function get_task_detail(task_info) {
+
+    if(!getURLString('task'))history.pushState(null,null,changeURLArg(location.href,'task',task_info));
     /*获得单个任务的详情信息*/
     let b = new Base64();
     task_info = b.decode(task_info);
@@ -333,9 +340,6 @@ function get_send_task_info_html(task_info) {
     // $("#task_send_detail_table_body .columnT").html(html);
     return html;
 }
-$(function(){
-
-})
 
 function get_task_detail_html(task_id) {
     $.ajax({
@@ -344,7 +348,7 @@ function get_task_detail_html(task_id) {
         type: "get",
         async:false,
         success: function (res) {
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             document.title = '任务详情报告';
             let send_data = {};
             if (task_id)

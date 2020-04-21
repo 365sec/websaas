@@ -5,7 +5,7 @@ function vulcheckQuickstart() {
         type: "get",
         success: function(res){
             // history.pushState(null,null,'/vulcheck#quickstart')
-            $('.tab-content').html(res)
+            $('.right-content').html(res)
         }
     });
 }

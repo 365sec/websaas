@@ -18,7 +18,7 @@ function vulcheck_get_total_html(task_id) {
         type: "get",
         async:false,
         success: function (res) {
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             // 更改title
             classify_by_key(filter_param);
             get_scan_list(filter_param);
@@ -303,13 +303,18 @@ function btn_total_search() {
 function get_scan_list(filter_param) {
     /*
     * 加载每个IP扫描的结果信息*/
+    // 如果有id即为内页
+    if(getURLString('id')){
+        get_total_one_detail(getURLString('id'))
+    }else{
+        // 获取页码刷新时的高亮显示
+        var page = 1;
+        if (location.href.split('?')[1]) {
+            page = location.href.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+        }
+        get_scan_list_page(page, filter_param)//刷新后退加载页码表格数据
 
-    // 获取页码刷新时的高亮显示
-    var page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
-    get_scan_list_page(page, filter_param)//刷新后退加载页码表格数据
 
 }
 
@@ -587,6 +592,8 @@ function get_scan_list_page_report_html(res) {
     return html
 }
 function get_total_one_detail(_info) {
+    // 点击详情触发 刷新触发
+    if(!getURLString('id'))history.pushState(null,null,changeURLArg(location.href,'id',_info))
     /*获得单个数据的详情信息*/
     let b = new Base64();
     _info = b.decode(_info);
@@ -603,7 +610,7 @@ function get_total_one_detail_html() {
         type: "get",
         async:false,
         success: function (res) {
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
         }
     });
 }
@@ -626,27 +633,22 @@ function get_detail_html(info) {
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">国家/地区</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['country_ch']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">省份</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['province']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">城市</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['city']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">经度</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['lon']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">纬度</div>
                 <div class="columnT-tr-right">${info['result']['value']['location']['lat']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     $("#base_info_body").html("").append(html);
     //服务信息
@@ -655,24 +657,20 @@ function get_detail_html(info) {
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">操作系统</div>
                 <div class="columnT-tr-right">${info['result']['value']['os']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     if (info['result']['value'].hasOwnProperty("server")) {
         html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">服务器</div>
                 <div class="columnT-tr-right">${info['result']['value']['server']['product']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
         html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">版本</div>
                 <div class="columnT-tr-right">${info['result']['value']['server']['version']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     }
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">端口</div>
                 <div class="columnT-tr-right">${info['result']['value']['protocols']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
 
     if (info['result']['value'].hasOwnProperty("language"))
@@ -687,14 +685,12 @@ function get_detail_html(info) {
         html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">语言</div>
                 <div class="columnT-tr-right">${language||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     }
 
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">返回状态码</div>
                 <div class="columnT-tr-right">${info['result']['value']['status_code']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     $("#base_info_server_body").html("").append(html);
     //WHOIS
@@ -719,39 +715,15 @@ function get_detail_html(info) {
                 }
             }
             html+=    `</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
 
         }
         $("#base_info_whois").html("").append(html);
-        $("#whois_div").show();
+        $("#other_detail").show();
+        $("#other_detail ul").append('<li><a href="#whois_div" data-toggle="tab">WHOIS</a></li>');
 
     }
-
-    //备案
-    if (info['result']['value'].hasOwnProperty("icp"))
-    {
-        let tmp_class = {};
-        tmp_class['beian_domain'] = "备案域名";
-        tmp_class['icp_code'] = "ICP备案号";
-        tmp_class['site_name'] = "备案网站名称";
-        tmp_class['org_name'] = "企业或事业单位名称";
-        tmp_class['nature'] = "单位类型";
-        let temp = info['result']['value']['icp'];
-        html=``;
-        for(let key in temp)
-        {
-            html+=`<div  class="columnT-tr clearfix">
-                                <div class="columnT-tr-left">${tmp_class[key]}</div>
-                                <div class="columnT-tr-right">${temp[key]}</div>`;
-            html+=`<div class="columnT-tip">点击展开</div></div>`;
-
-        }
-        $("#base_info_beian").html("").append(html);
-        $("#beian_div").show();
-
-    }
-    //autonomous_system
+//autonomous_system
     if (info['result']['value'].hasOwnProperty("autonomous_system"))
     {
         let temp = info['result']['value']['autonomous_system'];
@@ -761,53 +733,79 @@ function get_detail_html(info) {
             html+=`<div  class="columnT-tr clearfix">
                                 <div class="columnT-tr-left">${key}</div>
                                 <div class="columnT-tr-right">${temp[key]}</div>`;
-            html+=`<div class="columnT-tip">点击展开</div></div>`;
 
         }
         $("#base_info_autonomous_system").html("").append(html);
-        $("#autonomous_system_div").show();
+        $("#other_detail").show();
+        $("#other_detail ul").append('<li><a href="#autonomous_system_div" data-toggle="tab">autonomous_system</a></li>');
     }
+    $('#other_detail li:eq(0) a').tab('show')
+    //备案
+    // if (info['result']['value'].hasOwnProperty("icp"))
+    // {
+    //     let tmp_class = {};
+    //     tmp_class['beian_domain'] = "备案域名";
+    //     tmp_class['icp_code'] = "ICP备案号";
+    //     tmp_class['site_name'] = "备案网站名称";
+    //     tmp_class['org_name'] = "企业或事业单位名称";
+    //     tmp_class['nature'] = "单位类型";
+    //     let temp = info['result']['value']['icp'];
+    //     html=``;
+    //     for(let key in temp)
+    //     {
+    //         html+=`<div  class="columnT-tr clearfix">
+    //                             <div class="columnT-tr-left">${tmp_class[key]}</div>
+    //                             <div class="columnT-tr-right">${temp[key]}</div>`;
+    //         html+=`<div class="columnT-tip">点击展开</div></div>`;
+    //
+    //     }
+    //     $("#base_info_beian").html("").append(html);
+    //     $("#beian_div").show();
+    //
+    // }
+
 
     //网站信息
     html =``;
+
+
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">域名</div>
                 <div class="columnT-tr-right">${info['result']['scheme_domain']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">URL</div>
                 <div class="columnT-tr-right">${info['result']['value']['url']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
+    if (info['result']['value'].hasOwnProperty("icp")){
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">ICP备案号</div>
+                <div class="columnT-tr-right">${info['result']['value']['icp']['icp_code']||""}</div>
+            </div>`;
+    }
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">标题</div>
                 <div class="columnT-tr-right">${info['result']['value']['title']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">描述</div>
                 <div class="columnT-tr-right">${info['result']['value']['description']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">关键词</div>
                 <div class="columnT-tr-right">${info['result']['value']['keywords']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">保存时间</div>
                 <div class="columnT-tr-right">${info['result']['value']['save_time']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
     if (info['result']['value'].hasOwnProperty("statistics"))
     {
         html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">扫描URL总数</div>
                 <div class="columnT-tr-right">${info['result']['value']['statistics']['total']||""}</div>
-                <div class="columnT-tip">点击展开</div>
             </div>`;
-        html+=`<div  class="columnT-tr clearfix">
+        html+=`<div  class="columnT-tr clearfix overflow">
                 <div class="columnT-tr-left">URL_LIST</div>
                 <div class="columnT-tr-right">
                 `;
@@ -818,17 +816,15 @@ function get_detail_html(info) {
             html+=`<div>${url||""}</div>`;
         }
     }
-
-
-
+    let detail = get_detail_bs4(info['result']);
     html+=`    </div>
-                <div class="columnT-tip">点击展开</div>
+                <div class="columnT-tip" data-toggle="modal" data-target="#total_one_modal" onclick=total_detail_model("${detail}")>详情</div>
 
             </div>`;
 
     $("#web_info_body").html("").append(html);
 
-    //网站相应信息
+    //网站响应信息
     if (info['result']['value'].hasOwnProperty("response_headers")) {
         html = ``;
         for (let key in info['result']['value']['response_headers'])
@@ -836,7 +832,7 @@ function get_detail_html(info) {
             html+=`<div  class="columnT-tr clearfix">
                 <div class="columnT-tr-left">${key}</div>
                 <div class="columnT-tr-right">${info['result']['value']['response_headers'][key]||""}</div>
-                <div class="columnT-tip">点击展开</div>
+<!--                <div class="columnT-tip">点击展开</div>-->
             </div>`;
         }
         $("#web_response_info").html("").append(html);
@@ -860,12 +856,12 @@ function get_detail_html(info) {
                                 <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">URL</div>
                                     <div class="columnT-tr-right">${info['result']['value']['illegal_feature'][i]['url']||""}</div>
-                                    <div class="columnT-tip">点击展开</div>
+<!--                                    <div class="columnT-tip">点击展开</div>-->
                                 </div>
                               <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">描述</div>
                                     <div class="columnT-tr-right">${info['result']['value']['illegal_feature'][i]['description']||""}</div>
-                                    <div class="columnT-tip">点击展开</div>
+<!--                                    <div class="columnT-tip">点击展开</div>-->
                                 </div>
                             </div>
                 </div>`;
@@ -899,28 +895,29 @@ function get_detail_html(info) {
             // severity_dir['Information'] = "信息"
             switch (severity) {
                 case "Urgent":
-                    _style = `style="color: darkred"`;
+                    _style = `style="background: darkred"`;
                     break;
                 case "High":
-                    _style = `style="color: red"`;
+                    _style = `style="background: red"`;
                     break;
                 case "Medium":
-                    _style = `style="color: orange"`;
+                    _style = `style="background: orange"`;
                     break;
                 case "Low":
-                    _style = `style="color: yellowgreen"`;
+                    _style = `style="background: yellowgreen"`;
                     break;
                 case "Information":
-                    _style = `style="color: green"`;
+                    _style = `style="background: green"`;
                     break;
                 default:
                     _style = ``;
             }
-
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
-                        <span ${_style} >漏洞等级&nbsp;${severity_dir[severity]}</span>
-                        <span>${info['result']['value']['vulnerables'][i]['name']||""}&nbsp;${url}</span>
+                        <div>${info['result']['value']['vulnerables'][i]['name']||""}</div>
+                        <div class="columnT-level">
+                            <div ${_style}></div><div ${_style}></div><div ${_style}></div>
+                        </div>
                         <i class="iconfont icon-arrow"></i>
                     </div>
                     <div class="columnT-sec-content">
@@ -1065,7 +1062,7 @@ function get_detail_html(info) {
             }
             html+=`<div class="columnT-sec">
                     <div class="columnT-sec-title">
-                        <span>${info['result']['value']['illegality'][i]['name']||""}&nbsp;${url}</span>
+                        <span>${info['result']['value']['illegality'][i]['name']||""}</span>
                         <i class="iconfont icon-arrow"></i>
                     </div>
                     <div class="columnT-sec-content">
@@ -1112,18 +1109,18 @@ function get_detail_html(info) {
     //高度过高数据缩放
     columnSlide();
     // 地图
-    getMap(info['result']['value']['location']['lon'],info['result']['value']['location']['lat'],'map-canvas');
+    // getMap(info['result']['value']['location']['lon'],info['result']['value']['location']['lat'],'map-canvas');
 }
 // 地图
-function getMap(x,y,div) {
-    var map = new BMap.Map(div);            // 创建Map实例
-    var point = new BMap.Point(x,y); // 创建点坐标
-    map.centerAndZoom(point,17);
-    map.enableScrollWheelZoom();
-    var marker = new BMap.Marker(point);        // 创建标注
-    map.addOverlay(marker);                     // 将标注添加到地图中
-
-}
+// function getMap(x,y,div) {
+//     var map = new BMap.Map(div);            // 创建Map实例
+//     var point = new BMap.Point(x,y); // 创建点坐标
+//     map.centerAndZoom(point,17);
+//     map.enableScrollWheelZoom();
+//     var marker = new BMap.Marker(point);        // 创建标注
+//     map.addOverlay(marker);                     // 将标注添加到地图中
+//
+// }
 //二级嵌套table展开缩放
 $(document).on('click','.columnT-sec-title',function () {
     $(this).next().slideToggle();
@@ -1136,3 +1133,57 @@ $(document).on('click','.key-content-data-country,.key-content-data-province',fu
     $(this).find('.icon-arrow').toggleClass('iconRotate');
     $(this).parent().next().slideToggle();
 });
+
+
+// 网站信息详情点开
+function total_detail_model(data) {
+    let b = new Base64();
+    data = b.decode(data);
+    data = JSON.parse(data);
+    console.log(data);
+    let html =``;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">域名</div>
+                <div class="columnT-tr-right">${data['scheme_domain']||""}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL</div>
+                <div class="columnT-tr-right">${data['value']['url']||""}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">标题</div>
+                <div class="columnT-tr-right">${data['value']['title']||""}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">描述</div>
+                <div class="columnT-tr-right">${data['value']['description']||""}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">关键词</div>
+                <div class="columnT-tr-right">${data['value']['keywords']||""}</div>
+            </div>`;
+    html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">保存时间</div>
+                <div class="columnT-tr-right">${data['value']['save_time']||""}</div>
+            </div>`;
+    if (data['value'].hasOwnProperty("statistics"))
+    {
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">扫描URL总数</div>
+                <div class="columnT-tr-right">${data['value']['statistics']['total']||""}</div>
+            </div>`;
+        html+=`<div  class="columnT-tr clearfix">
+                <div class="columnT-tr-left">URL_LIST</div>
+                <div class="columnT-tr-right">
+                `;
+        for (let i in data['value']['statistics']['urls'])
+        {
+            let url = data['value']['statistics']['urls'][i];
+            // console.log(url);
+            html+=`<div>${url||""}</div>`;
+        }
+    }
+    html+=`    </div>
+            </div>`;
+    $("#total_one_detail_div").html("").append(html);
+}

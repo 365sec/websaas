@@ -5,7 +5,7 @@ function vulcheck_get_ill_web_html() {
         type: "get",
         success: function (res) {
 
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             document.title = '违法网站分析';
             ill_web_table();
             get_ill_keyword();
@@ -266,16 +266,18 @@ function ill_web_table_page_gua_ma(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
-            <th width="15%">网站域名</th>
-            <th width="120px">关联IP</th>
-          
-            <th width="10%">挂马类型</th>
-            <th width="10%">挂马名称</th>
-            <th width="10%">挂马内容</th>
-              <th width="10%">归属地区</th>
-            <th width="160px">扫描时间</th>
-            <th width="80px">截图</th>
-            <th width="80px">详情</th>
+            <tr>
+                <th width="15%">网站域名</th>
+                <th width="120px">关联IP</th>
+              
+                <th width="10%">挂马类型</th>
+                <th width="10%">挂马名称</th>
+                <th width="10%">挂马内容</th>
+                  <th width="10%">归属地区</th>
+                <th width="160px">扫描时间</th>
+                <th width="80px">截图</th>
+                <th width="80px">详情</th>
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -335,14 +337,16 @@ function ill_web_table_page_jie_chi(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
-            <th width="15%">网站域名</th>
-            <th width="120px">关联IP</th>
-            <th width="10%">分类</th>
-            <th width="10%">归属地区</th>
-            <th width="10%">劫持前url</th>
-            <th width="10%">劫持前url</th>
-            <th width="160px">扫描时间</th>
-            <th width="80px">详情</th>
+            <tr>
+                <th width="15%">网站域名</th>
+                <th width="120px">关联IP</th>
+                <th width="10%">分类</th>
+                <th width="10%">归属地区</th>
+                <th width="10%">劫持前url</th>
+                <th width="10%">劫持前url</th>
+                <th width="160px">扫描时间</th>
+                <th width="80px">详情</th>
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -406,13 +410,15 @@ function ill_web_table_page_an_lian(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
-            <th width="15%">网站域名</th>
-            <th width="120px">关联IP</th>
-            <th width="10%">暗链URL</th>
-            <th width="10%">暗链类型</th>
-            <th width="160px">归属地区</th>
-            <th width="160px">扫描时间</th>
-            <th width="80px">详情</th>
+            <tr>
+                <th width="15%">网站域名</th>
+                <th width="120px">关联IP</th>
+                <th width="10%">暗链URL</th>
+                <th width="10%">暗链类型</th>
+                <th width="160px">归属地区</th>
+                <th width="160px">扫描时间</th>
+                <th width="80px">详情</th>
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -469,14 +475,16 @@ function ill_web_table_page_min_gan_ci(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
-            <th width="15%">网站域名</th>
-            <th width="120px">关联IP</th>
-            <th width="10%">关键词类型 </th>
-            <th width="10%">关键词内容</th>
-            <th width="160px">地区</th>
-            <th width="160px">扫描时间</th>
-            <th width="80px">截图</th>
-            <th width="80px">详情</th>
+            <tr>
+                <th width="15%">网站域名</th>
+                <th width="120px">关联IP</th>
+                <th width="10%">关键词类型 </th>
+                <th width="10%">关键词内容</th>
+                <th width="160px">地区</th>
+                <th width="160px">扫描时间</th>
+                <th width="80px">截图</th>
+                <th width="80px">详情</th>
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -540,6 +548,7 @@ function ill_web_table_page_yellow_img(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
+            <tr>
             <th width="15%">网站域名</th>
             <th width="120px">关联IP</th>
 <!--            <th width="10%">类型 </th>-->
@@ -547,6 +556,8 @@ function ill_web_table_page_yellow_img(page) {
             <th width="160px">地区</th>
             <th width="160px">扫描时间</th>
             <th width="80px">详情</th>
+
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -599,15 +610,17 @@ function ill_web_table_page_wei_fa(page) {
         type: "post",
         success: function (res) {
             let tab_div=`
-            <th width="15%">网站域名</th>
-            <th width="120px">关联IP</th>
-            <th width="10%">网站类型 </th>
-            <th width="10%">描述</th>
-            <th width="160px">URL</th>
-            <th width="160px">地区</th>
-            <th width="160px">扫描时间</th>
-            <th width="80px">图片</th>
-            <th width="80px">详情</th>
+            <tr>
+                <th width="15%">网站域名</th>
+                <th width="120px">关联IP</th>
+                <th width="10%">网站类型 </th>
+                <th width="10%">描述</th>
+                <th width="160px">URL</th>
+                <th width="160px">地区</th>
+                <th width="160px">扫描时间</th>
+                <th width="80px">图片</th>
+                <th width="80px">详情</th>
+            </tr>
             `;
             $('.pagination').prev().find('thead').html(tab_div);
             console.log(res);
@@ -867,13 +880,11 @@ function get_ill_one_detail(data) {
                                  <div class="columnT-tr clearfix">
                                                     <div class="columnT-tr-left">关键词</div>
                                                     <div class="columnT-tr-right">${data[key][k][i]['value']}</div>
-                                                    <div class="columnT-tip">点击展开</div>
                                                 </div>
                                                 
                                  <div class="columnT-tr clearfix">
                                             <div class="columnT-tr-left">内容</div>
                                             <div class="columnT-tr-right">${data[key][k][i]['segment']}</div>
-                                            <div class="columnT-tip">点击展开</div>
                                         </div>
                                     `
                             }
@@ -883,7 +894,6 @@ function get_ill_one_detail(data) {
                      <div class="columnT-tr clearfix">
                                         <div class="columnT-tr-left">${k}</div>
                                         <div class="columnT-tr-right">${data[key][k]||""}</div>
-                                        <div class="columnT-tip">点击展开</div>
                                     </div>
                         `
                         }
@@ -901,7 +911,6 @@ function get_ill_one_detail(data) {
                  <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">${item[key]}</div>
                                     <div class="columnT-tr-right">${val||""}</div>
-                                    <div class="columnT-tip">点击展开</div>
                                 </div>
                 `
                 }
@@ -929,7 +938,6 @@ function get_ill_one_detail(data) {
         <div class="columnT-tr clearfix">
             <div class="columnT-tr-left">URL</div>
             <div class="columnT-tr-right">${data['url']||""}</div>
-            <div class="columnT-tip">点击展开</div>
         </div>
     `;
     for(let item of  tmp_list){
@@ -941,7 +949,6 @@ function get_ill_one_detail(data) {
                  <div class="columnT-tr clearfix">
                     <div class="columnT-tr-left">${item[key]||""}</div>
                     <div class="columnT-tr-right">${data[key]||""}</div>
-                    <div class="columnT-tip">点击展开</div>
                 </div>
                 `;
             }

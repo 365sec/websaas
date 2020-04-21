@@ -6,7 +6,7 @@ function vulcheck_get_vul_web_html() {
         type: "get",
         success: function (res) {
 
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             // 更改title
             document.title = '漏洞列表';
             vul_web_table();
@@ -119,8 +119,8 @@ let vul_param;
 function vul_web_table() {
     // 获取页码刷新时的高亮显示
     var page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+    if (location.href.split('?')[1]) {
+        page = location.href.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
     vul_param = {};
     vul_web_table_page(page)//刷新后退加载页码表格数据

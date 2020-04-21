@@ -9,51 +9,56 @@ document.write("<script type='text/javascript' src='/static/js/project/vulcheck/
 document.write("<script type='text/javascript' src='/static/js/project/AbnormalWebsite/index.js'></script>");
 document.write("<script type='text/javascript' src='/static/js/project/AbnormalWebsite/task.js'></script>");
 $(function() {
-    // 左侧手风琴点击样式变化
-    $('.sidebar-firstNav').click(function () { //点击一级触发
+    // // 左侧手风琴点击样式变化
+    // $('.sidebar-firstNav').on('high',function () { //点击一级触发
+    //     var parent = $(this).parent();
+    //     parent.siblings().children('ul').slideUp();
+    //     //收起其他一级展开框
+    //     parent.siblings().find('.active').removeClass('active');//移除其他二级open active
+    //     if (parent.attr('data-drop')) {//有展开框一级点击事件
+    //         parent.addClass('open').siblings().removeClass('open');//移除其他一级open
+    //         $(this).siblings().slideToggle();//展开当前展开框
+    //         parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
+    //         $(this).find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
+    //     } else {//无展开框一级点击事件
+    //         parent.addClass('active').siblings().removeClass('open active');//移除其他一级open active
+    //         parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
+    //
+    //     }
+    // })
+    // $('.sidebar-secondNav').on('high',function () { //点击二级触发
+    //     var parent = $(this).parent();
+    //     // 刷新加载时
+    //     var parentlevel = parent.parents('.sidebar-firstItem');
+    //     parentlevel.addClass('open')//展开当前上级
+    //     parentlevel.children('ul').slideDown();//展开当前展开框
+    //     parentlevel.children('div').find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
+    //     if (parent.attr('data-drop')) {//有展开框二级点击事件
+    //         // 暂无
+    //         // parent.toggleClass('open').siblings().removeClass('open');//移除其他二级open
+    //         // $(this).siblings().slideToggle();//展开当前展开框
+    //         // parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
+    //         // $(this).find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
+    //     } else {//无展开框二级点击事件
+    //         parent.addClass('active')//二级高亮
+    //         parent.siblings().removeClass('active')//其他二级取消高亮
+    //         parentlevel.siblings().removeClass('open active').find('.active').removeClass('active')
+    //     }
+    // })
+// 左侧手风琴点击样式变化
+    $('.sidebar-firstNav').on('high',function () { //点击一级触发
         var parent = $(this).parent();
-        parent.siblings().children('ul').slideUp();
-        ;//收起其他一级展开框
-        parent.siblings().find('.active').removeClass('active');//移除其他二级open active
-        if (parent.attr('data-drop')) {//有展开框一级点击事件
-            parent.toggleClass('open').siblings().removeClass('open');//移除其他一级open
-            $(this).siblings().slideToggle();//展开当前展开框
-            parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
-            $(this).find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
-        } else {//无展开框一级点击事件
-            parent.addClass('active').siblings().removeClass('open active');//移除其他一级open active
-            parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
-
-        }
+        parent.addClass('active').siblings().removeClass('open active');//移除其他一级open active
+        parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
     })
-    $('.sidebar-secondNav').click(function () { //点击二级触发
-        var parent = $(this).parent();
-        // 刷新加载时
-        var parentlevel = parent.parents('.sidebar-firstItem');
-        parentlevel.addClass('open')//展开当前上级
-        parentlevel.children('ul').slideDown();//展开当前展开框
-        parentlevel.children('div').find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
-        if (parent.attr('data-drop')) {//有展开框二级点击事件
-            // 暂无
-            // parent.toggleClass('open').siblings().removeClass('open');//移除其他二级open
-            // $(this).siblings().slideToggle();//展开当前展开框
-            // parent.siblings().find('.iconRotate').removeClass('iconRotate');//恢复其他模块箭头指向
-            // $(this).find('.icon-arrow').toggleClass('iconRotate');//调转当前箭头指向
-        } else {//无展开框二级点击事件
-            parent.addClass('active')//二级高亮
-            parent.siblings().removeClass('active')//其他二级取消高亮
-            parentlevel.siblings().removeClass('open active').find('.active').removeClass('active')
-        }
-    })
-
     // 左侧手风琴点击执行事件
     $(".sidebar-firstNav,.sidebar-secondNav").click(function () {
+        $(this).trigger('high');
         var value = $(this).attr("data-value");
         if(value){
-            var target = '/'+value.split('-')[0]+'#'+value.split('-')[1]
+            var target = '/'+value
             // 在本页面刷新链接只有参数变化则不改变url
-            if(!location.pathname || !location.hash ||
-                location.pathname + location.hash.split('?')[0] !== target){
+            if(location.pathname !== target || getURLString('id')){
                 history.pushState(null,null,target);
             }
         }
@@ -61,34 +66,26 @@ $(function() {
             // case "vulcheck-index":
             //     vulcheckIndex();
             //     break;
-            case "vulcheck-quickstart":
-                vulcheckQuickstart();
-                break;
-            case "vulcheck-show_all_task":
+            case "asset-task-list":
                 vulcheck_show_all_task();
                 break;
             // case "vulcheck-send_task":
             //     vulcheck_send_task();
             //     break;
-            case "vulcheck-index":
+            case "asset-manage":
                 vulcheck_get_total_html();
                 break;
-            case "vulcheck-get_ill_web_html":
+            case "ill-web-ana":
                 vulcheck_get_ill_web_html();
                 break;
-            case "vulcheck-get_vul_web_html":
+            case "vul-web-list":
                 vulcheck_get_vul_web_html();
                 break;
-            case "vulcheck-get_beian_html":
+            case "beian-ana":
                 vulcheck_get_beian_html();
                 break;
-            case "vulcheck-get_abnormal_html":
-                get_abnormal_html();
-                break;
-            case "vulcheck-get_abnormal_task_html":
-                get_abnormal_task_html();
-                break;
             default:
+                vulcheck_get_total_html();
         }
     });
     // 点击menu菜单按钮展开折叠左侧sidebar
@@ -123,22 +120,41 @@ $(function() {
 // 刷新，回退时加载默认
 function refresh() {
     var req = '',//一级
-        hash='',//二级
+        // hash='',//二级
         page='';//页码参数
     if(location.pathname)req = location.pathname.slice(1);//解析一级路径
-    if(location.hash)hash = location.hash.split('#')[1].split('?')[0];//解析二级路径
-    if(!hash){
+    // if(location.hash)hash = location.hash.split('#')[1].split('?')[0];//解析二级路径
+    // if(!hash){
         if(!req){
             //默认页面
-            $('.sidebar-secondNav[data-value="vulcheck-index"], .sidebar-firstNav[data-value="vulcheck-indexl"]').trigger('click');
+            $('.sidebar-firstNav[data-value="asset-manage"], .sidebar-firstNav[data-value="asset-manage"]').trigger('click');
         }else{
             //只有一级的默认页面为data-value为一级-index的内页
-            $('.sidebar-secondNav[data-value="'+req+'-index"], .sidebar-firstNav[data-value="'+req+'-index"]').trigger('click');
+            $('.sidebar-firstNav[data-value="'+req+'"], .sidebar-firstNav[data-value="'+req+'"]').trigger('high');
+            switch (req) {
+                case "asset-task-list":
+                    vulcheck_show_all_task();
+                    break;
+                case "asset-manage":
+                    vulcheck_get_total_html();
+                    break;
+                case "ill-web-ana":
+                    vulcheck_get_ill_web_html();
+                    break;
+                case "vul-web-list":
+                    vulcheck_get_vul_web_html();
+                    break;
+                case "beian-ana":
+                    vulcheck_get_beian_html();
+                    break;
+                default:
+                    vulcheck_get_total_html();
+            }
         }
-    }else{
+    // }else{
         //模拟触发点击事件加载页面
-        $('.sidebar-secondNav[data-value="'+req+'-'+hash+'"], .sidebar-firstNav[data-value="'+req+'-'+hash+'"]').trigger('click');
-    }
+        // $('.sidebar-firstNav[data-value="'+req+'-'+hash+'"], .sidebar-firstNav[data-value="'+req+'-'+hash+'"]').trigger('click');
+    // }
 }
 
 
@@ -199,8 +215,9 @@ function addPagination(nowpage,maxpage) {
         '<li  data-page="'+nowpage+'" class="pagination-link">跳转</li><span class="jump-text" style="color: red;"></span>' +
         '</ul>';
     $('.pagination').html(pagination);
-    if(location.hash.split('?')[1]){//若存在参数
-        if ( nowpage !== location.hash.split('?')[1].split('=')[1]){
+    // console.log(location.search)
+    if(location.href.split('?')[1]){//若存在参数
+        if ( nowpage !== getURLString('page')){
             // 不为当前页面则改变url（返回时也调用，不判断则当前重复进入history列表，上一页仍为当前页面）
             history.pushState(null,null,changeURLArg(location.href,'page',nowpage)); //更改当前路径
         }
@@ -247,27 +264,26 @@ $(document).on('change','.checkbox-selectall input',function() {
 
 // 内容过长缩放显示
 // 展开
-$(document).on('click','.columnT-tip',function(){
-    if($(this).siblings('.columnT-tr-right').height() > 100){
-        $(this).siblings('.columnT-tr-right').css('max-height','100px').css('overflow','hidden');
-        $(this).css('display','block').text('点击展开');
-
-    }else{
-        $(this).siblings('.columnT-tr-right').css('max-height','1200px')
-        $(this).text('点击收起');
-        var $this = $(this);
-        setTimeout(function () {
-            $this.siblings('.columnT-tr-right').css('overflow','auto');
-        },200)
-    }
-})
+// $(document).on('click','.columnT-tip',function(){
+//     if($(this).siblings('.columnT-tr-right').height() > 100){
+//         $(this).siblings('.columnT-tr-right').css('max-height','100px').css('overflow','hidden');
+//         $(this).css('display','block').text('');
+//
+//     }else{
+//         $(this).siblings('.columnT-tr-right').css('max-height','1200px')
+//         $(this).text('点击收起');
+//         var $this = $(this);
+//         setTimeout(function () {
+//             $this.siblings('.columnT-tr-right').css('overflow','auto');
+//         },200)
+//     }
+// })
 //高度过高数据缩放
 function columnSlide() {
-
-    $('.columnT-tr').each(function(){
+    $('.columnT-tr.overflow').each(function(){
         if($(this).height() > 100){
-            $(this).find('.columnT-tr-right').css('max-height','100px');
-            $(this).find('.columnT-tip').css('display','block').text('点击展开');
+            $(this).find('.columnT-tr-right').css('max-height','70px');
+            $(this).find('.columnT-tip').css('display','block');
         }
     });
 }
@@ -278,7 +294,7 @@ function columnSlide() {
  * */
 
 function changeURLArg(url,arg,arg_val){
-    var pattern=arg+'=([^&]*)';
+    var pattern='(&|\\?)'+arg+'=([^&]*)';
     var replaceText=arg+'='+arg_val;
     if(url.match(pattern)){
         var tmp='/('+ arg+'=)([^&]*)/gi';

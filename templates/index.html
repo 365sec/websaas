@@ -8,15 +8,15 @@
     <link rel="stylesheet" href="/static/css/plugins/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/common.css">
     <link rel="stylesheet" href="/static/css/index.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_1612569_49v5qj3znsw.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1612569_9umuyfjgvim.css">
     <script type="text/javascript" src="/static/js/plugins/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/static/js/plugins/echarts.min.js"></script>
     <script type="text/javascript" src="/static/js/plugins/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="/static/js/common.js"></script>
     <script type="text/javascript" src="/static/js/plugins/base64.js"></script>
-    <script type="text/javascript"
-            src="http://api.map.baidu.com/api?v=3.0&ak=aiZMF1Gwk8aamRtgfbLa1AnF0IZhGPNm"></script>
+{#    <script type="text/javascript"#}
+{#            src="http://api.map.baidu.com/api?v=3.0&ak=aiZMF1Gwk8aamRtgfbLa1AnF0IZhGPNm"></script>#}
     <style>
 
     </style>
@@ -29,44 +29,46 @@
 
             <ul class="nano-content">
                 <li class="sidebar-firstItem" data-drop="true">
-                    <div class="sidebar-firstNav">
-                        <i class="iconfont icon-default tran"></i>
-                        <span class="tran">&nbsp;&nbsp;漏洞检查<i class="iconfont icon-arrow"></i></span>
+                    <div class="sidebar-firstNav" data-value="asset-manage">
+                        <i class="iconfont icon-assetmanage tran"></i>
+                        <span class="tran">&nbsp;&nbsp;资产管理
+{#                            <i class="iconfont icon-arrow"></i>#}
+                        </span>
                     </div>
-                    <ul class="sidebar-firstDrop">
-
-                        <li class="sidebar-secondItem">
-                            <div class="sidebar-secondNav" data-value="vulcheck-index">
-                                <i class="iconfont icon-default"></i>
-                                <span>&nbsp;&nbsp;资产管理</span>
-                            </div>
-                        </li>
-
-                        <li class="sidebar-secondItem">
-                            <div class="sidebar-secondNav" data-value="vulcheck-show_all_task">
-                                <i class="iconfont icon-default"></i>
-                                <span>&nbsp;&nbsp;资产任务列表</span>
-                            </div>
-                        </li>
-
-                        <li class="sidebar-secondItem">
-                            <div class="sidebar-secondNav" data-value="vulcheck-get_ill_web_html">
-                                <i class="iconfont icon-default"></i>
-                                <span>&nbsp;&nbsp;违法网站分析</span>
-                            </div>
-                        </li>
-                        <li class="sidebar-secondItem">
-                            <div class="sidebar-secondNav" data-value="vulcheck-get_vul_web_html">
-                                <i class="iconfont icon-default"></i>
-                                <span>&nbsp;&nbsp;漏洞列表</span>
-                            </div>
-                        </li>
-                        <li class="sidebar-secondItem">
-                            <div class="sidebar-secondNav" data-value="vulcheck-get_beian_html">
-                                <i class="iconfont icon-default"></i>
-                                <span>&nbsp;&nbsp;备案分析</span>
-                            </div>
-                        </li>
+{#                    <ul class="sidebar-firstDrop">#}
+{##}
+{#                        <li class="sidebar-secondItem">#}
+{#                            <div class="sidebar-secondNav" data-value="vulcheck-index">#}
+{#                                <i class="iconfont icon-default"></i>#}
+{#                                <span>&nbsp;&nbsp;资产管理</span>#}
+{#                            </div>#}
+{#                        </li>#}
+{##}
+{#                        <li class="sidebar-secondItem">#}
+{#                            <div class="sidebar-secondNav" data-value="vulcheck-show_all_task">#}
+{#                                <i class="iconfont icon-default"></i>#}
+{#                                <span>&nbsp;&nbsp;资产任务列表</span>#}
+{#                            </div>#}
+{#                        </li>#}
+{##}
+{#                        <li class="sidebar-secondItem">#}
+{#                            <div class="sidebar-secondNav" data-value="vulcheck-get_ill_web_html">#}
+{#                                <i class="iconfont icon-default"></i>#}
+{#                                <span>&nbsp;&nbsp;违法网站分析</span>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li class="sidebar-secondItem">#}
+{#                            <div class="sidebar-secondNav" data-value="vulcheck-get_vul_web_html">#}
+{#                                <i class="iconfont icon-default"></i>#}
+{#                                <span>&nbsp;&nbsp;漏洞列表</span>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li class="sidebar-secondItem">#}
+{#                            <div class="sidebar-secondNav" data-value="vulcheck-get_beian_html">#}
+{#                                <i class="iconfont icon-default"></i>#}
+{#                                <span>&nbsp;&nbsp;备案分析</span>#}
+{#                            </div>#}
+{#                        </li>#}
 
 {#                    </ul>#}
 {#                </li>#}
@@ -90,7 +92,38 @@
 {#                                <span>&nbsp;&nbsp;异常网站列表</span>#}
 {#                            </div>#}
 {#                        </li>#}
-                    </ul>
+                </li>
+                <li class="sidebar-firstItem" data-drop="true">
+                    <div class="sidebar-firstNav" data-value="asset-task-list">
+                        <i class="iconfont icon-task tran"></i>
+                        <span class="tran">&nbsp;&nbsp;资产任务列表
+{#                            <i class="iconfont icon-arrow"></i>#}
+                        </span>
+                    </div>
+                </li>
+                <li class="sidebar-firstItem" data-drop="true">
+                    <div class="sidebar-firstNav" data-value="ill-web-ana">
+                        <i class="iconfont icon-default tran"></i>
+                        <span class="tran">&nbsp;&nbsp;违法网站分析
+{#                            <i class="iconfont icon-arrow"></i>#}
+                        </span>
+                    </div>
+                </li>
+                <li class="sidebar-firstItem" data-drop="true">
+                    <div class="sidebar-firstNav" data-value="vul-web-list">
+                        <i class="iconfont icon-vulweb tran"></i>
+                        <span class="tran">&nbsp;&nbsp;漏洞列表
+{#                            <i class="iconfont icon-arrow"></i>#}
+                        </span>
+                    </div>
+                </li>
+                <li class="sidebar-firstItem" data-drop="true">
+                    <div class="sidebar-firstNav" data-value="beian-ana">
+                        <i class="iconfont icon-beian tran"></i>
+                        <span class="tran">&nbsp;&nbsp;备案分析
+{#                            <i class="iconfont icon-arrow"></i>#}
+                        </span>
+                    </div>
                 </li>
             </ul>
 
@@ -107,7 +140,7 @@
                 <span class="header-right-exit"><a title="退出" href="/logout"><i class="iconfont icon-exit"></i><span>&nbsp;退出</span></a></span>
             </div>
         </div>
-        <div class="tab-content">
+        <div class="right-content">
             {#            <div id="d_issue_tesk" class='tab-pane active'>#}
             {#                <div class="row">#}
             {#                    <div class="col-lg-6">#}

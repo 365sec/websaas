@@ -8,7 +8,7 @@ function get_abnormal_task_html()
         type: "get",
         success: function (res) {
 
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             // 更改title
             document.title = '异常网站';
             abnormal_task_web_table();
@@ -20,8 +20,8 @@ function get_abnormal_task_html()
 function abnormal_task_web_table() {
     // 获取页码刷新时的高亮显示
     var page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+    if (location.href.split('?')[1]) {
+        page = location.href.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
     }
     abnormal_task_web_table_page(page)//刷新后退加载页码表格数据
 }

@@ -3,97 +3,118 @@
 {##}
 {#    </pre>#}
 
+<div class="clearfix" style="margin-bottom: 24px">
+    <div style="float: left; width: calc(50% - 12px);margin-right: 24px">
+        {#    ip信息#}
+        <div class="main-content-card">
+            <div class="main-content-card-content">
+                <div id="base_info_ip" class="columnT-title"></div>
+                <div id="base_info_body" class="columnT"></div>
+            </div>
+        </div>
 
-<div style="float: left; width: calc(50% - 12px);margin-right: 24px">
-{#    ip信息#}
-    <div class="main-content-card">
-        <div class="main-content-card-content">
-            <div id="base_info_ip" class="columnT-title"></div>
-            <div id="base_info_body" class="columnT"></div>
+        {#    网站信息#}
+        <div class="main-content-card">
+            <div class="main-content-card-content">
+                <div class="columnT-title">网站信息</div>
+                <div id="web_info_body" class="columnT"></div>
+            </div>
         </div>
+
+
     </div>
-{#   服务信息#}
-    <div class="main-content-card">
-        <div class="main-content-card-content">
-            <div id="base_info_server" class="columnT-title"></div>
-            <div id="base_info_server_body" class="columnT"></div>
+    <div style="float: left; width: calc(50% - 12px)">
+        {#   服务信息#}
+        <div class="main-content-card">
+            <div class="main-content-card-content">
+                <div id="base_info_server" class="columnT-title"></div>
+                <div id="base_info_server_body" class="columnT"></div>
+            </div>
         </div>
-    </div>
-{#    whois#}
-    <div id="whois_div" class="main-content-card" style="display: none">
-        <div class="main-content-card-content" id="whois_div">
-            <div class="columnT-title">WHOIS</div>
-            <div id="base_info_whois" class="columnT"></div>
+        {#  地图#}
+        {#    <div class="main-content-card">#}
+        {#        <div class="main-content-card-content">#}
+        {#            <div id="map-canvas" style="width: 100%; height: 300px"></div>#}
+        {#        </div>#}
+        {#    </div>#}
+        {#    响应头部信息#}
+        <div class="main-content-card">
+            <div class="main-content-card-content" id="web_response_info_div" style="display: none">
+                <div class="columnT-title">响应头部信息</div>
+                <div id="web_response_info" class="columnT"></div>
+            </div>
         </div>
+        <div id="illegality_feature_div" class="main-content-card" style="display: none">
+            <div class="main-content-card-content" id="illegality_feature_info_div">
+                <div class="columnT-title">网站类型信息</div>
+                <div id="illegality_feature_info" class="columnT"></div>
+            </div>
+        </div>
+
+
+        {#    <div id="illegality_div" class="main-content-card" style="display: none" >>#}
+        {#        <div class="main-content-card-content">#}
+        {#        </div>#}
+        {#    </div>#}
+        <div id="other_detail" style="display: none">
+            <ul class="nav nav-tabs">
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade main-content-card" id="whois_div">
+                    <div class="main-content-card-content" id="whois_div">
+                        <div id="base_info_whois" class="columnT"></div>
+                    </div>
+                </div>
+                <div class="tab-pane fade main-content-card" id="autonomous_system_div">
+                    <div class="main-content-card-content" id="autonomous_system_div">
+                        <div id="base_info_autonomous_system" class="columnT"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-{#    beian#}
-<div id="beian_div" class="main-content-card" style="display: none">
-    <div class="main-content-card-content" id="beian_div">
-        <div class="columnT-title">备案信息</div>
-        <div id="base_info_beian" class="columnT"></div>
-    </div>
 </div>
-
-{#    autonomous_system#}
-<div id="autonomous_system_div" class="main-content-card" style="display: none">
-    <div class="main-content-card-content" id="autonomous_system_div">
-        <div class="columnT-title">autonomous_system</div>
-        <div id="base_info_autonomous_system" class="columnT"></div>
-    </div>
-</div>
-{#    网站信息#}
-    <div class="main-content-card">
-        <div class="main-content-card-content">
-            <div class="columnT-title">网站信息</div>
-            <div id="web_info_body" class="columnT"></div>
-        </div>
-    </div>
-
-
-</div>
-<div style="float: left; width: calc(50% - 12px)">
-{#  地图#}
-    <div class="main-content-card">
-        <div class="main-content-card-content">
-            <div id="map-canvas" style="width: 100%; height: 300px"></div>
-        </div>
-    </div>
-{#    响应头部信息#}
-    <div class="main-content-card">
-        <div class="main-content-card-content" id="web_response_info_div" style="display: none">
-            <div class="columnT-title">响应头部信息</div>
-            <div id="web_response_info" class="columnT"></div>
-        </div>
-    </div>
-    <div id="illegality_feature_div" class="main-content-card" style="display: none">
-        <div class="main-content-card-content" id="illegality_feature_info_div">
-            <div class="columnT-title">网站类型信息</div>
-            <div id="illegality_feature_info" class="columnT"></div>
-        </div>
-    </div>
-    <div id="illegality_div" class="main-content-card" style="display: none">
-        <div class="main-content-card-content" id="vulnerables_info_div">
-            <div class="columnT-title">违法信息</div>
-            <div id="illegality_info" class="columnT"></div>
-        </div>
-    </div>
-
-{#    <div id="illegality_div" class="main-content-card" style="display: none" >>#}
-{#        <div class="main-content-card-content">#}
-{#        </div>#}
-{#    </div>#}
-{#漏洞信息#}
+<div style="width: 100%">
+    {#漏洞信息#}
     <div   id="vulnerables_div" class="main-content-card"  style="display: none">
         <div class="main-content-card-content" id="vulnerables_info_div">
             <div class="columnT-title">漏洞信息</div>
-            <div id="vulnerables_info" class="columnT"></div>
+            <div  class="columnT">
+                <div class="columnT-header">
+                    <div>漏洞名称</div>
+                    <div>漏洞等级</div>
+                </div>
+                <div id="vulnerables_info"></div>
+            </div>
+        </div>
+    </div>
+{#    违法信息#}
+    <div id="illegality_div" class="main-content-card" style="display: none">
+        <div class="main-content-card-content" id="vulnerables_info_div">
+            <div class="columnT-title">违法信息</div>
+            <div class="columnT">
+                <div id="illegality_info"></div>
         </div>
     </div>
 </div>
 
-
-
+<!-- 详情模态框（Modal） -->
+<div class="modal fade" id="total_one_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">详情</h4>
+            </div>
+            <div class="modal-body" id="total_one_detail_div"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
 
 {#    <div class="row">#}

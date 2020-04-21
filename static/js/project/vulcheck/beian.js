@@ -5,7 +5,7 @@ function vulcheck_get_beian_html() {
         type: "get",
         success: function (res) {
 
-            $('.tab-content').html(res);
+            $('.right-content').html(res);
             // 更改title
             document.title = '备案列表';
             beian_table();
@@ -17,12 +17,16 @@ function vulcheck_get_beian_html() {
 let beian_param;
 function beian_table() {
     // 获取页码刷新时的高亮显示
-    var page = 1;
-    if (location.hash.split('?')[1]) {
-        page = location.hash.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+    if(getURLString('id')){
+        get_total_one_detail(getURLString('id'))
+    }else {
+        var page = 1;
+        if (location.href.split('?')[1]) {
+            page = location.href.split('?')[1].split('=')[1].split('&')[0] || 1;//获取当前页码
+        }
+        beian_param = {};
+        beian_table_page(page)//刷新后退加载页码表格数据
     }
-    beian_param ={};
-    beian_table_page(page)//刷新后退加载页码表格数据
 }
 
 function beian_table_page(page) {
