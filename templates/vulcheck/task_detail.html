@@ -1,9 +1,11 @@
 
-{#<div class="main-content-card">#}
-{#    <div class="main-content-card-title">#}
-{#        任务详情报告#}
-{#    </div>#}
-{#</div>#}
+
+<div id="task_send_detail_div" class="main-content-card" style="display: none">
+    <div id="task_send_detail_table_body" class="main-content-card-content" >
+        <div class="columnT-title">扫描任务信息</div>
+        <div class="columnT"></div>
+    </div>
+</div>
 <div class="main-content-card content-w3">
     <div id="chart_server" class="main-content-card-content canvas-400">
     </div>
@@ -38,49 +40,19 @@
 </div>
 
 
-{#<div class="row">#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_server">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_protocols">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_language">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{##}
-{#</div>#}
-{##}
-{#<div class="row">#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_cdn">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_component">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#    <div class="col-lg-4">#}
-{#        <div id="chart_vulnerables">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-{#<div class="row">#}
-{#    <div id="chart_illegality" style="width: 600px;height:400px;">#}
-{##}
-{#    </div>#}
-{#</div>#}
-{##}
-{#<div class="row "  id="report_vul_ill_list">#}
-{##}
-{##}
-{#</div>#}
+
+<div id="report_div" class="main-content-card" style="display: none">
+    <div class="main-content-card-content">
+    </div>
+</div>
+
+<div class="main-content-card">
+
+
+    <div class="clearfix classify">
+        <div class="classify-content float-left">
+            <div class="classify-content-data-all">暂无数据</div>
+            <div class="pagination" data-func="get_scan_list_page"></div>
+        </div>
+    </div>
+</div>

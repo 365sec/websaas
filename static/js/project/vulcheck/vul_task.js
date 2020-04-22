@@ -79,6 +79,43 @@ function get_task_list(page) {
     });
 }
 
+function get_scan_task_list(filter_param) {
+    let data = {
+        "param": filter_param,
+    };
+    data = JSON.stringify(data);
+    $.ajax({
+        url: "vulcheck/get_scan_task_list",
+        type: "post",
+        dataType: "json",
+        contentType: 'application/json;charset=utf-8',
+        data: data,
+        success: function (res) {
+
+            console.log(res);
+            // let html = get_scan_list_page_html(res);
+            let html = get_scan_list_page_report_html(res);
+            let send_data = {};
+
+            send_data['param'] = filter_param;
+
+            let  data = get_classify_by_key(send_data);
+            // console.log(data);
+            $("#task_result_detail_div").html("").append(JSON.stringify(data, undefined, 4));
+            chart_pie(data['data']['result.value.server'],"服务器","chart_server");
+            chart_pie(data['data']['result.value.protocols'],"端口服务","chart_protocols");
+            // chart_pie(data['data']['result.value.language'],"开发语言","chart_language");
+            chart_bar(data['data']['result.value.language'],"开发语言","chart_language");
+            chart_pie(data['data']['result.value.cdn'],"使用的cdn服务器","chart_cdn");
+            chart_pie(data['data']['result.value.component'],"使用的组件","chart_component");
+            chart_pie(data['data']['result.value.vulnerables.plugin_name'],"漏洞情况","chart_vulnerables");
+            chart_pie(data['data']['result.value.illegality.plugin_name'],"违法信息情况","chart_illegality");
+            $('.classify-content-data-all').html(html);
+
+
+        }
+    })
+}
 function delete_task(task_id) {
     var message=confirm("确定删除task_id=="+task_id+"吗？");
     if(message===true)
@@ -248,8 +285,8 @@ function get_task_detail(task_info) {
 
     //报道a标签
     //<button class="btn btn-default">  </button>
-    let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html('${task_info['task_id']}')"  >报告</button>`;
-    $("#report_div").show().children().html("").append(report_a);
+    // let  report_a = `<button class="btn btn-default"  onclick="get_task_detail_html('${task_info['task_id']}')"  >报告</button>`;
+    // $("#report_div").show().children().html("").append(report_a);
 
 
 

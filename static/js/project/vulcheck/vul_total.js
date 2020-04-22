@@ -1,19 +1,22 @@
 function vulcheck_get_total_html(task_id) {
     filter_param = {};
     filter_temp = {};
+    let url ="";
     if(task_id)
     {
          filter_param['task_id']=task_id;
          document.title = '扫描任务信息';
+         url = "vulcheck/task_detial_html"
     }
     else{
          document.title = '总览';
+        url = "vulcheck/get_total_html"
 
     }
     /*
     * 加载统计信息HTML页面*/
     $.ajax({
-        url: 'vulcheck/get_total_html',
+        url: url,
         dataType: "html",
         type: "get",
         async:false,
@@ -21,7 +24,15 @@ function vulcheck_get_total_html(task_id) {
             $('.right-content').html(res);
             // 更改title
             classify_by_key(filter_param);
-            get_scan_list(filter_param);
+
+            if (task_id)
+            {
+                get_scan_task_list(filter_param)
+            }
+            else
+            {
+                get_scan_list(filter_param);
+            }
 
 
         }
@@ -334,7 +345,8 @@ function get_scan_list_page(page, filter_param) {
         success: function (res) {
             let max_page = parseInt(res['max_page']);
             // console.log(res);
-            let html = get_scan_list_page_html(res);
+            // let html = get_scan_list_page_html(res);
+            let html = get_scan_list_page_report_html(res);
             $('.classify-content-data-all').html(html);
             addPagination(page, max_page);
             //设置右侧最小高度，使中间分割线撑满
@@ -511,9 +523,9 @@ function get_scan_list_page_html(res) {
 function get_scan_list_page_report_html(res) {
     let html = ``;
     for (let x in res['data']) {
-        let title = res['data'][x]['result'][0]['value']['title'] || "";
-        let ip = res['data'][x]['result'][0]['value']['ip'] || "";
-        let response_headers = res['data'][x]['result'][0]['value']['response_headers'];
+        let title = res['data'][x]['result']['value']['title'] || "";
+        let ip = res['data'][x]['result']['value']['ip'] || "";
+        let response_headers = res['data'][x]['result']['value']['response_headers'];
         if (response_headers) {
             response_headers = JSON.stringify(response_headers, undefined, 4);
         } else {
@@ -523,15 +535,54 @@ function get_scan_list_page_report_html(res) {
         let detail = JSON.stringify(res['data'][x]);
         let b = new Base64();
         detail = b.encode(detail);
-        let protocols = res['data'][x]['result'][0]['value']['protocols'] || "";
-        let save_time = res['data'][x]['result'][0]['value']['save_time'] || "";
-        let vulnerables = res['data'][x]['result'][0]['value']['vulnerables'] || [];
-        let illegality = res['data'][x]['result'][0]['value']['illegality'] || [];
+        // console.log(res['data'][x]['result']['value']);
+        let country ="";
+        let country_code ="";
+
+        if (res['data'][x]['result']['value'].hasOwnProperty('location'))
+        {
+            country = res['data'][x]['result']['value']['location']['country_ch'] || "";
+            country_code = res['data'][x]['result']['value']['location']['country_code'] || "";
+        }
+        let protocols = res['data'][x]['result']['value']['protocols'] || "";
+        let language =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("language"))
+        {
+            language =  "";
+            // language = res['data'][x]['result']['value']['language'][0]['product']
+            for (let j in res['data'][x]['result']['value']['language'])
+            {
+                language +="&nbsp"+res['data'][x]['result']['value']['language'][j]['product'];
+            }
+        }
+        let server =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("server"))
+        {
+            server = res['data'][x]['result']['value']['server']['product']
+        }
+        let web_type =  "-";
+        if (res['data'][x]['result']['value'].hasOwnProperty("illegal_feature"))
+        {
+            let web_map_set = new Set();
+            web_type =  "";
+            for (let j in res['data'][x]['result']['value']['illegal_feature'])
+            {
+                web_map_set.add(res['data'][x]['result']['value']['illegal_feature'][j]['name'])
+            }
+            web_map_set.forEach(function (item) {
+                web_type+=item +"&nbsp"
+            });
+        }
+        // let server = res['data'][x]['result']['value']['server']['product'] || "";
+
+        let save_time = res['data'][x]['result']['value']['save_time'] || "";
+        let vulnerables = res['data'][x]['result']['value']['vulnerables'] || [];
+        let illegality = res['data'][x]['result']['value']['illegality'] || [];
         let vul_html =``;
 
         if (vulnerables.length>0)
         {
-            vul_html =`<li>插件扫描：${vulnerables.length}</li>`;
+            vul_html =`<li><i class="iconfont icon-vulnerables"></i>&nbsp;&nbsp;插件扫描：${vulnerables.length}</li>`;
             let vul_reduce = vulnerables.reduce(function (prev,res) {
                 if(prev.hasOwnProperty(res['name']))
                 {
@@ -550,7 +601,7 @@ function get_scan_list_page_report_html(res) {
         let ill_html =``;
         if (illegality.length>0)
         {
-            ill_html =`<li>非法信息：${illegality.length}</li>`;
+            ill_html =`<li><i class="iconfont icon-warn"></i>&nbsp;&nbsp;非法信息：${illegality.length}</li>`;
 
             let ill_reduce = illegality.reduce(function (prev,res) {
                 if(prev.hasOwnProperty(res['name']))
@@ -568,17 +619,36 @@ function get_scan_list_page_report_html(res) {
             }
         }
 
-        // console.log(res['data'][x]['result']);
+        // 获取国家国旗
+        let countryline='';
+        if(country)
+        {
+            let tmp = country;
+            let province = res['data'][x]['result']['value']['location']['province'] || "";
+            let city = res['data'][x]['result']['value']['location']['city'] || "";
+            if (province)
+            {
+                tmp +="&nbsp;"+province;
+            }
+            if (city) {
+                tmp +="&nbsp;"+city;
+            }
+            countryline= `<li><i class="iconfont icon-country"></i>&nbsp;&nbsp;国家/地区：<img src="/static/img/countries_flags/`+country_code+`.png" alt="`+country_code+`.png" width="16px" style="border: 1px solid #eee;">&nbsp;&nbsp;${tmp}</li>`;
+        }
         html += `<div class="classify-content-data">
                             <div class="classify-content-data-ip">
-                                <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result'][0]['scheme_domain']} <i class="iconfont icon-link"></i></a>
+                                <a onclick='get_total_one_detail("${detail}")'>${res['data'][x]['result']['scheme_domain']} <i class="iconfont icon-link"></i></a>
                              </div>
                              <div class="classify-content-data-content clearfix">
                                 <ul class="classify-content-data-content-info float-left">
-                                    <li>标题：${title}</li>
-                                    <li>ip：${ip}</li>
-                                    <li>端口：${protocols}</li>
-                                    <li>保存时间：${save_time}</li>
+                                    <li><i class="iconfont icon-title"></i>&nbsp;&nbsp;标题：${title}</li>
+                                    <li><i class="iconfont icon-ip"></i>&nbsp;&nbsp;ip：${ip}</li>
+                                    ${countryline}
+<!--                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;端口：${protocols}</li>-->
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;开发语言：${language}</li>
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;服务：${server}</li>
+                                    <li><i class="iconfont icon-port"></i>&nbsp;&nbsp;网站类型：${web_type}</li>
+                                    <li><i class="iconfont icon-time"></i>&nbsp;&nbsp;保存时间：${save_time}</li>
                                     ${vul_html}
                                     ${ill_html}
                                 </ul>
@@ -919,12 +989,13 @@ function get_detail_html(info) {
                             <div ${_style}></div><div ${_style}></div><div ${_style}></div>
                         </div>
                         <i class="iconfont icon-arrow"></i>
+                        <div>${info['result']['value']['vulnerables'][i]['url']||""}</div>
                     </div>
                     <div class="columnT-sec-content">
                             <div class="columnT">
                                 <div class="columnT-tr clearfix">
                                     <div class="columnT-tr-left">存在漏洞的URL</div>
-                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['url']||""}</div>
+                                    <div class="columnT-tr-right">${info['result']['value']['vulnerables'][i]['verify_url']||""}</div>
                                     <div class="columnT-tip">点击展开</div>
                                 </div>
                                 <div class="columnT-tr clearfix">

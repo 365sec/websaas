@@ -862,6 +862,7 @@ def get_scan_list(request):
     logging.debug(json.loads(request.body))
     param = json.loads(request.body)
     page = param['page']
+    limit = param.get("limit", 0)
     filter_param = param['param']
     # project_set = mongo_db['resultdb']
     page = 0 if not page else int(page) - 1
@@ -894,31 +895,31 @@ def get_scan_list(request):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
-# def get_scan_vul_iil_domain_list(request):
-#     """:arg
-#         获得违法信息和存在漏洞的域名
-#     """
-#     # logging.debug(json.loads(request.body))
-#     request_param = json.loads(request.body)
-#     logging.debug(request_param)
-#     task_id = request_param['param']['task_id']
-#
-#     context = {}
-#     # task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
-#     param = {}
-#     if task_id:
-#         param['task_id'] = task_id
-#     param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
-#                     {'result.value.vulnerables.plugin_name': {'$exists': True}}]
-#     res = result_set.find(param, {"result": 1, "task_id": 1, "_id": 0})
-#     result = []
-#     for i in res:
-#         # logging.debug(i)
-#         result.append(i)
-#
-#     context['data'] = result
-#
-#     return HttpResponse(json.dumps(context), content_type="application/json")
+def get_scan_task_list(request):
+    context = {"max_page": 0}
+    logging.debug(json.loads(request.body))
+    param = json.loads(request.body)
+    filter_param = param['param']
+    match = {'$match': {"result": {'$exists': True}}}
+    for key in filter_param:
+        val = filter_param[key]
+        match['$match'][key] = val
+    logging.debug(match)
+    pipeline = [
+        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$unwind': "$result"},
+        match,
+        {'$sort': {'result.value.save_time': -1}},
+
+    ]
+    result = []
+    for i in result_set.aggregate(pipeline):
+        # logging.debug(i)
+        result.append(i)
+
+    context['max_page'] = 1
+    context['data'] = result
+    return HttpResponse(json.dumps(context), content_type="application/json")
 
 def get_scan_vul_iil_domain_list(request):
     """:arg
@@ -930,43 +931,13 @@ def get_scan_vul_iil_domain_list(request):
     task_id = request_param['param']['task_id']
 
     context = {}
-    match = {'$match': {}}
-    if(task_id):
-        match['$match']['task_id'] = task_id
-    match['$match']['$or'] = [
-        {'result.value.vulnerables.plugin_name': {'$exists': True}}
-    ]
-    pipeline = [
-        {'$match': {'task_id': task_id}},
-        {'$project': {"_id": 0,"task_id":1, 'result.value.vulnerables': 1}},
-        {'$unwind': "$result"},
-        match,
-        {'$unwind': "$result.value.vulnerables"},
-        {'$group':{
-
-            '_id': {
-                "severity": "$result.value.vulnerables.severity",
-                "plugin_name": "$result.value.vulnerables.plugin_name",
-            },
-            'plugin_count':  {'$sum': 1},
-            'info': {'$push':  {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
-        }},
-        {'$sort': {'plugin_count': -1}},
-        {'$group':{
-
-            '_id': {
-                "severity": "$_id.severity",
-            },
-            'severity_count':  {'$sum': "$plugin_count"},
-            'plugin': {'$push':  {"plugin_name": "$_id.plugin_name","data":"$info", "count": "$plugin_count"}},
-        }},
-        {'$sort': {'severity_count': -1}},
-        {'$skip': 0},
-        {'$limit': 10},
-        {'$sort': {'result.value.save_time': -1}},
-
-    ]
-    res = result_set.aggregate(pipeline)
+    # task_id = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
+    param = {}
+    if task_id:
+        param['task_id'] = task_id
+    param['$or'] = [{'result.value.illegality.plugin_name': {'$exists': True}},
+                    {'result.value.vulnerables.plugin_name': {'$exists': True}}]
+    res = result_set.find(param, {"result": 1, "task_id": 1, "_id": 0})
     result = []
     for i in res:
         # logging.debug(i)
@@ -975,6 +946,62 @@ def get_scan_vul_iil_domain_list(request):
     context['data'] = result
 
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+# def get_scan_vul_iil_domain_list(request):
+#     """:arg
+#         获得违法信息和存在漏洞的域名
+#     """
+#     # logging.debug(json.loads(request.body))
+#     request_param = json.loads(request.body)
+#     logging.debug(request_param)
+#     task_id = request_param['param']['task_id']
+#
+#     context = {}
+#     match = {'$match': {}}
+#     if(task_id):
+#         match['$match']['task_id'] = task_id
+#     match['$match']['$or'] = [
+#         {'result.value.vulnerables.plugin_name': {'$exists': True}}
+#     ]
+#     pipeline = [
+#         {'$match': {'task_id': task_id}},
+#         {'$project': {"_id": 0,"task_id":1, 'result.value.vulnerables': 1}},
+#         {'$unwind': "$result"},
+#         match,
+#         {'$unwind': "$result.value.vulnerables"},
+#         {'$group':{
+#
+#             '_id': {
+#                 "severity": "$result.value.vulnerables.severity",
+#                 "plugin_name": "$result.value.vulnerables.plugin_name",
+#             },
+#             'plugin_count':  {'$sum': 1},
+#             'info': {'$push':  {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
+#         }},
+#         {'$sort': {'plugin_count': -1}},
+#         {'$group':{
+#
+#             '_id': {
+#                 "severity": "$_id.severity",
+#             },
+#             'severity_count':  {'$sum': "$plugin_count"},
+#             'plugin': {'$push':  {"plugin_name": "$_id.plugin_name","data":"$info", "count": "$plugin_count"}},
+#         }},
+#         {'$sort': {'severity_count': -1}},
+#         {'$skip': 0},
+#         {'$limit': 10},
+#         {'$sort': {'result.value.save_time': -1}},
+#
+#     ]
+#     res = result_set.aggregate(pipeline)
+#     result = []
+#     for i in res:
+#         # logging.debug(i)
+#         result.append(i)
+#
+#     context['data'] = result
+#
+#     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
 def get_ill_web_data(request):

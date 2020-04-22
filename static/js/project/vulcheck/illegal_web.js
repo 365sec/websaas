@@ -920,7 +920,9 @@ function get_ill_one_detail(data) {
     }
 
     $("#ill_detail_div").html("").append(html1);
-}function get_ill_feature_one_detail(data) {
+}
+
+function get_ill_feature_one_detail(data) {
     let tmp_list =[];
     tmp_list.push({"url":"地址"});
     tmp_list.push({"description":"描述"});

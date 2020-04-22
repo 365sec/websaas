@@ -170,8 +170,9 @@ function vul_web_table_page(page) {
             let html = ``;
             for (let x in res['data']) {
                 html += `<tr>`;
-                // html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`;
-                html += `<td><p class="tabletd-overflow" title="${res['data'][x]['result']['scheme_domain'] || ""}">${res['data'][x]['result']['scheme_domain'] || ""}</p></td>`;
+                // html+=`<td>${res['data'][x]['result']['value']['domain']||""}</td>`; verify_url
+                let verify_url =res['data'][x]['result']['value']['vulnerables']['verify_url']||"";
+                html += `<td><p class="tabletd-overflow" title="${verify_url || ""}">${verify_url|| ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['ip'] || ""}</td>`;
                 let class_word = res['data'][x]['result']['value']['vulnerables']['name']||"";
                 let segment_word = res['data'][x]['result']['value']['vulnerables']['result_desc']||"";
@@ -184,28 +185,6 @@ function vul_web_table_page(page) {
                 html += `<td><p class="tabletd-overflow" title='${segment_word || ""}'>${segment_word || ""}</p></td>`;
                 let severity = res['data'][x]['result']['value']['vulnerables']['severity'];
                 html+=`<td>${severity_dir[severity]||""}</td>`;
-                // html+=`<td>${key_word||""}</td>`;
-                let country_ch = "";
-                let province = "";
-                let city = "";
-                if (res['data'][x]['result']['value'].hasOwnProperty("location"))
-                {
-                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('country_ch'))
-                    {
-                        country_ch = res['data'][x]['result']['value']['location']['country_ch'] || "";
-                    }
-                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('province'))
-                    {
-                        province = res['data'][x]['result']['value']['location']['province'] || "";
-                    }
-                    if (res['data'][x]['result']['value']['location'].hasOwnProperty('city'))
-                    {
-                        city = res['data'][x]['result']['value']['location']['city'] || "";
-                    }
-                }
-
-                html += `<td><p class="tabletd-overflow" title="${country_ch + "&nbsp;" + province + "&nbsp;" + city}">${country_ch + "&nbsp;" + province + "&nbsp;" + city}</p></td>`;
-                // html += `<td><p class="tabletd-overflow" title="${segment_word || ""}">${segment_word || ""}</p></td>`;
                 html += `<td>${res['data'][x]['result']['value']['save_time'] || ""}</td>`;
                 let detail = JSON.stringify(res['data'][x]['result']['value']['vulnerables']);
                 let b = new Base64();
