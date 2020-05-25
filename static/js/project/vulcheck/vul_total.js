@@ -59,7 +59,7 @@ function classify_by_key(filter_param) {
     let  data = get_classify_by_key(send_data);
     // console.log(data);
     let temp_list =[];
-    let language = data['data']["result.value.language"].reduce(function (prev,item) {
+    let language = data['data']["language"].reduce(function (prev,item) {
         let key = item['_id'].split(":")[0];
         let version = item['_id'].split(":")[1]||"";
         let count = item['count'];
@@ -78,7 +78,7 @@ function classify_by_key(filter_param) {
         }
         return prev
     },{});
-    let server = data['data']["result.value.server"].reduce(function (prev,item) {
+    let server = data['data']["server"].reduce(function (prev,item) {
         let key = item['_id'].split(":")[0];
         let version = item['_id'].split(":")[1]||"-";
         let count = item['count'];
@@ -106,15 +106,15 @@ function classify_by_key(filter_param) {
     // temp_list.push({"result.value.location.province":data['data']["result.value.location.province"]});
     // temp_list.push({"result.value.location.city":data['data']["result.value.location.city"]});
     // temp_list.push({"result.value.server":data['data']["result.value.server"]});
-    temp_list.push({"result.value.protocols":data['data']["result.value.protocols"]});
+    temp_list.push({"result.value.protocols":data['data']["protocols"]});
     // temp_list.push({"result.value.language":data['data']["result.value.language"]});
-    temp_list.push({"result.value.cdn":data['data']["result.value.cdn"]});
-    temp_list.push({"result.value.component":data['data']["result.value.component"]});
-    temp_list.push({"result.value.illegal_feature.name":data['data']["result.value.illegal_feature.name"]});
-    temp_list.push({"result.value.illegality.plugin_name":data['data']["result.value.illegality.plugin_name"]});
-    temp_list.push({"result.value.vulnerables.plugin_name":data['data']["result.value.vulnerables.plugin_name"]});
+    temp_list.push({"result.value.cdn":data['data']["cdn"]});
+    temp_list.push({"result.value.component":data['data']["component"]});
+    temp_list.push({"result.value.illegal_feature.name":data['data']["illegal_feature"]});
+    temp_list.push({"result.value.illegality.plugin_name":data['data']["illegality"]});
+    temp_list.push({"result.value.vulnerables.plugin_name":data['data']["vulnerables"]});
     let html = ``;
-    let location = data['data']["result.value.location"];
+    let location = data['data']["location"];
     // console.log(data['data']["result.value.location"]);
     html += `<div>
                 <div class="key-title">国家/地区</div>
@@ -241,6 +241,7 @@ function get_classify_by_key(send_data) {
         async:false,
         success: function (data) {
             return_data = data;
+            console.log(data)
         }
     });
 

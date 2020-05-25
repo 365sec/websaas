@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import sys
 import time
 
 import pymongo
 import logging
 import coloredlogs
 
+# logging.getLogger('tos').addHandler(logging.StreamHandler(stream=sys.stdout))
+logger = logging.getLogger('tos')
+
 coloredlogs.install(level='DEBUG',
                     fmt="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s",
+
                     )
 
-mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/webmap')
-
+# mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/?authSource=webmap')
+mongo_client = pymongo.MongoClient('mongodb://172.16.39.196:27017/?authSource=webmap')
 mongo_db = mongo_client['webmap']
-project_set = mongo_db['projectdb']
-result_set = mongo_db['resultdb']
 
 
 def log_time(func):
@@ -107,19 +110,16 @@ def classify_by_key():
         # 'result.value.language',
         # 'result.value.cdn',
         # 'result.value.component',
-        'result.value.illegal_feature.name',
+        # 'result.value.illegal_feature.name',
+        'result.value.location',
     ]
 
     for x in classify:
         match = {'$match': {x: {'$exists': True}}}
-        # match = {'$match': {}}
 
-        # match['$match']['result.value.location.province'] = "Hubei"
-        # match['$match']['task_id'] = "c0381eb6-b01d-434a-ab38-5e42756fa40f"
-        # match['$match']['result.value.protocols'] = "9000/http"
         if x == 'result.value.language':
             pipeline = [
-                {'$project': {"task_id": 1, 'result': 1}},
+                {'$project': {"task_id": 1, 'result.value.language': 1}},
                 {'$unwind': '$result'},
                 {'$unwind': "$" + x},
                 match,
@@ -129,7 +129,7 @@ def classify_by_key():
             ]
         elif "result.value.location" in x:
             pipeline = [
-                {'$project': {"task_id": 1, 'result': 1}},
+                {'$project': {"task_id": 1, 'result.value.location': 1}},
                 {'$unwind': '$result'},
                 match,
                 {'$group': {
@@ -139,7 +139,7 @@ def classify_by_key():
                         "province": "$result.value.location.province",
                         "city": "$result.value.location.city",
                     },
-                    'city_count':  {'$sum': 1},
+                    'city_count': {'$sum': 1},
                 }},
                 {'$sort': {'city_count': -1}},
                 {
@@ -149,8 +149,8 @@ def classify_by_key():
                             "country_code": "$_id.country_code",
                             "province": "$_id.province",
                         },
-                        'city': {'$push':  {"city_name": "$_id.city", "count": "$city_count"}},
-                        'province_count':  {'$sum': "$city_count"},
+                        'city': {'$push': {"city_name": "$_id.city", "count": "$city_count"}},
+                        'province_count': {'$sum': "$city_count"},
                     }
                 },
                 {'$sort': {'province_count': -1}},
@@ -160,8 +160,9 @@ def classify_by_key():
                             "country": "$_id.country",
                             "country_code": "$_id.country_code",
                         },
-                        'province': {'$push':  {"province_name":"$_id.province","province_count":"$province_count", "city":"$city"}},
-                        'country_count':  {'$sum': '$province_count'},
+                        'province': {'$push': {"province_name": "$_id.province", "province_count": "$province_count",
+                                               "city": "$city"}},
+                        'country_count': {'$sum': '$province_count'},
                     }
                 },
                 {'$sort': {'country_count': -1}},
@@ -200,10 +201,94 @@ def classify_by_key():
                 continue
             if "result.value.server" in x:
                 i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
-            print(i)
-            # logging.debug(i)
+
+            logging.debug(i)
         #     k += 1
         # logging.debug(k)
+
+
+def classify_by_key_pipeline(x):
+    match = {'$match': {}}
+    pipeline = []
+    if x == 'result.value.language':
+        pipeline.append({'$project': {"task_id": 1, 'result': 1}})
+        pipeline.append({'$unwind': '$result'})
+        if match['$match']:
+            pipeline.append(match)
+        pipeline.append({'$unwind': "$" + x})
+        pipeline.append({'$group': {'_id': "$" + x, 'count': {'$sum': 1}}})
+        pipeline.append({'$sort': {'count': -1}})
+        pipeline.append({'$project': {"_id": 1, 'count': 1}})
+
+    elif "result.value.location" in x:
+        pipeline = [
+            {'$project': {"task_id": 1, 'result': 1}},
+            {'$unwind': '$result'},
+            match,
+            {'$group': {
+                '_id': {
+                    "country": "$result.value.location.country_ch",
+                    "country_code": "$result.value.location.country_code",
+                    "province": "$result.value.location.province",
+                    "city": "$result.value.location.city",
+                },
+                'city_count': {'$sum': 1},
+            }},
+            {'$sort': {'city_count': -1}},
+            {
+                '$group': {
+                    "_id": {
+                        "country": "$_id.country",
+                        "country_code": "$_id.country_code",
+                        "province": "$_id.province",
+                    },
+                    'city': {'$push': {"city_name": "$_id.city", "count": "$city_count"}},
+                    'province_count': {'$sum': "$city_count"},
+                }
+            },
+            {'$sort': {'province_count': -1}},
+            {
+                '$group': {
+                    "_id": {
+                        "country": "$_id.country",
+                        "country_code": "$_id.country_code",
+                    },
+                    'province': {'$push': {"province_name": "$_id.province", "province_count": "$province_count",
+                                           "city": "$city"}},
+                    'country_count': {'$sum': '$province_count'},
+                }
+            },
+            {'$sort': {'country_count': -1}},
+
+            # {'$project': {"_id": 1, 'count': 1}}
+        ]
+    elif "result.value.illegal_feature.name" in x:
+        pipeline = [
+            {'$project': {"task_id": 1, 'result': 1}},
+            {'$unwind': '$result'},
+            match,
+            {'$unwind': "$result.value.illegal_feature"},
+            {'$group': {
+                '_id': "$" + x,
+                'count': {'$sum': 1},
+            }},
+            {'$sort': {'count': -1}},
+            {'$project': {"_id": 1, 'count': 1}}
+        ]
+    else:
+        pipeline = [
+            {'$project': {"task_id": 1, 'result': 1}},
+            {'$unwind': '$result'},
+            match,
+            {'$group': {
+                '_id': "$" + x,
+                'count': {'$sum': 1},
+            }},
+            {'$sort': {'count': -1}},
+            {'$project': {"_id": 1, 'count': 1}}
+        ]
+
+    return pipeline
 
 
 @log_time
@@ -495,6 +580,7 @@ def get_ill_feature_keyword():
     for i in res:
         logging.debug(i)
 
+
 def get_vul_keyword():
     """:arg
     获得漏洞的个数
@@ -573,7 +659,6 @@ def get_all_web():
         logging.debug(i)
 
 
-
 def get_ill_feature():
     """:arg
     违法加上feature
@@ -584,11 +669,11 @@ def get_ill_feature():
     match = {}
     match = {'$match': {}}
     match['$match']['$or'] = [
-                            {'result.value.illegality.plugin_name': {'$exists': True}},
-                              {'result.value.illegal_feature.name': {'$exists': True}}
-                              ]
+        {'result.value.illegality.plugin_name': {'$exists': True}},
+        {'result.value.illegal_feature.name': {'$exists': True}}
+    ]
     pipeline = [
-        {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+        {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
         {'$unwind': "$result"},
         match,
         {'$skip': 0},
@@ -599,6 +684,7 @@ def get_ill_feature():
     res = result_set.aggregate(pipeline)
     for i in res:
         logging.debug(i)
+
 
 def get_vul_iil_domain():
     result_set = mongo_db['resultdb']
@@ -629,27 +715,27 @@ def get_vul_iil_domain1():
     ]
     pipeline = [
         {'$match': {'task_id': task_id}},
-        {'$project': {"_id": 0,'result.value.vulnerables': 1}},
+        {'$project': {"_id": 0, 'result.value.vulnerables': 1}},
         {'$unwind': "$result"},
         match,
         {'$unwind': "$result.value.vulnerables"},
-        {'$group':{
+        {'$group': {
 
             '_id': {
                 "severity": "$result.value.vulnerables.severity",
                 "plugin_name": "$result.value.vulnerables.plugin_name",
             },
-            'plugin_count':  {'$sum': 1},
-            'info': {'$push':  {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
+            'plugin_count': {'$sum': 1},
+            'info': {'$push': {"plugin_name": "$result.value.vulnerables", "count": "$severity_count"}},
         }},
         {'$sort': {'plugin_count': -1}},
-        {'$group':{
+        {'$group': {
 
             '_id': {
                 "severity": "$_id.severity",
             },
-            'severity_count':  {'$sum': "$plugin_count"},
-            'plugin': {'$push':  {"plugin_name": "$_id.plugin_name","name1":"$info", "count": "$plugin_count"}},
+            'severity_count': {'$sum': "$plugin_count"},
+            'plugin': {'$push': {"plugin_name": "$_id.plugin_name", "name1": "$info", "count": "$plugin_count"}},
         }},
         {'$sort': {'severity_count': -1}},
         {'$skip': 0},
@@ -810,7 +896,6 @@ def mongo_search_like():
 
 
 def get_image():
-
     match = {'$match': {"result": {'$exists': True}}}
     match['$match']['result.value.illegal_feature'] = {'$exists': True}
 
@@ -821,11 +906,11 @@ def get_image():
         match,
         # {'$group': {'_id': "$result.value.illegality.plugin_name", 'count': {'$sum': 1}}},
         {'$unwind': "$result.value.illegal_feature"},
-        {"$match":{"result.value.illegal_feature.image_snapshot": {'$exists': True}}},
+        {"$match": {"result.value.illegal_feature.image_snapshot": {'$exists': True}}},
         {'$project': {
-                '_id': 1,
-                'result.value.illegal_feature.image_snapshot': 1,
-            }
+            '_id': 1,
+            'result.value.illegal_feature.image_snapshot': 1,
+        }
         },
         # {'$count': "$_id"}
     ]
@@ -835,8 +920,10 @@ def get_image():
         sum += 1
     logging.debug(sum)
 
+
 @log_time
 def get_vul_web_data():
+    result_set = mongo_db['resultdb']
     match = {'$match': {"result": {'$exists': True}}}
     # match['$match']['result.value.illegal_feature'] = {'$exists': True}
 
@@ -844,7 +931,7 @@ def get_vul_web_data():
         # {'$project': {"_id": 0,"task_id":1, 'result': 1}},
         {'$project': {
             "_id": 0,
-            "task_id":1,
+            "task_id": 1,
             'result.value.vulnerables': 1,
             'result.scheme_domain': 1,
             'result.value.ip': 1,
@@ -865,7 +952,191 @@ def get_vul_web_data():
         sum += 1
     logging.debug(sum)
 
+
+@log_time
+def get_count():
+    result_set = mongo_db['resultdb']
+    pipeline = [
+        {'$project': {
+            "_id": 0,
+            'result.value.server': 1,
+            'result.value.protocols': 1,
+            'result.value.illegality': 1,
+            'result.value.location': 1,
+        }},
+        {'$unwind': "$result"},
+        {'$group': {'_id': None, 'count': {'$sum': 1}}},
+    ]
+    sum = 0
+    for i in result_set.aggregate(pipeline):
+        # print(i)
+        sum += i['count']
+    logging.debug(sum)
+    return sum
+
+
+# class_dir['result.value.server'] = "服务器";
+# class_dir['result.value.protocols'] = "端口";
+# class_dir['result.value.location.city'] = "城市";
+# class_dir['result.value.location.province'] = "省份";
+# class_dir['result.value.location.country_ch'] = "国家\\地区";
+# class_dir['result.value.language'] = "语言";
+# class_dir['result.value.cdn'] = "CDN";
+# class_dir['result.value.component'] = "组件";
+# class_dir['result.value.illegality.plugin_name'] = "非法信息";
+# class_dir['result.value.vulnerables.plugin_name'] = "检查插件";
+# class_dir['result.value.illegal_feature.name'] = "网站类型";
+@log_time
+def classify_by_key_test():
+    result_set = mongo_db['resultdb']
+    # match = {'$match': {'result.value.location.country_ch': '中国'}}
+
+    pipeline = [
+        {
+            "$facet": {
+                "server": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.server': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.server", 'count': {'$sum': 1}}},
+                ],
+                "protocols": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.protocols': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.protocols", 'count': {'$sum': 1}}},
+                ],
+                "cdn": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.cdn': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.cdn", 'count': {'$sum': 1}}},
+                ],
+                "component": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.component': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.component"},
+                    {'$group': {'_id': "$result.value.component", 'count': {'$sum': 1}}},
+                ],
+                "language": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.language': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.language"},
+                    {'$group': {'_id': "$result.value.language", 'count': {'$sum': 1}}},
+                ],
+                "location": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.location': 1,
+                    }
+                    },
+                    {'$unwind': '$result'},
+
+                    {'$group': {
+                        '_id': {
+                            "country": "$result.value.location.country_ch",
+                            "country_code": "$result.value.location.country_code",
+                            "province": "$result.value.location.province",
+                            "city": "$result.value.location.city",
+                        },
+                        'city_count': {'$sum': 1},
+
+                    }},
+                    {'$sort': {'city_count': -1}},
+                    {
+                        '$group': {
+                            "_id": {
+                                "country": "$_id.country",
+                                "country_code": "$_id.country_code",
+                                "province": "$_id.province",
+                            },
+                            'city': {'$push': {"city_name": "$_id.city", "count": "$city_count"}},
+                            'province_count': {'$sum': "$city_count"},
+                        }
+                    },
+                    {'$sort': {'province_count': -1}},
+                    {
+                        '$group': {
+                            "_id": {
+                                "country": "$_id.country",
+                                "country_code": "$_id.country_code",
+
+                            },
+                            'province': {
+                                '$push': {"province_name": "$_id.province", "province_count": "$province_count",
+                                          "city": "$city"}},
+                            'country_count': {'$sum': '$province_count'},
+                        }
+                    },
+                    {'$sort': {'country_count': -1}},
+                ],
+                "illegal_feature": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.illegal_feature.name': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.illegal_feature"},
+                    {'$group': {'_id': "$result.value.illegal_feature.name", 'count': {'$sum': 1}}},
+                ],
+                "vulnerables": [
+
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.vulnerables': 1,
+                    }},
+                    {'$unwind': '$result'},
+                    {'$unwind': '$result.value.vulnerables'},
+                    {'$group': {'_id': "$result.value.vulnerables.plugin_name", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "illegality": [
+                    # match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.illegality': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': '$result.value.illegality'},
+                    # {'$unwind': '$result.value.illegality.plugin_name'},
+                    {'$group': {'_id': "$result.value.illegality.plugin_name", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+
+            }
+        }
+    ]
+    sum = 0
+    res = []
+    for i in result_set.aggregate(pipeline):
+        res.append(i)
+
+    logging.debug(res[0])
+    return sum
+
+
 if __name__ == '__main__':
+    classify_by_key_test()
+    # get_count()
     # get_image(
     # get_ill_feature()
     # get_all_vul_count()
@@ -888,4 +1159,4 @@ if __name__ == '__main__':
     # get_vul_result_count()
     # mongo_search_like()
     # get_vul_web_data()
-    get_vul_iil_domain1()
+    # get_vul_iil_domain1()

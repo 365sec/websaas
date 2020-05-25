@@ -32,16 +32,19 @@ coloredlogs.install(level='DEBUG',
 
 # glob_url = "http://172.16.39.65:9000"
 # glob_url = "http://172.16.39.81:22222"
-glob_url = "http://172.16.39.78:24444"
+# glob_url = "http://172.16.39.78:24444"
+glob_url = "http://127.0.0.1:24444"
 # glob_url = "http://47.100.88.79:9000"
 
 # mongo_client = pymongo.MongoClient('mongodb://47.100.88.79:27017/?authSource=webmap')
 # mongo_client = pymongo.MongoClient('mongodb://172.16.39.178:27017/?authSource=webmap')
-mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/webmap')
+# mongo_client = pymongo.MongoClient('mongodb://gree:12345@172.16.39.78:27017/webmap')
+mongo_client = pymongo.MongoClient('mongodb://172.16.39.196:27017/webmap')
 
 mongo_db = mongo_client['webmap']
 project_set = mongo_db['projectdb']
 result_set = mongo_db['resultdb']
+
 
 def log_time(func):
     def wrapper(*args, **kw):
@@ -51,6 +54,8 @@ def log_time(func):
         return result
 
     return wrapper
+
+
 # reload(sys)
 # sys.setdefaultencoding('utf8')
 
@@ -60,10 +65,12 @@ def index(request):
 
     return render(request, r'vulcheck\index.html', context)
 
+
 def index1(request):
     context = {'hello': 'Hello World!'}
 
     return render(request, r'index.html', context)
+
 
 def quickstart(request):
     context = {'hello': 'Hello World!'}
@@ -83,11 +90,11 @@ def show_all_task(request):
     skip = int(page * page_num)
     max_num = project_set.count()
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
-    result = project_set.find({}, {'_id': 0}).sort([("finish_time",-1)]).skip(skip).limit(page_num)
+    result = project_set.find({}, {'_id': 0}).sort([("finish_time", -1)]).skip(skip).limit(page_num)
     logging.debug(max_num)
     task_list = []
     for x in result:
-        # logging.debug(x)
+        logging.debug(x)
         x['finish_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['finish_time'])) if x[
             'finish_time'] else ""
         x['start_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(x['start_time'])) if x['start_time'] else ""
@@ -130,9 +137,11 @@ def get_vul_web_html(request):
     context = {}
     return render(request, r'vulcheck\vulWebsites.html', context)
 
+
 def keywords_library_html(request):
     context = {}
     return render(request, r'vulcheck\keywords_library.html', context)
+
 
 def domain_library_html(request):
     context = {}
@@ -490,8 +499,6 @@ def get_plug(request):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
-
-
 def issue_task_list(request):
     """:arg下发任务"""
     task_content = {
@@ -627,8 +634,8 @@ def deal_result_json(web):
 def delete_task(request):
     task_id = request.GET.get("task_id")
     logging.debug(task_id)
-    result_set.delete_many({"task_id":task_id})
-    project_set.delete_many({"task_id":task_id})
+    result_set.delete_many({"task_id": task_id})
+    project_set.delete_many({"task_id": task_id})
     context = {"code": 200}
     return HttpResponse(json.dumps(context), content_type="application/json")
 
@@ -686,12 +693,12 @@ def classify_by_key(request):
                 match,
                 {'$group': {
                     '_id': {
-                        "country":"$result.value.location.country_ch",
+                        "country": "$result.value.location.country_ch",
                         "country_code": "$result.value.location.country_code",
-                        "province":"$result.value.location.province",
-                        "city":"$result.value.location.city",
+                        "province": "$result.value.location.province",
+                        "city": "$result.value.location.city",
                     },
-                    'city_count':  {'$sum': 1},
+                    'city_count': {'$sum': 1},
 
                 }},
                 {'$sort': {'city_count': -1}},
@@ -702,8 +709,8 @@ def classify_by_key(request):
                             "country_code": "$_id.country_code",
                             "province": "$_id.province",
                         },
-                        'city': {'$push':  {"city_name":"$_id.city","count":"$city_count"}},
-                        'province_count':  {'$sum': "$city_count"},
+                        'city': {'$push': {"city_name": "$_id.city", "count": "$city_count"}},
+                        'province_count': {'$sum': "$city_count"},
                     }
                 },
                 {'$sort': {'province_count': -1}},
@@ -714,8 +721,9 @@ def classify_by_key(request):
                             "country_code": "$_id.country_code",
 
                         },
-                        'province': {'$push':  {"province_name":"$_id.province","province_count":"$province_count", "city":"$city"}},
-                        'country_count':  {'$sum': '$province_count'},
+                        'province': {'$push': {"province_name": "$_id.province", "province_count": "$province_count",
+                                               "city": "$city"}},
+                        'country_count': {'$sum': '$province_count'},
                     }
                 },
                 {'$sort': {'country_count': -1}},
@@ -769,47 +777,250 @@ def classify_by_key(request):
 
 
 def classify_by_key_plugins_reduce(match):
-
     result = {}
 
-    plug = ["vulnerables","illegality"]
+    plug = ["vulnerables", "illegality"]
     for x in plug:
         pipeline = [
             # {'$match': {'task_id': u'0a71f4a8-7987-49c0-b4a9-afadb39fe843','result': {'$exists': True}}},
             {'$project': {'result': 1, 'task_id': 1}},
             {'$unwind': '$result'},
-            {'$unwind': '$result.value.'+x},
-            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$unwind': '$result.value.' + x},
+            {'$unwind': '$result.value.' + x + '.plugin_name'},
             match,
             {'$group': {
-                '_id': '$result.value.'+x+'.plugin_name',
+                '_id': '$result.value.' + x + '.plugin_name',
                 'count': {'$sum': 1},
             }},
             {'$sort': {'count': -1}},
 
         ]
         res = result_set.aggregate(pipeline)
-        result['result.value.'+x+'.plugin_name'] = []
+        result['result.value.' + x + '.plugin_name'] = []
         for i in res:
-            result['result.value.'+x+'.plugin_name'].append(i)
+            result['result.value.' + x + '.plugin_name'].append(i)
             # logging.debug(i)
         # logging.debug(result)
     return result
 
 
+def classify_by_key1(request):
+    """
+    关于所有分类信息的查询过滤
+    :arg request
+    :return 结果
+    """
+
+    # project_set = mongo_db['resultdb']
+    filter_param = json.loads(request.body)
+    # logging.debug(filter_param)
+    context = {"data": {}}
+    classify = [
+        'other',
+        'result.value.language',
+        'result.value.component',
+        'result.value.illegal_feature.name',
+    ]
+    match = {'$match': {}}
+    for key in filter_param['param']:
+        val = filter_param['param'][key]
+        match['$match'][key] = val
+
+    pipeline = [
+        {
+            "$facet": {
+                "server": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.server': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.server", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "protocols": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.protocols': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.protocols", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "cdn": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.cdn': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$group': {'_id': "$result.value.cdn", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "component": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.component': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.component"},
+                    {'$group': {'_id': "$result.value.component", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "language": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.language': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.language"},
+                    {'$group': {'_id': "$result.value.language", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "location": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.location': 1,
+                    }
+                    },
+                    {'$unwind': '$result'},
+
+                    {'$group': {
+                        '_id': {
+                            "country": "$result.value.location.country_ch",
+                            "country_code": "$result.value.location.country_code",
+                            "province": "$result.value.location.province",
+                            "city": "$result.value.location.city",
+                        },
+                        'city_count': {'$sum': 1},
+
+                    }},
+                    {'$sort': {'city_count': -1}},
+                    {
+                        '$group': {
+                            "_id": {
+                                "country": "$_id.country",
+                                "country_code": "$_id.country_code",
+                                "province": "$_id.province",
+                            },
+                            'city': {'$push': {"city_name": "$_id.city", "count": "$city_count"}},
+                            'province_count': {'$sum': "$city_count"},
+                        }
+                    },
+                    {'$sort': {'province_count': -1}},
+                    {
+                        '$group': {
+                            "_id": {
+                                "country": "$_id.country",
+                                "country_code": "$_id.country_code",
+
+                            },
+                            'province': {
+                                '$push': {"province_name": "$_id.province", "province_count": "$province_count",
+                                          "city": "$city"}},
+                            'country_count': {'$sum': '$province_count'},
+                        }
+                    },
+                    {'$sort': {'country_count': -1}},
+                ],
+                "illegal_feature": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.illegal_feature.name': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': "$result.value.illegal_feature"},
+                    {'$group': {'_id': "$result.value.illegal_feature.name", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "vulnerables": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.vulnerables': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': '$result.value.vulnerables'},
+                    # {'$unwind': '$result.value.vulnerables.plugin_name'},
+                    {'$group': {'_id': "$result.value.vulnerables.plugin_name", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+                "illegality": [
+                    match,
+                    {'$project': {
+                        "_id": 0,
+                        'result.value.illegality': 1,
+                    }},
+                    {'$unwind': "$result"},
+                    {'$unwind': '$result.value.illegality'},
+                    # {'$unwind': '$result.value.illegality.plugin_name'},
+                    {'$group': {'_id': "$result.value.illegality.plugin_name", 'count': {'$sum': 1}}},
+                    {'$sort': {'count': -1}},
+                ],
+
+            }
+        }
+    ]
+    res = []
+    for i in result_set.aggregate(pipeline):
+        res.append(i)
+
+    for key in res[0]:
+        for i in res[0][key]:
+            # logging.debug(i)
+            if not i['_id']:
+                i['_id'] = "unknown"
+            if isinstance(i['_id'], dict):
+                if 'version' in i['_id']:
+                    i['_id'] = i['_id']['product'] + ":" + i['_id']['version']
+                elif 'product' not in i['_id']:
+                    pass
+                else:
+                    i['_id'] = i['_id']['product'] + ":"
+
+    context['data'] = res[0]
+
+    # plugins_result = classify_by_key_plugins_reduce(match)
+    # for x in plugins_result:
+    #     context["data"][x] = plugins_result[x]
+    return HttpResponse(json.dumps(context), content_type="application/json")
+
+
 def get_result_count(match):
     """:ivar获得所有result长度总和"""
-    pipeline = [
-        {'$unwind': "$result"},
-        match,
-        {'$group': {'_id': None, 'count': {'$sum': 1}}},
-        # {
-        #     '$project': {
-        #         '_id': 0,
-        #         'size_of_result': {'$size': "$result"},
-        #     }
-        # },
-    ]
+    logging.debug(match)
+
+    if match['$match']:
+        project = {
+            "_id": 0,
+        }
+        for x in match['$match']:
+            project[x] = 1
+        logging.debug(project)
+        pipeline = [
+            {'$project': project},
+            match,
+            {'$unwind': "$result"},
+            {'$group': {'_id': None, 'count': {'$sum': 1}}},
+        ]
+    else:
+        pipeline = [
+            {'$project': {
+                "_id": 0,
+                'result.value.vulnerables': 1,
+                'result.value.illegal_feature': 1,
+                'result.value.illegality': 1,
+                'result.value.icp': 1,
+            }},
+            {'$unwind': "$result"},
+            {'$group': {'_id': None, 'count': {'$sum': 1}}},
+        ]
     sum = 0
     for i in result_set.aggregate(pipeline):
         sum += i['count']
@@ -824,7 +1035,6 @@ def get_vul_result_count(match):
     pipeline = [
         {'$project': {
             "_id": 0,
-            "task_id":1,
             'result.value.vulnerables': 1,
         }},
         {'$unwind': "$result"},
@@ -843,7 +1053,18 @@ def get_vul_result_count(match):
 def get_ill_result_count(match):
     """:ivar获得所有违法网站 result长度总和"""
     # match = {'$match': {"result": {'$exists': True}}}
+    logging.debug(match)
+    if not match['$match']:
+        match = {'$match': {"result": {'$exists': True}}}
+    # match = {'$match': {'result.value.illegality.name': '黄色图片'}}
+    # logging.debug(match)
     pipeline = [
+        {'$project': {
+            "_id": 0,
+            "task_id": 1,
+            'result.value.illegality.name': 1,
+            'result.value.illegal_feature.name': 1,
+        }},
         {'$unwind': "$result"},
         match,
         {'$group': {'_id': None, 'count': {'$sum': 1}}},
@@ -868,7 +1089,8 @@ def get_scan_list(request):
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
-    match = {'$match': {"result": {'$exists': True}}}
+    match = {}
+    match['$match'] = {}
     for key in filter_param:
         val = filter_param[key]
         match['$match'][key] = val
@@ -876,14 +1098,24 @@ def get_scan_list(request):
     max_num = get_result_count(match)
     logging.debug(match)
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
-    pipeline = [
-        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
-        {'$unwind': "$result"},
-        match,
-        {'$sort': {'result.value.save_time': -1}},
-        {'$skip': skip},
-        {'$limit': page_num},
-    ]
+    if match['$match']:
+        pipeline = [
+            {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
+            {'$unwind': "$result"},
+            match,
+            {'$sort': {'result.value.save_time': -1}},
+            {'$skip': skip},
+            {'$limit': page_num},
+        ]
+    else:
+        pipeline = [
+            {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
+            {'$unwind': "$result"},
+            {'$sort': {'result.value.save_time': -1}},
+            {'$skip': skip},
+            {'$limit': page_num},
+        ]
+
     result = []
     for i in result_set.aggregate(pipeline):
         # logging.debug(i)
@@ -906,7 +1138,7 @@ def get_scan_task_list(request):
         match['$match'][key] = val
     logging.debug(match)
     pipeline = [
-        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
         {'$unwind': "$result"},
         match,
         {'$sort': {'result.value.save_time': -1}},
@@ -920,6 +1152,7 @@ def get_scan_task_list(request):
     context['max_page'] = 1
     context['data'] = result
     return HttpResponse(json.dumps(context), content_type="application/json")
+
 
 def get_scan_vul_iil_domain_list(request):
     """:arg
@@ -946,6 +1179,7 @@ def get_scan_vul_iil_domain_list(request):
     context['data'] = result
 
     return HttpResponse(json.dumps(context), content_type="application/json")
+
 
 # def get_scan_vul_iil_domain_list(request):
 #     """:arg
@@ -1011,20 +1245,14 @@ def get_ill_web_data(request):
     context = {"max_page": 0}
     logging.debug(json.loads(request.body))
     param = json.loads(request.body)
-    page = param.get("page",0)
+    page = param.get("page", 0)
     filter_param = param['param']
     # project_set = mongo_db['resultdb']
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
-    match = {'$match': {"result": {'$exists': True}}}
-    # match['$match']['result.value.illegal_feature.name'] = {'$exists': True}
-    # match = {'$match': {}}
-    match['$match']['$or'] = [
-        {'result.value.illegality.plugin_name': {'$exists': True}},
-        {'result.value.illegal_feature.name': {'$exists': True}},
-        # {'result.value.illegality.image_snapshot': {'$exists': True}}
-]
+    match = {'$match': {}}
+
     for key in filter_param:
         if key == "keyword":
             continue
@@ -1032,37 +1260,40 @@ def get_ill_web_data(request):
         match['$match'][key] = val
 
     max_num = get_ill_result_count(match)
-    # logging.debug(max_num)
+
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     if 'result.value.illegality.name' in filter_param and filter_param['result.value.illegality.name'] == '黄色图片':
-        logging.debug("黄色图片")
+        logging.debug(filter_param)
         pipeline = [
             {'$project': {
                 "_id": 0,
-                "task_id":1,
-                'result.value.illegality': 1,
+                "task_id": 1,
+                # 'result.value.illegality': 1,
                 'result.scheme_domain': 1,
                 'result.value.ip': 1,
                 'result.value.location': 1,
                 'result.value.save_time': 1,
+                'result.value.illegality': 1,
             }},
+            {'$match': {'result.value.illegality.name':"黄色图片"}},
+            # match,
             {'$unwind': "$result"},
             {'$unwind': "$result.value.illegality"},
-            match,
             {'$skip': skip},
             {'$limit': page_num},
             {'$sort': {'result.value.save_time': -1}},
         ]
-    elif 'result.value.illegal_feature.name' in filter_param :
+    elif 'result.value.illegal_feature.name' in filter_param:
         pipeline = [
             {'$project': {
                 "_id": 0,
-                "task_id":1,
+                "task_id": 1,
                 'result.value.illegal_feature': 1,
                 'result.scheme_domain': 1,
                 'result.value.ip': 1,
                 'result.value.location': 1,
                 'result.value.save_time': 1,
+
             }},
             {'$unwind': "$result"},
             {'$unwind': "$result.value.illegal_feature"},
@@ -1076,7 +1307,7 @@ def get_ill_web_data(request):
         pipeline = [
             {'$project': {
                 "_id": 0,
-                "task_id":1,
+                "task_id": 1,
                 'result.value.illegality': 1,
                 'result.scheme_domain': 1,
                 'result.value.ip': 1,
@@ -1093,7 +1324,7 @@ def get_ill_web_data(request):
         ]
     result = []
     for i in result_set.aggregate(pipeline):
-        # logging.debug(i)
+        logging.debug(i)
         result.append(i)
     # logging.debug(max_page)
     context['max_page'] = max_page
@@ -1117,11 +1348,11 @@ def get_ill_web_data_wei_fa(request):
     skip = int(page * page_num)
     match = {'$match': {"result": {'$exists': True}}}
     # match['$match']['result.value.illegality.plugin_name'] = {'$exists': True}
-    # match = {'$match': {}}
-    match['$match']['$or'] = [
-        # {'result.value.illegal_feature': {'$exists': True}},
-        {'result.value.illegal_feature.image_snapshot': {'$exists': True}}
-    ]
+    match = {'$match': {}}
+    # match['$match']['$or'] = [
+    #     # {'result.value.illegal_feature': {'$exists': True}},
+    #     {'result.value.illegal_feature.image_snapshot': {'$exists': True}}
+    # ]
     for key in filter_param:
         if key == "keyword":
             continue
@@ -1133,7 +1364,7 @@ def get_ill_web_data_wei_fa(request):
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
 
     pipeline = [
-        {'$project': {"_id": 0,"task_id": 1, 'result': 1}},
+        {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
         {'$unwind': "$result"},
         {'$unwind': "$result.value.illegal_feature"},
         # {'$unwind': "$result.value.illegality.value"},
@@ -1152,6 +1383,7 @@ def get_ill_web_data_wei_fa(request):
     context['data'] = result
 
     return HttpResponse(json.dumps(context), content_type="application/json")
+
 
 def get_image_bs64(request):
     context = {}
@@ -1179,6 +1411,7 @@ def img_to_base64(img_path):
         base64_data = b""
     return base64_data
 
+
 def get_vul_web_data(request):
     """:arg
         获得漏洞网站网站信息
@@ -1192,7 +1425,7 @@ def get_vul_web_data(request):
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
-    match = {'$match': {"result": {'$exists': True}}}
+    match = {'$match': {}}
     match['$match']['result.value.vulnerables.plugin_name'] = {'$exists': True}
     for key in filter_param:
         if key == "keyword":
@@ -1201,11 +1434,12 @@ def get_vul_web_data(request):
         match['$match'][key] = val
 
     max_num = get_vul_result_count(match)
+    # max_num =10
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
         {'$project': {
             "_id": 0,
-            "task_id":1,
+            "task_id": 1,
             'result.value.vulnerables': 1,
             'result.scheme_domain': 1,
             'result.value.ip': 1,
@@ -1348,7 +1582,7 @@ def get_vul_total(request):
     vul_web = get_vul_web_num()
     all_web = get_all_web_num()
 
-    context = {'vul_keyword':vul_keyword,'vul_web':vul_web,'all_web':all_web}
+    context = {'vul_keyword': vul_keyword, 'vul_web': vul_web, 'all_web': all_web}
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
@@ -1356,7 +1590,7 @@ def get_ill_total(request):
     """:arg违法列表上面统计部分"""
     data = get_ill_keyword_num()
     key_info = illegality_by_key_by_domian_reduce()
-    context = {'data':data,'key_info':key_info}
+    context = {'data': data, 'key_info': key_info}
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
@@ -1447,12 +1681,12 @@ def illegality_by_key_by_domian_reduce():
         pipeline = [
             {'$project': {'result': 1, 'task_id': 1}},
             {'$unwind': '$result'},
-            {'$unwind': '$result.value.'+x},
-            {'$unwind': '$result.value.'+x+'.plugin_name'},
+            {'$unwind': '$result.value.' + x},
+            {'$unwind': '$result.value.' + x + '.plugin_name'},
             {'$group': {
                 '_id': '$result.scheme_domain',
                 'count': {'$sum': 1},
-                'plugin_num': {'$push': '$result.value.'+x+'.plugin_name'},
+                'plugin_num': {'$push': '$result.value.' + x + '.plugin_name'},
                 # 'plugin': {'$push': {'plugin_name': '$result.value.vulnerables.plugin_name','num':{'$sum':1}}},
             }},
             {'$unwind': '$plugin_num'},
@@ -1492,7 +1726,7 @@ def get_beian_data(request):
     page = 0 if not page else int(page) - 1
     page_num = 10
     skip = int(page * page_num)
-    match = {'$match': {"result": {'$exists': True}}}
+    match = {'$match': {}}
     # match['$match']['result.value.icp'] = {'$exists': True}
     for key in filter_param:
         if key == "keyword":
@@ -1504,7 +1738,7 @@ def get_beian_data(request):
     # max_num = 195
     max_page = int(math.ceil(float(max_num) / page_num))  # 最大分页数
     pipeline = [
-        {'$project': {"_id": 0,"task_id":1, 'result': 1}},
+        {'$project': {"_id": 0, "task_id": 1, 'result': 1}},
         {'$unwind': "$result"},
         match,
         {'$sort': {'result.value.save_time': -1}},
